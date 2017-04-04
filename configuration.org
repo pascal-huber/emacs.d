@@ -1,10 +1,6 @@
 #+TITLE: Emacs configuration
 
 * Dependencies
-** System
-- [[https://www.djcbsoftware.nl/code/mu/][mu]]
-- [[http://www.offlineimap.org/][offlineimap]]
-- [[https://languagetool.org/][language-tools]]
 ** Emacs
 
 #+BEGIN_SRC emacs-lisp
