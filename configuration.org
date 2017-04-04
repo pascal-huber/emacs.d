@@ -587,8 +587,6 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 
 ** Auto complete 
 
-Auto complete.
-
 #+BEGIN_SRC emacs-lisp
   (ac-config-default)
 #+END_SRC
@@ -606,23 +604,22 @@ Auto complete.
 Set tab width to 2 for all buffers
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2)
+(setq-default tab-width 2)
 #+END_SRC
 
 Use 2 spaces instead of a tab.
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2 indent-tabs-mode nil)
-  (setq-default indent-tabs-mode nil)
-  (setq js-indent-level 2)
-  (setq coffee-tab-width 2)
-  (setq python-indent 2)
-  (setq css-indent-offset 2)
-  (add-hook 'sh-mode-hook
-            (lambda ()
-              (setq sh-basic-offset 2
-                    sh-indentation 2)))
-  (setq web-mode-markup-indent-offset 2)
+(setq-default tab-width 2 indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
+(setq js-indent-level 2)
+(setq python-indent 2)
+(setq css-indent-offset 2)
+(setq web-mode-markup-indent-offset 2)
+(add-hook 'sh-mode-hook
+          (lambda ()
+            (setq sh-basic-offset 2
+                  sh-indentation 2)))
 #+END_SRC
 
 ** JavaScript
@@ -653,7 +650,7 @@ Tern shortcuts:
 - =C-c C-d= Find docs of the thing under the cursor. Press again to
   open the associated URL (if any).
 
-*** Emacs
+*** Settings 
 
 Activate tern.
 
@@ -680,8 +677,8 @@ Activate tern.
 (elpy-enable)
 #+END_SRC
 
-** Keybindings and Shortcuts
-*** Evil mode
+** Keybindings
+*** Evil mode keybindings
 
 Next line on the same line.
 
@@ -696,7 +693,7 @@ Evil shortcut.
 (evil-ex-define-cmd "ww" 'sudo-save)
 #+END_SRC
 
-*** Mu4e Shortcuts
+*** Mu4e keybindings
 
 #+BEGIN_SRC emacs-lisp
 (define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
@@ -711,12 +708,17 @@ Evil shortcut.
 
 #+END_SRC
 
-*** Global.
+*** Global
+
+#+BEGIN_SRC emacs-lisp
+(define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+*** Minor Global
 
 #+BEGIN_SRC emacs-lisp
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET")      'newline-and-indent)
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-j")      'drag-stuff-down)
     (define-key map (kbd "C-k")      'drag-stuff-up)
