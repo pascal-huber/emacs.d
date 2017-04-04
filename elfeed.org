@@ -1,0 +1,13 @@
+* Elfeed                                                             :elfeed:
+** News                                                                :news:
+*** https://www.nzz.ch/startseite.rss                                   :nzz:
+*** http://www.20min.ch/rss/rss.tmpl?type=channel&get=4               :20min:
+** IT                                                                    :it:
+*** http://200ok.ch/atom.xml                                          :200ok:
+*** https://www.archlinux.org/feeds/news/                              :arch:
+*** https://news.ycombinator.com/rss                                     :hn:
+*** https://www.schneier.com/blog/atom.xml                         :security:
+*** http://www.zdnet.com/news/rss.xml                                 :zdnet:
+*** https://www.redhat.com/en/rss/blog                               :redhat:
+** Random
+*** https://lindahuber.net/blog/feed/                                   :mum:

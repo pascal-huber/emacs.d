@@ -1,0 +1,12 @@
+
+# Ignore everything
+*
+
+# But not these files...
+!elfeed.org
+!configuration.org
+!.gitignore
+!README.md
+
+# even if they are in the lisp folder
+!lisp/

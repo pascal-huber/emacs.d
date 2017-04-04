@@ -1,0 +1,804 @@
+#+TITLE: Emacs configuration
+
+* Dependencies
+** System
+- [[https://www.djcbsoftware.nl/code/mu/][mu]]
+- [[http://www.offlineimap.org/][offlineimap]]
+- [[https://languagetool.org/][language-tools]]
+** Emacs
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-archives '(
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
+
+(defvar my-packages '(
+                      ac-math
+                      auctex
+                      auto-complete
+                      calfw
+                      dictcc
+                      dictionary
+                      drag-stuff
+                      elfeed
+                      elfeed-org
+                      elfeed-goodies
+                      elpy
+                      emojify
+                      evil
+                      evil-ediff
+                      evil-leader
+                      evil-mu4e
+                      evil-org
+                      fill-column-indicator
+                      fsharp-mode
+                      helm-projectile
+                      js2-mode
+                      lua-mode
+                      magit
+                      mu4e-maildirs-extension
+                      neotree
+                      openwith
+                      powerline
+                      projectile
+                      smex
+                      tern
+                      tern-auto-complete))
+
+(defvar old-packages '(ess
+                       linum
+                       move-text
+                       multi-term
+                       shell-command
+                       smart-mode-line
+                       zenburn-theme))
+
+(dolist (p my-packages)
+  (unless (package-installed-p p)
+    (package-install p)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(require 'auto-complete-config)
+(ac-config-default)
+#+END_SRC
+
+* Private
+
+I have some info I do not want to share here.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-contexts nil)
+(load-file "~/git/config/emacs/private.el")
+#+END_SRC
+
+* Setup
+** Menu, Toolbar and Splashscreen
+
+No fancy stuff for me.
+
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-splash-screen t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+#+END_SRC
+
+** Backup files
+
+No Backup Files.
+
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+#+END_SRC
+
+** Symlinks
+
+Always Follow Symlinks, no questions asked.
+
+#+BEGIN_SRC emacs-lisp
+(setq vc-follow-symlinks nil)
+#+END_SRC
+
+** Auto-save
+
+Auto-Save in /tmp
+
+#+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+#+END_SRC
+
+** Evil
+
+I am evil.
+
+#+BEGIN_SRC emacs-lisp
+(require 'evil-org)
+(require 'evil-ediff)
+(require 'evil)
+(evil-mode t)
+#+END_SRC
+
+** Smex
+
+A better M-x.
+
+#+BEGIN_SRC emacs-lisp
+(require 'smex)
+(smex-initialize)
+#+END_SRC
+** Spell Checking
+
+For normal online spell checking I use hunspell.
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "hunspell")
+(setq ispell-local-dictionary "de_CH")
+(setq ispell-nondefault-dictionary "en_GB")
+(setq ispell-local-dictionary-alist '(("de_CH"
+                                       "[[:alpha:]]"
+                                       "[^[:alpha:]]"
+                                       "[']"
+                                       nil nil nil
+                                       utf-8)
+                                      ("en_GB"
+                                       "[[:alpha:]]"
+                                       "[^[:alpha:]]"
+                                       "[']"
+                                       nil nil nil
+                                       utf-8)))
+(dolist (hook '(text-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode 1))))
+(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode -1))))
+
+(require 'ispell)
+
+(defun flyspell-check-next-highlighted-word ()
+   "Custom function to spell check next highlighted word"
+  (interactive)
+  (flyspell-goto-next-error)
+  (ispell-word))
+#+END_SRC
+
+I use languagetool for serious spell and grammar checking.
+
+#+BEGIN_SRC emacs-lisp
+(require 'langtool)
+(setq langtool-nondefault-language "en-GB")
+(setq langtool-default-language "de-CH")
+(setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*")
+(setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
+
+#+END_SRC
+
+Change language
+
+#+BEGIN_SRC emacs-lisp
+(defun spell-checker-change-language ()
+  (interactive)
+  (switch-langtool-language)
+  (switch-ispell-language)
+  (message (concat "Switched language to: " ispell-local-dictionary)))
+
+(defun switch-langtool-language ()
+  "swap default and nondefault language"
+  (cl-rotatef langtool-default-language
+              langtool-nondefault-language))
+
+(defun switch-ispell-language ()
+  (interactive)
+  (cl-rotatef ispell-local-dictionary
+              ispell-nondefault-dictionary))
+
+#+END_SRC
+
+** Emojify
+
+Everybody loves emojis.
+
+#+BEGIN_SRC emacs-lisp
+(global-emojify-mode)
+#+END_SRC
+
+** Drag stuff
+
+#+BEGIN_SRC emacs-lisp
+(require 'drag-stuff)
+(drag-stuff-global-mode 1)
+#+END_SRC
+
+** Org Mode
+
+My org directory.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files '("~/org"))
+#+END_SRC
+
+A beatiful calendar (with some serous flaws with reoccuring events).
+
+#+BEGIN_SRC emacs-lisp
+(require 'calfw)
+(require 'calfw-org)
+;;(setq cfw:org-agenda-schedule-args '(:timestamp))
+;;(setq cfw:org-overwrite-default-keybinding t)
+#+END_SRC
+
+** Line numbers
+
+#+BEGIN_SRC emacs-lisp
+(global-linum-mode t)
+#+END_SRC
+
+** Sudo Save
+
+Save a file with sudo. Not quite functional yet though.
+
+#+BEGIN_SRC emacs-lisp
+(defun sudo-save ()
+  (interactive)
+  (let ((prefix "/sudo:root@localhost:")
+  )
+    (if (not buffer-file-name)
+        (write-file (concat prefix (ido-read-file-name "file:")))
+      (if (string-prefix-p prefix buffer-file-name)
+          (write-file buffer-file-name)
+        (write-file (concat prefix buffer-file-name))))))
+#+END_SRC
+
+** Elfeed
+
+Set it all up.
+
+#+BEGIN_SRC emacs-lisp
+(require 'elfeed)
+(require 'elfeed-goodies)
+(require 'elfeed-org)
+(elfeed-goodies/setup)
+(elfeed-org)
+(setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+#+END_SRC
+
+My most used filters have shortcuts.
+
+#+BEGIN_SRC emacs-lisp
+(defun elfeed-select-filter ()
+  (interactive)
+  (let ((x (read-string (concat "[ia] it-all  "
+                                "[nz] nzz.ch  "
+                                "[is] it-selcted  "
+                                ":  "))))
+    (cond ((string= x "ia")
+           (elfeed-search-set-filter "@6-months-ago +it"))
+          ((string= x "20")
+           (elfeed-search-set-filter "@6-months-ago +20min"))
+          ((string= x "nzz")
+           (elfeed-search-set-filter "@6-months-ago +nzz"))
+          ((string= x "is")
+           (elfeed-search-set-filter "@6-months-ago +it -zdnet -hn")))))
+#+END_SRC
+
+Quickly toggle the +unread filter.
+
+#+BEGIN_SRC emacs-lisp
+(defun elfeed-toggle-filter-unread ()
+  (interactive)
+  (if (string-match ".*+unread.*" elfeed-search-filter)
+    (elfeed-search-set-filter (replace-regexp-in-string "+unread" ""
+                                                       elfeed-search-filter))
+      (elfeed-search-set-filter (concat "+unread "
+                                        elfeed-search-filter)))
+  (elfeed-search-set-filter (replace-regexp-in-string "  " " " elfeed-search-filter)))
+
+#+END_SRC
+
+Clear the filter
+
+#+BEGIN_SRC emacs-lisp
+(defun elfeed-reset-filter ()
+  (interactive)
+  (elfeed-search-set-filter "@6-months-ago "))
+#+END_SRC
+
+Last but not least my elfeed keybindings.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'elfeed-search-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "c") 'elfeed-reset-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "r") 'elfeed-toggle-filter-unread)
+            (define-key evil-normal-state-local-map
+              (kbd ";") 'elfeed-select-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "F") 'elfeed-search-live-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "!") 'elfeed-search-untag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "u") 'elfeed-search-tag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "O") 'elfeed-search-browse-url)
+            (define-key evil-normal-state-local-map
+              (kbd "U") 'elfeed-update)
+            (define-key evil-normal-state-local-map
+              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
+(add-hook 'elfeed-show-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "n") 'elfeed-goodies/split-show-next)
+            (define-key evil-normal-state-local-map
+              (kbd "p") 'elfeed-goodies/split-show-prev)))
+#+END_SRC
+
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+(projectile-global-mode)
+(setq projectile-completion-system 'grizzl) ;; to compare with default (ido)
+(setq projectile-enable-caching t)
+(setq projectile-require-project-root nil) ;; use projectile everywhere
+#+END_SRC
+
+** Ido
+
+#+BEGIN_SRC emacs-lisp
+(require 'ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(setq ido-enable-flex-matching t)
+#+END_SRC
+
+** Helm
+
+#+BEGIN_SRC emacs-lisp
+(setq helm-buffers-fuzzy-matching 1)
+(helm-projectile-on)
+#+END_SRC
+
+** Faces
+
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ '(show-paren-match ((((class color) (background dark)) (:background "firebrick")))))
+#+END_SRC
+
+** Themes
+
+Toggle dark and light theme.
+
+#+BEGIN_SRC emacs-lisp
+(defun toggle-dark-light-theme ()
+  (interactive)
+  (let ((is-light (cl-find 'whiteboard custom-enabled-themes)))
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
+    (load-theme (if is-light 'wombat  'whiteboard))))
+(load-theme 'wombat t)
+#+END_SRC
+
+** Matching Brackets
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+(setq show-paren-style 'mixed)
+#+END_SRC
+** Font
+
+#+BEGIN_SRC emacs-lisp
+(setq default-frame-alist
+      '((font . "DejaVu Sans Mono-12")))
+#+END_SRC
+
+** Mail
+*** Init
+
+Note that my mu4e-contexts are set in a file elsewhere.
+
+Load deps.
+
+#+BEGIN_SRC emacs-lisp
+(require 'mu4e)
+(require 'mu4e-maildirs-extension)
+(require 'mu4e-contrib)
+(require 'evil-mu4e)
+(require 'smtpmail)
+#+END_SRC
+
+Show text, not html.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-html2text-command 'mu4e-shr2text)
+#+END_SRC
+
+I can handle the return key myself when I need it. But thanks mu4e!
+
+#+BEGIN_SRC emacs-lisp
+(defun no-auto-fill ()
+  "Turn off auto-fill-mode."
+  (auto-fill-mode -1))
+
+(add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
+#+END_SRC
+
+
+Hmm, not sure about this one.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+Skip duplicates
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-skip-duplicates t)
+#+END_SRC
+
+Some self explanatory settings.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-maildir "~/.mail")
+(setq mu4e-get-mail-command "offlineimap")
+(setq message-kill-buffer-on-exit t)
+#+END_SRC
+
+Update interval.
+
+#+BEGIN_SRC emacs-lisp
+;; (setq mu4e-update-interval 30)
+#+END_SRC
+
+Context policy.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'ask-if-none)
+#+END_SRC
+
+*** Check for forgotten -attachments.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'message-send-hook 'check-forgotten-attachment)
+(setq suspicious-regex-list '("^.*attach.*$"
+                              "^.*angehäng.*$"
+                              "^.*angehaeng.*$"
+                              "^.*anhang.*$"))
+(setq attachment-regex-list '("^.*<#part.*$"))
+
+(defun check-forgotten-attachment ()
+  "Returns t if the mail doesn't containany suspicious"
+  "words or if the user approved, else nil"
+  (interactive)
+  (let ((line-list (read-lines (buffer-file-name))))
+    (if (> (regex-test line-list suspicious-regex-list) 0)
+        (unless (or (> (regex-test line-list attachment-regex-list) 0)
+                    (yes-or-no-p "Did you add all your attachments?"))
+          (error "add the damn attachment(s)")))))
+
+(defun regex-test (file-lines regex-list)
+  "Returns the number of regex-matches in a list of strings"
+  (interactive)
+  (let ((matches 0))
+    (dolist (line file-lines)
+        (unless (string= ">" (substring line 0 1)) ; no check if line starts with ">"
+            (dolist (regex regex-list)
+                (if (string-match regex line)
+                    (incf matches)))))
+    (+ matches 0))) ; bump, there must be a better way to make sure the right value is returned
+
+(defun read-lines (filePath)
+  "Return a list of lines of a file at filePath."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string (buffer-string) "\n" t)))
+#+END_SRC
+
+** Latex
+
+To make evince go to the updated page when using auctex to compile.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o")))
+(setq TeX-view-program-selection '((output-pdf "Evince")))
+#+END_SRC
+
+
+I put a `make.sh` in the root of latex documents along with the main tex file `main.tex` and of course the `.gitignore`.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-latex-compile-quick ()
+  "runs make.sh -q -s (..) in the latex root"
+  (interactive)
+  (let* ((main-folder (get-latex-main-folder
+                       (file-name-directory buffer-file-name)))
+         (command (concat "sh " main-folder "make.sh " "-q "
+                          "-s " (number-to-string
+                                 (line-number-at-pos)) ":"
+                          (buffer-file-name))))
+    (start-process "my-latex" "latex-make"
+                   (concat main-folder "make.sh") "-q"
+                   "-s" (concat (number-to-string
+                                 (line-number-at-pos)) ":"
+                                 (buffer-file-name)))))
+
+(defun my-latex-compile-full ()
+  "runs make.sh -f -s (..) in the latex root"
+  (interactive)
+  (let* ((main-folder (get-latex-main-folder
+                       (file-name-directory buffer-file-name)))
+         (command (concat "sh " main-folder "make.sh " "-f "
+                          "-s " (number-to-string
+                                 (line-number-at-pos)) ":"
+                          (buffer-file-name))))
+    (start-process "my-latex" "latex-make"
+                   (concat main-folder "make.sh") "-f"
+                   "-s" (concat (number-to-string
+                                 (line-number-at-pos)) ":"
+                                 (buffer-file-name)))))
+
+(defun update-evince ()
+  "updates evince"
+  (interactive)
+  (let* ((main-folder (get-latex-main-folder
+                       (file-name-directory buffer-file-name)))
+         (command (concat "sh " main-folder "make.sh " "-f "
+                          "-s " (number-to-string
+                                 (line-number-at-pos)) ":"
+                          (buffer-file-name))))
+    (start-process "my-latex" "latex-make"
+                   (concat main-folder "make.sh") "-f"
+                   "-s" (concat (number-to-string
+                                 (line-number-at-pos)) ":"
+                                 (buffer-file-name)))))
+
+(defun my-latex-clean ()
+  "runs make.sh -c in the latex root"
+  (interactive)
+  (let ((main-folder (get-latex-main-folder
+                      (file-name-directory buffer-file-name))))
+    (shell-command-to-string (concat "sh " main-folder
+                                     "make.sh clean"))))
+
+(defun get-latex-main-folder (path)
+  "recursively gets the root folder of the latex project"
+  (interactive)
+  (if (not (string= path "/"))
+      (if (is-latex-root path)
+          path
+        (get-latex-main-folder (folder-up path)))))
+
+(defun folder-up (path)
+  "removes last folder of path"
+  (file-name-directory (directory-file-name path)))
+
+(defun is-latex-root (path)
+  "returns t if the path is the root folder of the latex project"
+  (interactive)
+  (and (file-exists-p (concat path ".gitignore"))
+       (file-exists-p (concat path "main.tex"))
+       (file-exists-p (concat path "make.sh"))))
+
+#+END_SRC
+
+** Auto complete 
+
+Auto complete.
+
+#+BEGIN_SRC emacs-lisp
+  (ac-config-default)
+#+END_SRC
+
+** 80 columns indicator.
+
+#+BEGIN_SRC emacs-lisp
+(require 'fill-column-indicator)
+(setq fci-rule-width 1)
+(setq fci-rule-color "red")
+#+END_SRC
+
+** Indents
+
+Set tab width to 2 for all buffers
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 2)
+#+END_SRC
+
+Use 2 spaces instead of a tab.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 2 indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil)
+  (setq js-indent-level 2)
+  (setq coffee-tab-width 2)
+  (setq python-indent 2)
+  (setq css-indent-offset 2)
+  (add-hook 'sh-mode-hook
+            (lambda ()
+              (setq sh-basic-offset 2
+                    sh-indentation 2)))
+  (setq web-mode-markup-indent-offset 2)
+#+END_SRC
+
+** JavaScript
+*** HowTo
+
+[[http://ternjs.net/][Tern]] is a stand-alone code-analysis engine for JavaScript and can be installed with =npm install -g tern=.
+
+For completion to work in a Node.js project, a =.tern-project= file like this is required:
+
+#+BEGIN_EXAMPLE
+    {"plugins": {"node": {}}}
+#+END_EXAMPLE
+
+or
+
+#+BEGIN_EXAMPLE
+    {"libs": ["browser", "jquery"]}
+#+END_EXAMPLE
+
+[[http://ternjs.net/doc/manual.html#configuration][Here]] is more documentation on how to configure a Tern project.
+
+Tern shortcuts:
+
+- =M-.= Jump to the definition of the thing under the cursor.
+- =M-,= Brings you back to last place you were when you pressed M-..
+- =C-c C-r= Rename the variable under the cursor.
+- =C-c C-c= Find the type of the thing under the cursor.
+- =C-c C-d= Find docs of the thing under the cursor. Press again to
+  open the associated URL (if any).
+
+*** Emacs
+
+Activate tern.
+
+#+BEGIN_SRC emacs-lisp
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-hook 'js-mode-hook 'js2-minor-mode)
+  (setq js2-highlight-level 3)
+  (setq js-indent-level 2)
+
+  ;; Tern
+  (add-hook 'js-mode-hook (lambda () (tern-mode t)))
+  (eval-after-load 'tern
+     '(progn
+        (require 'tern-auto-complete)
+        (tern-ac-setup)))
+
+
+#+END_SRC
+
+** Python
+
+#+BEGIN_SRC emacs-lisp
+(elpy-enable)
+#+END_SRC
+
+** Keybindings and Shortcuts
+*** Evil mode
+
+Next line on the same line.
+
+#+BEGIN_SRC emacs-lisp
+(define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+(define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+#+END_SRC
+
+Evil shortcut.
+
+#+BEGIN_SRC emacs-lisp
+(evil-ex-define-cmd "ww" 'sudo-save)
+#+END_SRC
+
+*** Mu4e Shortcuts
+
+#+BEGIN_SRC emacs-lisp
+(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
+(add-hook 'mu4e-view-mode-hook
+  (lambda()
+    ;; try to emulate some of the eww key-bindings
+    (local-set-key (kbd "<tab>") 'shr-next-link)
+    (local-set-key (kbd "i") 'mu4e-view-toggle-html)
+    (local-set-key (kbd "h") 'evil-backward-char)
+    (local-set-key (kbd "F") 'mu4e-compose-forward) ; why no working ???
+    (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+
+#+END_SRC
+
+*** Global.
+
+#+BEGIN_SRC emacs-lisp
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET")      'newline-and-indent)
+    (define-key map (kbd "M-x")      'smex)
+    (define-key map (kbd "C-j")      'drag-stuff-down)
+    (define-key map (kbd "C-k")      'drag-stuff-up)
+    (define-key map (kbd "C-c -")    'comment-region)
+    (define-key map (kbd "C-c ö")    'uncomment-region)
+    (define-key map (kbd "C-c d")    'fci-mode)
+    (define-key map (kbd "C-c m")    'mu4e)
+    (define-key map (kbd "C-c g")    'magit-status)
+    (define-key map (kbd "C-c a")    'org-agenda)
+    (define-key map (kbd "C-c n")    'elfeed)
+    (define-key map (kbd "C-x b")    'helm-mini)
+    (define-key map (kbd "C-x C-a")  'cfw:open-org-calendar)
+    (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
+    (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
+    (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
+    (define-key map (kbd "<f8>")     'neotree-toggle)
+    (define-key map (kbd "<f9>")     'ispell-word)
+    (define-key map (kbd "C-S-<f9>") 'flyspell-buffer)
+    (define-key map (kbd "C-<f9>")   'flyspell-check-next-highlighted-word)
+    (define-key map (kbd "M-<f9>")   'flyspell-check-previous-highlighted-word)
+    (define-key map (kbd "<f2>")     'spell-checker-change-language)
+    map)
+  "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-global-keys
+  :init-value t
+  :keymap my-keys-minor-mode-map
+  :lighter " my-keys")
+
+(my-global-keys 1)
+#+END_SRC
+
+* Old unused stuff
+** line numbers switching
+#+BEGIN_SRC emacs-lisp
+;; (defun toggle-abs-rel-line-numbers ()
+;;   (interactive)
+;;   (if (bound-and-true-p linum-mode)
+;;       ((lambda()
+;;          (message "relative line numbers")
+;;          (linum-mode 0)
+;;          (relative-line-numbers-mode t)))
+;;     ((lambda()
+;;        (message "absolute line numbers")
+;;        (relative-line-numbers-mode 0)
+;;        (linum-mode t)))))
+#+END_SRC
+** gnome keyring
+#+BEGIN_SRC emacs-lisp
+;; (defun get_keyring_password (user)
+;;   (interactive)
+;;   (let  ((x (shell-command-to-string
+;;              (concat "secret-tool lookup user " user))))
+;;     (format "%s" x)))
+;; ;; Example call
+;; ;; (defun test ()
+;; ;;   (interactive)
+;; ;;   (let ((x (get_keyring_password "asdf@gmail.com")))
+;; ;;     (message "%s" x)))
+#+END_SRC
+   
+** Multi-Term
+#+BEGIN_SRC emacs-lisp
+;;(setq multi-term-program "/bin/zsh")
+#+END_SRC
+
+** Neotree
+
+I sometimes use neotree. not anymore
+
+#+BEGIN_SRC emacs-lisp
+;; (require 'neotree)
+;; (add-hook 'neotree-mode-hook
+;;           (lambda ()
+;;             (define-key evil-normal-state-local-map
+;;               (kbd "H") 'neotree-hidden-file-toggle)
+;;             (define-key evil-normal-state-local-map
+;;               (kbd "TAB") 'neotree-enter)
+;;             (define-key evil-normal-state-local-map
+;;               (kbd "SPC") 'neotree-enter)
+;;             (define-key evil-normal-state-local-map
+;;               (kbd "q") 'neotree-hide)
+;;             (define-key evil-normal-state-local-map
+;;               (kbd "RET") 'neotree-enter)))
+#+END_SRC
