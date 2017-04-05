@@ -1,7 +1,6 @@
-#+TITLE: Emacs configuration
+#+TITLE: Esp-macs configuration
 
 * Dependencies
-** Emacs
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
@@ -62,17 +61,9 @@
 (ac-config-default)
 #+END_SRC
 
-* Private
-
-I have some info I do not want to share here.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-contexts nil)
-(load-file "~/git/config/emacs/private.el")
-#+END_SRC
-
 * Setup
-** Menu, Toolbar and Splashscreen
+** Gemeral Setup
+*** Menu, Toolbar and Splashscreen
 
 No fancy stuff for me.
 
@@ -82,7 +73,7 @@ No fancy stuff for me.
 (tool-bar-mode -1)
 #+END_SRC
 
-** Backup files
+*** Backup files
 
 No Backup Files.
 
@@ -90,7 +81,7 @@ No Backup Files.
 (setq make-backup-files nil)
 #+END_SRC
 
-** Symlinks
+*** Symlinks
 
 Always Follow Symlinks, no questions asked.
 
@@ -98,7 +89,7 @@ Always Follow Symlinks, no questions asked.
 (setq vc-follow-symlinks nil)
 #+END_SRC
 
-** Auto-save
+*** Auto-save
 
 Auto-Save in /tmp
 
@@ -109,7 +100,7 @@ Auto-Save in /tmp
       `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
-** Evil
+*** Evil
 
 I am evil.
 
@@ -120,7 +111,24 @@ I am evil.
 (evil-mode t)
 #+END_SRC
 
-** Smex
+C-g to escape.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-esc (prompt)
+  "Functionality for escaping generally"
+  (cond
+   ((or (evil-insert-state-p)
+        (evil-normal-state-p)
+        (evil-replace-state-p)
+        (evil-visual-state-p))
+    [escape])
+   (t (kbd "C-g"))))
+(define-key key-translation-map (kbd "C-g") 'my-esc)
+(define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
+(set-quit-char "C-g")
+#+END_SRC
+
+*** Smex
 
 A better M-x.
 
@@ -128,7 +136,7 @@ A better M-x.
 (require 'smex)
 (smex-initialize)
 #+END_SRC
-** Spell Checking
+*** Spell Checking
 
 For normal online spell checking I use hunspell.
 
@@ -194,7 +202,7 @@ Change language
 
 #+END_SRC
 
-** Emojify
+*** Emojify
 
 Everybody loves emojis.
 
@@ -202,14 +210,14 @@ Everybody loves emojis.
 (global-emojify-mode)
 #+END_SRC
 
-** Drag stuff
+*** Drag stuff
 
 #+BEGIN_SRC emacs-lisp
 (require 'drag-stuff)
 (drag-stuff-global-mode 1)
 #+END_SRC
 
-** Org Mode
+*** Org Mode
 
 My org directory.
 
@@ -226,29 +234,27 @@ A beatiful calendar (with some serous flaws with reoccuring events).
 ;;(setq cfw:org-overwrite-default-keybinding t)
 #+END_SRC
 
-** Line numbers
+*** Line numbers
 
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode t)
 #+END_SRC
 
-** Sudo Save
+*** Sudo files
 
-Save a file with sudo. Not quite functional yet though.
+I want to be asked if the file should be opened by root if it is not writable (this includes nonexistent files in write-protected folders).
 
 #+BEGIN_SRC emacs-lisp
-(defun sudo-save ()
-  (interactive)
-  (let ((prefix "/sudo:root@localhost:")
-  )
-    (if (not buffer-file-name)
-        (write-file (concat prefix (ido-read-file-name "file:")))
-      (if (string-prefix-p prefix buffer-file-name)
-          (write-file buffer-file-name)
-        (write-file (concat prefix buffer-file-name))))))
+(add-hook 'find-file-hook 'find-file-sudo)
+(defun find-file-sudo ()
+  (when (and (not (file-writable-p buffer-file-name))
+             (y-or-n-p "open file as root?"))
+    (find-alternate-file (concat "/sudo:root@localhost:"
+                                 buffer-file-name))
+    (message "file opened as root")))
 #+END_SRC
 
-** Elfeed
+*** Elfeed
 
 Set it all up.
 
@@ -333,7 +339,7 @@ Last but not least my elfeed keybindings.
               (kbd "p") 'elfeed-goodies/split-show-prev)))
 #+END_SRC
 
-** Projectile
+*** Projectile
 
 #+BEGIN_SRC emacs-lisp
 (projectile-global-mode)
@@ -342,7 +348,7 @@ Last but not least my elfeed keybindings.
 (setq projectile-require-project-root nil) ;; use projectile everywhere
 #+END_SRC
 
-** Ido
+*** Ido
 
 #+BEGIN_SRC emacs-lisp
 (require 'ido)
@@ -351,21 +357,21 @@ Last but not least my elfeed keybindings.
 (setq ido-enable-flex-matching t)
 #+END_SRC
 
-** Helm
+*** Helm
 
 #+BEGIN_SRC emacs-lisp
 (setq helm-buffers-fuzzy-matching 1)
 (helm-projectile-on)
 #+END_SRC
 
-** Faces
+*** Faces
 
 #+BEGIN_SRC emacs-lisp
 (custom-set-faces
  '(show-paren-match ((((class color) (background dark)) (:background "firebrick")))))
 #+END_SRC
 
-** Themes
+*** Themes
 
 Toggle dark and light theme.
 
@@ -379,24 +385,17 @@ Toggle dark and light theme.
 (load-theme 'wombat t)
 #+END_SRC
 
-** Matching Brackets
-#+BEGIN_SRC emacs-lisp
-(show-paren-mode 1)
-(setq show-paren-style 'mixed)
-#+END_SRC
-** Font
+*** Font
 
 #+BEGIN_SRC emacs-lisp
 (setq default-frame-alist
       '((font . "DejaVu Sans Mono-12")))
 #+END_SRC
 
-** Mail
-*** Init
+*** Mail
+**** Init
 
-Note that my mu4e-contexts are set in a file elsewhere.
-
-Load deps.
+Load it.
 
 #+BEGIN_SRC emacs-lisp
 (require 'mu4e)
@@ -406,13 +405,21 @@ Load deps.
 (require 'smtpmail)
 #+END_SRC
 
+My contexts.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-contexts nil)
+(load-file "~/git/config/emacs/private.el")
+#+END_SRC
+
+
 Show text, not html.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-html2text-command 'mu4e-shr2text)
 #+END_SRC
 
-I can handle the return key myself when I need it. But thanks mu4e!
+I can handle the return key myself, but thanks mu4e!
 
 #+BEGIN_SRC emacs-lisp
 (defun no-auto-fill ()
@@ -422,11 +429,11 @@ I can handle the return key myself when I need it. But thanks mu4e!
 (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
 #+END_SRC
 
-
-Hmm, not sure about this one.
+View mail in browser (with "Av").
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+(add-to-list 'mu4e-view-actions
+             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 #+END_SRC
 
 Skip duplicates
@@ -456,7 +463,7 @@ Context policy.
 (setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
-*** Check for forgotten -attachments.
+**** Check for forgotten -attachments.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'message-send-hook 'check-forgotten-attachment)
@@ -494,7 +501,14 @@ Context policy.
     (split-string (buffer-string) "\n" t)))
 #+END_SRC
 
-** Latex
+*** Auto complete 
+
+#+BEGIN_SRC emacs-lisp
+  (ac-config-default)
+#+END_SRC
+
+** Programming
+*** Latex
 
 To make evince go to the updated page when using auctex to compile.
 
@@ -580,14 +594,7 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
        (file-exists-p (concat path "make.sh"))))
 
 #+END_SRC
-
-** Auto complete 
-
-#+BEGIN_SRC emacs-lisp
-  (ac-config-default)
-#+END_SRC
-
-** 80 columns indicator.
+*** 80 columns indicator.
 
 #+BEGIN_SRC emacs-lisp
 (require 'fill-column-indicator)
@@ -595,7 +602,18 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 (setq fci-rule-color "red")
 #+END_SRC
 
-** Indents
+*** Matching Brackets
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+(setq show-paren-style 'mixed)
+#+END_SRC
+*** Python
+
+#+BEGIN_SRC emacs-lisp
+(elpy-enable)
+#+END_SRC
+
+*** Indents
 
 Set tab width to 2 for all buffers
 
@@ -617,62 +635,6 @@ Use 2 spaces instead of a tab.
             (setq sh-basic-offset 2
                   sh-indentation 2)))
 #+END_SRC
-
-** JavaScript
-*** HowTo
-
-[[http://ternjs.net/][Tern]] is a stand-alone code-analysis engine for JavaScript and can be installed with =npm install -g tern=.
-
-For completion to work in a Node.js project, a =.tern-project= file like this is required:
-
-#+BEGIN_EXAMPLE
-    {"plugins": {"node": {}}}
-#+END_EXAMPLE
-
-or
-
-#+BEGIN_EXAMPLE
-    {"libs": ["browser", "jquery"]}
-#+END_EXAMPLE
-
-[[http://ternjs.net/doc/manual.html#configuration][Here]] is more documentation on how to configure a Tern project.
-
-Tern shortcuts:
-
-- =M-.= Jump to the definition of the thing under the cursor.
-- =M-,= Brings you back to last place you were when you pressed M-..
-- =C-c C-r= Rename the variable under the cursor.
-- =C-c C-c= Find the type of the thing under the cursor.
-- =C-c C-d= Find docs of the thing under the cursor. Press again to
-  open the associated URL (if any).
-
-*** Settings 
-
-Activate tern.
-
-#+BEGIN_SRC emacs-lisp
-
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-  (add-hook 'js-mode-hook 'js2-minor-mode)
-  (setq js2-highlight-level 3)
-  (setq js-indent-level 2)
-
-  ;; Tern
-  (add-hook 'js-mode-hook (lambda () (tern-mode t)))
-  (eval-after-load 'tern
-     '(progn
-        (require 'tern-auto-complete)
-        (tern-ac-setup)))
-
-
-#+END_SRC
-
-** Python
-
-#+BEGIN_SRC emacs-lisp
-(elpy-enable)
-#+END_SRC
-
 ** Keybindings
 *** Evil mode keybindings
 
@@ -686,6 +648,7 @@ Next line on the same line.
 Evil shortcut.
 
 #+BEGIN_SRC emacs-lisp
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (evil-ex-define-cmd "ww" 'sudo-save)
 #+END_SRC
 
@@ -729,13 +692,12 @@ Evil shortcut.
     (define-key map (kbd "C-x C-a")  'cfw:open-org-calendar)
     (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
-    (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
-    (define-key map (kbd "<f8>")     'neotree-toggle)
-    (define-key map (kbd "<f9>")     'ispell-word)
+    (define-key map (kbd "<f2>")     'spell-checker-change-language)
     (define-key map (kbd "C-S-<f9>") 'flyspell-buffer)
+    (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
+    (define-key map (kbd "<f9>")     'ispell-word)
     (define-key map (kbd "C-<f9>")   'flyspell-check-next-highlighted-word)
     (define-key map (kbd "M-<f9>")   'flyspell-check-previous-highlighted-word)
-    (define-key map (kbd "<f2>")     'spell-checker-change-language)
     map)
   "my-keys-minor-mode keymap.")
 
@@ -748,20 +710,6 @@ Evil shortcut.
 #+END_SRC
 
 * Old unused stuff
-** line numbers switching
-#+BEGIN_SRC emacs-lisp
-;; (defun toggle-abs-rel-line-numbers ()
-;;   (interactive)
-;;   (if (bound-and-true-p linum-mode)
-;;       ((lambda()
-;;          (message "relative line numbers")
-;;          (linum-mode 0)
-;;          (relative-line-numbers-mode t)))
-;;     ((lambda()
-;;        (message "absolute line numbers")
-;;        (relative-line-numbers-mode 0)
-;;        (linum-mode t)))))
-#+END_SRC
 ** gnome keyring
 #+BEGIN_SRC emacs-lisp
 ;; (defun get_keyring_password (user)
@@ -776,11 +724,6 @@ Evil shortcut.
 ;; ;;     (message "%s" x)))
 #+END_SRC
    
-** Multi-Term
-#+BEGIN_SRC emacs-lisp
-;;(setq multi-term-program "/bin/zsh")
-#+END_SRC
-
 ** Neotree
 
 I sometimes use neotree. not anymore
@@ -800,3 +743,5 @@ I sometimes use neotree. not anymore
 ;;             (define-key evil-normal-state-local-map
 ;;               (kbd "RET") 'neotree-enter)))
 #+END_SRC
+
+
