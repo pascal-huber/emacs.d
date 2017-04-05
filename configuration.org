@@ -429,7 +429,7 @@ I can handle the return key myself, but thanks mu4e!
 (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
 #+END_SRC
 
-View mail in browser (with "Av").
+View mail in browser (with "aV").
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'mu4e-view-actions
