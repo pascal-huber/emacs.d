@@ -264,7 +264,7 @@ Set it all up.
 (require 'elfeed-org)
 (elfeed-goodies/setup)
 (elfeed-org)
-(setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+(setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
 My most used filters have shortcuts.
