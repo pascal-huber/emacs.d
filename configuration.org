@@ -606,11 +606,27 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
 (setq show-paren-style 'mixed)
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 #+END_SRC
 *** Python
 
 #+BEGIN_SRC emacs-lisp
 (elpy-enable)
+#+END_SRC
+
+Use jupyter/ipython if present
+
+#+BEGIN_SRC emacs-lisp
+(when (executable-find "ipython2")
+  (setq python-shell-interpreter "ipython2")
+  (setq python-shell-interpreter-args "--simple-prompt --pprint"))
+#+END_SRC
+
+Auto complete with jedi
+#+BEGIN_SRC emacs-lisp
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t) 
 #+END_SRC
 
 *** Indents
