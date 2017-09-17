@@ -766,39 +766,3 @@ Evil shortcut.
 
 (my-global-keys 1)
 #+END_SRC
-
-* Old unused stuff
-** gnome keyring
-#+BEGIN_SRC emacs-lisp
-;; (defun get_keyring_password (user)
-;;   (interactive)
-;;   (let  ((x (shell-command-to-string
-;;              (concat "secret-tool lookup user " user))))
-;;     (format "%s" x)))
-;; ;; Example call
-;; ;; (defun test ()
-;; ;;   (interactive)
-;; ;;   (let ((x (get_keyring_password "asdf@gmail.com")))
-;; ;;     (message "%s" x)))
-#+END_SRC
-   
-** Neotree
-
-I sometimes use neotree. not anymore
-
-#+BEGIN_SRC emacs-lisp
-;; (require 'neotree)
-;; (add-hook 'neotree-mode-hook
-;;           (lambda ()
-;;             (define-key evil-normal-state-local-map
-;;               (kbd "H") 'neotree-hidden-file-toggle)
-;;             (define-key evil-normal-state-local-map
-;;               (kbd "TAB") 'neotree-enter)
-;;             (define-key evil-normal-state-local-map
-;;               (kbd "SPC") 'neotree-enter)
-;;             (define-key evil-normal-state-local-map
-;;               (kbd "q") 'neotree-hide)
-;;             (define-key evil-normal-state-local-map
-;;               (kbd "RET") 'neotree-enter)))
-
-#+END_SRC
