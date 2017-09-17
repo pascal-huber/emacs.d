@@ -424,6 +424,12 @@ Load it.
 (require 'smtpmail)
 #+END_SRC
 
+Dont reply to myself.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-compose-dont-reply-to-self t)
+#+END_SRC
+
 My contexts.
 
 #+BEGIN_SRC emacs-lisp
