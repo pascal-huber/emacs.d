@@ -34,15 +34,15 @@
                       js2-mode
                       lua-mode
                       magit
-											markdown-mode
-											mu4e-alert
+                      markdown-mode
+                      mu4e-alert
                       mu4e-maildirs-extension
                       neotree
                       openwith
                       powerline
                       projectile
-											rainbow-delimiters
-											ruby-electric
+                      rainbow-delimiters
+                      ruby-electric
                       smex
                       tern
                       tern-auto-complete))
@@ -103,7 +103,7 @@ Always Follow Symlinks, no questions asked.
 *** Clipboard
 
 Copy to clipboard.
-    
+
 #+BEGIN_SRC emacs-lisp
 (setq x-select-enable-clipboard 't)
 #+END_SRC
@@ -163,18 +163,19 @@ For normal online spell checking I use hunspell.
 (setq ispell-program-name "hunspell")
 (setq ispell-local-dictionary "de_CH")
 (setq ispell-nondefault-dictionary "en_GB")
-(setq ispell-local-dictionary-alist '(("de_CH"
+(setq ispell-local-dictionary-alist '(("en_GB"
                                        "[[:alpha:]]"
                                        "[^[:alpha:]]"
                                        "[']"
                                        nil nil nil
                                        utf-8)
-                                      ("en_GB"
+                                      ("de_CH"
                                        "[[:alpha:]]"
                                        "[^[:alpha:]]"
                                        "[']"
                                        nil nil nil
                                        utf-8)))
+
 (dolist (hook '(text-mode-hook))
   (add-hook hook (lambda () (flyspell-mode 1))))
 (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
@@ -506,19 +507,20 @@ Some self explanatory settings.
 #+END_SRC
 
 *** Markdown Mode
-		
+
 #+BEGIN_SRC emacs-lisp
 (require 'markdown-mode)
 (setq markdown-command "pandoc")
-#+END_SRC 
+#+END_SRC
 
-*** Auto complete 
+*** Auto complete
 
 #+BEGIN_SRC emacs-lisp
   (ac-config-default)
 #+END_SRC
 
 ** Programming
+
 *** Latex
 
 To make evince go to the updated page when using auctex to compile.
@@ -646,7 +648,7 @@ Use jupyter/ipython if present
 Auto complete with jedi
 #+BEGIN_SRC emacs-lisp
 ;;(add-hook 'python-mode-hook 'jedi:setup)
-;;(setq jedi:complete-on-dot t) 
+;;(setq jedi:complete-on-dot t)
 #+END_SRC
 
 *** Indents
@@ -655,12 +657,24 @@ Set tab width to 2 for all buffers
 
 #+BEGIN_SRC emacs-lisp
 (setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+(setq js-indent-level 2)
+(setq python-indent 2)
+(setq css-indent-offset 2)
+(add-hook 'sh-mode-hook
+          (lambda ()
+            (setq sh-basic-offset 2
+                  sh-indentation 2)))
+
+(setq web-mode-markup-indent-offset 2)
 #+END_SRC
 
 Use 2 spaces instead of a tab.
 
 *** Whitespaces
-    
+
+To see whitespaces and indentation
+
 #+BEGIN_SRC emacs-lisp
 (require 'whitespace)
 #+END_SRC
@@ -669,7 +683,7 @@ Use 2 spaces instead of a tab.
 ** Keybindings
 *** Evil mode keybindings
 
-Next line on the same line.
+Visual lines, not real lines.
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -774,5 +788,3 @@ I sometimes use neotree. not anymore
 ;;             (define-key evil-normal-state-local-map
 ;;               (kbd "RET") 'neotree-enter)))
 #+END_SRC
-
-
