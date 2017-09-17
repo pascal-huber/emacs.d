@@ -25,6 +25,7 @@
                       emojify
                       evil
                       evil-ediff
+                      evil-god-state
                       evil-leader
                       evil-mu4e
                       evil-org
@@ -124,6 +125,13 @@ I am evil.
 (evil-mode t)
 #+END_SRC
 
+Evil God State
+
+#+BEGIN_SRC emacs-lisp
+(evil-define-key 'normal global-map "," 'evil-execute-in-god-state)
+(evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+#+END_SRC
+
 C-g to escape.
 
 #+BEGIN_SRC emacs-lisp
@@ -133,13 +141,16 @@ C-g to escape.
    ((or (evil-insert-state-p)
         (evil-normal-state-p)
         (evil-replace-state-p)
-        (evil-visual-state-p))
+        (evil-visual-state-p)
+        (evil-god-state-bail))
     [escape])
    (t (kbd "C-g"))))
 (define-key key-translation-map (kbd "C-g") 'my-esc)
 (define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
 (set-quit-char "C-g")
 #+END_SRC
+
+
 
 *** Smex
 
@@ -682,7 +693,6 @@ To see whitespaces and indentation
 (require 'whitespace)
 #+END_SRC
 
-
 ** Keybindings
 *** Evil mode keybindings
 
@@ -736,7 +746,7 @@ Evil shortcut.
     (define-key map (kbd "C-c g")    'magit-status)
     (define-key map (kbd "C-c a")    'org-agenda)
     (define-key map (kbd "C-c n")    'elfeed)
-    (define-key map (kbd "C-x b")    'helm-mini)
+    (define-key map (kbd "C-x C-b")  'helm-mini)
     (define-key map (kbd "C-x C-a")  'cfw:open-org-calendar)
     (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
@@ -790,4 +800,5 @@ I sometimes use neotree. not anymore
 ;;               (kbd "q") 'neotree-hide)
 ;;             (define-key evil-normal-state-local-map
 ;;               (kbd "RET") 'neotree-enter)))
+
 #+END_SRC
