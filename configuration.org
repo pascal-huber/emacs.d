@@ -41,6 +41,7 @@
                       mu4e-maildirs-extension
                       neotree
                       openwith
+                      org-bullets
                       powerline
                       projectile
                       rainbow-delimiters
@@ -230,6 +231,13 @@ Everybody loves emojis.
 #+END_SRC
 
 *** Org Mode
+    
+Nice bullets.
+
+#+BEGIN_SRC emacs-lisp
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+END_SRC
 
 My org directory.
 
