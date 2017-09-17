@@ -394,7 +394,6 @@ Toggle dark and light theme.
 #+END_SRC
 
 *** Mail
-**** Init
 
 Load it.
 
@@ -471,7 +470,8 @@ Some self explanatory settings.
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
-**** Check for forgotten -attachments.
+
+Check for forgotten attachments (TODO: Refactor)
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'message-send-hook 'check-forgotten-attachment)
