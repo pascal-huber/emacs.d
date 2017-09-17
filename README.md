@@ -6,7 +6,7 @@
 
 * [mu](https://www.djcbsoftware.nl/code/mu/)
 * [offlineimap](http://www.offlineimap.org/)
-* [language-tools](https://languagetool.org/)
+* [pandoc](http://pandoc.org/)
 
 # Installation:
 
@@ -14,5 +14,12 @@
 $ cd ~/git 
 $ git clone http://github.com/pascalhuber/emacs
 $ ln -s ~/git/emacs ~/.emacs.d
+```
+
+get mu4e ready
+```
+$ sudo pacman -S offlineimap 
+$ yaourt -s mu
+$ mu index --maildir=~/.mail
 ```
 

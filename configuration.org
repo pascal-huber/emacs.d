@@ -34,11 +34,15 @@
                       js2-mode
                       lua-mode
                       magit
+											markdown-mode
+											mu4e-alert
                       mu4e-maildirs-extension
                       neotree
                       openwith
                       powerline
                       projectile
+											rainbow-delimiters
+											ruby-electric
                       smex
                       tern
                       tern-auto-complete))
@@ -73,6 +77,13 @@ No fancy stuff for me.
 (tool-bar-mode -1)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(defun toggle-bars()
+  (interactive)
+  (menu-bar-mode)
+  (tool-bar-mode))
+#+END_SRC
+
 *** Backup files
 
 No Backup Files.
@@ -87,6 +98,14 @@ Always Follow Symlinks, no questions asked.
 
 #+BEGIN_SRC emacs-lisp
 (setq vc-follow-symlinks nil)
+#+END_SRC
+
+*** Clipboard
+
+Copy to clipboard.
+    
+#+BEGIN_SRC emacs-lisp
+(setq x-select-enable-clipboard 't)
 #+END_SRC
 
 *** Auto-save
@@ -170,36 +189,14 @@ For normal online spell checking I use hunspell.
   (ispell-word))
 #+END_SRC
 
-I use languagetool for serious spell and grammar checking.
-
-#+BEGIN_SRC emacs-lisp
-(require 'langtool)
-(setq langtool-nondefault-language "en-GB")
-(setq langtool-default-language "de-CH")
-(setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*")
-(setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
-
-#+END_SRC
-
 Change language
 
 #+BEGIN_SRC emacs-lisp
 (defun spell-checker-change-language ()
   (interactive)
-  (switch-langtool-language)
-  (switch-ispell-language)
-  (message (concat "Switched language to: " ispell-local-dictionary)))
-
-(defun switch-langtool-language ()
-  "swap default and nondefault language"
-  (cl-rotatef langtool-default-language
-              langtool-nondefault-language))
-
-(defun switch-ispell-language ()
-  (interactive)
   (cl-rotatef ispell-local-dictionary
-              ispell-nondefault-dictionary))
-
+              ispell-nondefault-dictionary)
+  (message (concat "Switched language to: " ispell-local-dictionary)))
 #+END_SRC
 
 *** Emojify
@@ -410,8 +407,29 @@ My contexts.
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-contexts nil)
 (load-file "~/git/config/emacs/private.el")
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
+Sending messages.
+
+#+BEGIN_SRC emacs-lisp
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq starttls-use-gnutls t)
+(setq smtpmail-debug-info t)
+#+END_SRC
+
+Activate Alert
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+#+END_SRC
+
+Show me the addresses, not only names.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-view-show-addresses t)
+#+END_SRC
 
 Show text, not html.
 
@@ -419,13 +437,12 @@ Show text, not html.
 (setq mu4e-html2text-command 'mu4e-shr2text)
 #+END_SRC
 
-I can handle the return key myself, but thanks mu4e!
+No automatic line breaks.
 
 #+BEGIN_SRC emacs-lisp
 (defun no-auto-fill ()
   "Turn off auto-fill-mode."
   (auto-fill-mode -1))
-
 (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
 #+END_SRC
 
@@ -446,21 +463,8 @@ Some self explanatory settings.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-maildir "~/.mail")
-(setq mu4e-get-mail-command "offlineimap")
+(setq mu4e-get-mail-command "offlineimap -o")
 (setq message-kill-buffer-on-exit t)
-#+END_SRC
-
-Update interval.
-
-#+BEGIN_SRC emacs-lisp
-;; (setq mu4e-update-interval 30)
-#+END_SRC
-
-Context policy.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
 **** Check for forgotten -attachments.
@@ -501,6 +505,13 @@ Context policy.
     (split-string (buffer-string) "\n" t)))
 #+END_SRC
 
+*** Markdown Mode
+		
+#+BEGIN_SRC emacs-lisp
+(require 'markdown-mode)
+(setq markdown-command "pandoc")
+#+END_SRC 
+
 *** Auto complete 
 
 #+BEGIN_SRC emacs-lisp
@@ -515,6 +526,15 @@ To make evince go to the updated page when using auctex to compile.
 #+BEGIN_SRC emacs-lisp
 (setq TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o")))
 (setq TeX-view-program-selection '((output-pdf "Evince")))
+#+END_SRC
+
+Use evince and firefox
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-output-view-style
+      (quote
+       (("^pdf$" "." "evince -f %o")
+        ("^html?$" "." "firefox %o"))))
 #+END_SRC
 
 
@@ -618,15 +638,15 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 Use jupyter/ipython if present
 
 #+BEGIN_SRC emacs-lisp
-(when (executable-find "ipython2")
-  (setq python-shell-interpreter "ipython2")
-  (setq python-shell-interpreter-args "--simple-prompt --pprint"))
+;;(when (executable-find "ipython3")
+;;  (setq python-shell-interpreter "ipython3")
+;;  (setq python-shell-interpreter-args "--simple-prompt --pprint"))
 #+END_SRC
 
 Auto complete with jedi
 #+BEGIN_SRC emacs-lisp
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t) 
+;;(add-hook 'python-mode-hook 'jedi:setup)
+;;(setq jedi:complete-on-dot t) 
 #+END_SRC
 
 *** Indents
@@ -639,18 +659,13 @@ Set tab width to 2 for all buffers
 
 Use 2 spaces instead of a tab.
 
+*** Whitespaces
+    
 #+BEGIN_SRC emacs-lisp
-(setq-default tab-width 2 indent-tabs-mode nil)
-(setq-default indent-tabs-mode nil)
-(setq js-indent-level 2)
-(setq python-indent 2)
-(setq css-indent-offset 2)
-(setq web-mode-markup-indent-offset 2)
-(add-hook 'sh-mode-hook
-          (lambda ()
-            (setq sh-basic-offset 2
-                  sh-indentation 2)))
+(require 'whitespace)
 #+END_SRC
+
+
 ** Keybindings
 *** Evil mode keybindings
 
