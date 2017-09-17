@@ -78,13 +78,6 @@ No fancy stuff for me.
 (tool-bar-mode -1)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(defun toggle-bars()
-  (interactive)
-  (menu-bar-mode)
-  (tool-bar-mode))
-#+END_SRC
-
 *** Backup files
 
 No Backup Files.
