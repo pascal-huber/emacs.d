@@ -398,10 +398,10 @@ Toggle dark and light theme.
 #+BEGIN_SRC emacs-lisp
 (defun toggle-dark-light-theme ()
   (interactive)
-  (let ((is-light (cl-find 'whiteboard custom-enabled-themes)))
+  (let ((is-light (cl-find 'leuven custom-enabled-themes)))
     (dolist (theme custom-enabled-themes)
       (disable-theme theme))
-    (load-theme (if is-light 'wombat  'whiteboard))))
+    (load-theme (if is-light 'wombat  'leuven))))
 (load-theme 'wombat t)
 #+END_SRC
 
