@@ -29,6 +29,7 @@
                       evil-mu4e
                       evil-org
                       fill-column-indicator
+                      fixme-mode
                       fsharp-mode
                       helm-projectile
                       js2-mode
@@ -155,6 +156,15 @@ A better M-x.
 (require 'smex)
 (smex-initialize)
 #+END_SRC
+
+*** Fixme-mode
+
+Highlight `FIXME`, `BUG` and `TODO`.
+    
+#+BEGIN_SRC emacs-lisp
+(fixme-mode t)
+#+END_SRC
+    
 *** Spell Checking
 
 For normal online spell checking I use hunspell.
@@ -516,7 +526,7 @@ Some self explanatory settings.
 *** Auto complete
 
 #+BEGIN_SRC emacs-lisp
-  (ac-config-default)
+(ac-config-default)
 #+END_SRC
 
 ** Programming
