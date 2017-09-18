@@ -1,4 +1,4 @@
-#+TITLE: Emacs configuration
+#+TITLE: Emacs Configuration
 
 * Dependencies
 
@@ -238,7 +238,8 @@ A beatiful calendar (with some serous flaws with reoccuring events).
 *** Line numbers
 
 #+BEGIN_SRC emacs-lisp
-(global-linum-mode t)
+;(global-linum-mode t)
+(add-hook 'prog-mode-hook 'linum-mode)
 #+END_SRC
 
 *** Sudo files
