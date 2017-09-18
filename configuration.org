@@ -6,6 +6,7 @@
 (require 'package)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("leuven" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
@@ -34,6 +35,7 @@
                       fsharp-mode
                       helm-projectile
                       js2-mode
+                      leuven-theme
                       lua-mode
                       magit
                       markdown-mode
@@ -126,32 +128,11 @@ I am evil.
 (evil-mode t)
 #+END_SRC
 
-Evil God State
+Evil commands
 
 #+BEGIN_SRC emacs-lisp
-(evil-define-key 'normal global-map "," 'evil-execute-in-god-state)
-(evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+(evil-ex-define-cmd "ww" 'sudo-save)
 #+END_SRC
-
-C-g to escape.
-
-#+BEGIN_SRC emacs-lisp
-(defun my-esc (prompt)
-  "Functionality for escaping generally"
-  (cond
-   ((or (evil-insert-state-p)
-        (evil-normal-state-p)
-        (evil-replace-state-p)
-        (evil-visual-state-p)
-        (evil-god-state-bail))
-    [escape])
-   (t (kbd "C-g"))))
-(define-key key-translation-map (kbd "C-g") 'my-esc)
-(define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
-(set-quit-char "C-g")
-#+END_SRC
-
-
 
 *** Smex
 
@@ -402,7 +383,7 @@ Toggle dark and light theme.
     (dolist (theme custom-enabled-themes)
       (disable-theme theme))
     (load-theme (if is-light 'wombat  'leuven))))
-(load-theme 'wombat t)
+(load-theme 'leuven t)
 #+END_SRC
 
 *** Font
@@ -548,7 +529,6 @@ Check for forgotten attachments (TODO: Refactor)
 #+END_SRC
 
 ** Programming
-
 *** Latex
 
 To make evince go to the updated page when using auctex to compile.
@@ -708,44 +688,59 @@ To see whitespaces and indentation
 #+END_SRC
 
 ** Keybindings
-*** Evil mode keybindings
 
-Visual lines, not real lines.
-
+Evil Normal State
+    
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 #+END_SRC
 
-Evil shortcut.
+Escape == C-g 
 
 #+BEGIN_SRC emacs-lisp
-(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-(evil-ex-define-cmd "ww" 'sudo-save)
+(defun my-esc (prompt)
+  "Functionality for escaping generally"
+  (cond
+   ((or (evil-insert-state-p)
+        (evil-normal-state-p)
+        (evil-replace-state-p)
+        (evil-visual-state-p))
+;        (evil-god-state-bail))
+    [escape])
+   (t (kbd "C-g"))))
+(define-key key-translation-map (kbd "C-g") 'my-esc)
+(define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
+(set-quit-char "C-g")
 #+END_SRC
 
-*** Mu4e keybindings
+mu4e
 
 #+BEGIN_SRC emacs-lisp
 (define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
 (add-hook 'mu4e-view-mode-hook
   (lambda()
-    ;; try to emulate some of the eww key-bindings
     (local-set-key (kbd "<tab>") 'shr-next-link)
     (local-set-key (kbd "i") 'mu4e-view-toggle-html)
     (local-set-key (kbd "h") 'evil-backward-char)
-    (local-set-key (kbd "F") 'mu4e-compose-forward) ; why no working ???
     (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-
 #+END_SRC
 
-*** Global
+Evil Motion (binds normal, visual, and operator states all at once)
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
+(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
+#+END_SRC
+
+Global
 
 #+BEGIN_SRC emacs-lisp
 (define-key global-map (kbd "RET") 'newline-and-indent)
 #+END_SRC
 
-*** Minor Global
+Global minor mode
 
 #+BEGIN_SRC emacs-lisp
 (defvar my-keys-minor-mode-map
@@ -753,19 +748,17 @@ Evil shortcut.
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-j")      'drag-stuff-down)
     (define-key map (kbd "C-k")      'drag-stuff-up)
-    (define-key map (kbd "C-c -")    'comment-region)
-    (define-key map (kbd "C-c ö")    'uncomment-region)
-    (define-key map (kbd "C-c d")    'fci-mode)
-    (define-key map (kbd "C-c m")    'mu4e)
-    (define-key map (kbd "C-c g")    'magit-status)
-    (define-key map (kbd "C-c a")    'org-agenda)
-    (define-key map (kbd "C-c n")    'elfeed)
+    (define-key map (kbd "C-c C--")  'comment-region)
+    (define-key map (kbd "C-c C-a")  'org-agenda)
     (define-key map (kbd "C-x C-b")  'helm-mini)
-    (define-key map (kbd "C-x C-a")  'cfw:open-org-calendar)
+    (define-key map (kbd "C-c C-d")  'fci-mode)
+    (define-key map (kbd "C-c C-g")  'magit-status)
+    (define-key map (kbd "C-c C-m")  'mu4e)
+    (define-key map (kbd "C-c C-n")  'elfeed)
+    (define-key map (kbd "C-c C-ö")  'uncomment-region)
     (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
-    (define-key map (kbd "C-S-<f9>") 'flyspell-buffer)
     (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
     (define-key map (kbd "<f9>")     'ispell-word)
     (define-key map (kbd "C-<f9>")   'flyspell-check-next-highlighted-word)
