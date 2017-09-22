@@ -15,7 +15,6 @@
                       ac-math
                       auctex
                       auto-complete
-                      calfw
                       dictcc
                       dictionary
                       drag-stuff
@@ -39,12 +38,12 @@
                       lua-mode
                       magit
                       markdown-mode
+                      moe-theme
                       mu4e-alert
                       mu4e-maildirs-extension
                       neotree
                       openwith
                       org-bullets
-                      powerline
                       projectile
                       rainbow-delimiters
                       ruby-electric
@@ -52,27 +51,13 @@
                       tern
                       tern-auto-complete))
 
-(defvar old-packages '(ess
-                       linum
-                       move-text
-                       multi-term
-                       shell-command
-                       smart-mode-line
-                       zenburn-theme))
-
 (dolist (p my-packages)
   (unless (package-installed-p p)
     (package-install p)))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(require 'auto-complete-config)
-(ac-config-default)
-#+END_SRC
-
-* Setup
-** Gemeral Setup
-*** Menu, Toolbar and Splashscreen
+* User Interface
+** Menu, Toolbar and Splashscreen
 
 No fancy stuff for me.
 
@@ -82,15 +67,57 @@ No fancy stuff for me.
 (tool-bar-mode -1)
 #+END_SRC
 
-*** Backup files
-
-No Backup Files.
+** Line- and Columnnumbers
 
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)
+(global-linum-mode t)
+;(add-hook 'prog-mode-hook 'linum-mode)
+(column-number-mode)
 #+END_SRC
 
-*** Symlinks
+** Themes
+   
+Toggle dark and light theme.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/moe-theme/")
+(add-to-list 'load-path "~/.emacs.d/themes/moe-theme/")
+(require 'moe-theme)
+
+(defun toggle-dark-light-theme ()
+  (interactive)
+  (let ((is-light (cl-find 'leuven custom-enabled-themes)))
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
+    (load-theme (if is-light 'moe-dark  'leuven))))
+(load-theme 'moe-dark t)
+#+END_SRC 
+
+** Matching Brackets
+
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+(setq show-paren-style 'mixed)
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+** Font
+
+#+BEGIN_SRC emacs-lisp
+(setq default-frame-alist
+      '((font . "DejaVu Sans Mono-12")))
+#+END_SRC
+
+** Emojify
+
+#+BEGIN_SRC emacs-lisp
+;(global-emojify-mode)
+#+END_SRC
+
+* Basic Configuration
+
+** Symlinks
 
 Always Follow Symlinks, no questions asked.
 
@@ -98,7 +125,7 @@ Always Follow Symlinks, no questions asked.
 (setq vc-follow-symlinks nil)
 #+END_SRC
 
-*** Clipboard
+** Clipboard
 
 Copy to clipboard.
 
@@ -106,18 +133,16 @@ Copy to clipboard.
 (setq x-select-enable-clipboard 't)
 #+END_SRC
 
-*** Auto-save
+** Backup files
 
-Auto-Save in /tmp
+Store backup files in ~/.emacs.backup
 
 #+BEGIN_SRC emacs-lisp
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(setq backup-directory-alist '(("" . "~/.emacs.backup")))
 #+END_SRC
 
-*** Evil
+* Basic Helpers
+** Evil
 
 I am evil.
 
@@ -125,7 +150,7 @@ I am evil.
 (require 'evil-org)
 (require 'evil-ediff)
 (require 'evil)
-(evil-mode t)
+(evil-mode 1)
 #+END_SRC
 
 Evil commands
@@ -134,7 +159,7 @@ Evil commands
 (evil-ex-define-cmd "ww" 'sudo-save)
 #+END_SRC
 
-*** Smex
+** Smex
 
 A better M-x.
 
@@ -143,7 +168,7 @@ A better M-x.
 (smex-initialize)
 #+END_SRC
 
-*** Fixme-mode
+** Fixme-mode
 
 Highlight `FIXME`, `BUG` and `TODO`.
     
@@ -151,7 +176,7 @@ Highlight `FIXME`, `BUG` and `TODO`.
 (fixme-mode t)
 #+END_SRC
     
-*** Spell Checking
+** Spell Checking
 
 For normal online spell checking I use hunspell.
 
@@ -196,22 +221,14 @@ Change language
   (message (concat "Switched language to: " ispell-local-dictionary)))
 #+END_SRC
 
-*** Emojify
-
-Everybody loves emojis.
-
-#+BEGIN_SRC emacs-lisp
-(global-emojify-mode)
-#+END_SRC
-
-*** Drag stuff
+** Drag stuff
 
 #+BEGIN_SRC emacs-lisp
 (require 'drag-stuff)
 (drag-stuff-global-mode 1)
 #+END_SRC
 
-*** Org Mode
+** Org Mode
     
 Nice bullets.
 
@@ -226,23 +243,7 @@ My org directory.
 (setq org-agenda-files '("~/org"))
 #+END_SRC
 
-A beatiful calendar (with some serous flaws with reoccuring events).
-
-#+BEGIN_SRC emacs-lisp
-(require 'calfw)
-(require 'calfw-org)
-;;(setq cfw:org-agenda-schedule-args '(:timestamp))
-;;(setq cfw:org-overwrite-default-keybinding t)
-#+END_SRC
-
-*** Line numbers
-
-#+BEGIN_SRC emacs-lisp
-;(global-linum-mode t)
-(add-hook 'prog-mode-hook 'linum-mode)
-#+END_SRC
-
-*** Sudo files
+** Sudo files
 
 I want to be asked if the file should be opened by root if it is not writable (this includes nonexistent files in write-protected folders).
 
@@ -256,10 +257,48 @@ I want to be asked if the file should be opened by root if it is not writable (t
     (message "file opened as root")))
 #+END_SRC
 
-*** Elfeed
+** Projectile
 
-Set it all up.
+#+BEGIN_SRC emacs-lisp
+(projectile-global-mode)
+(setq projectile-completion-system 'grizzl) ;; to compare with default (ido)
+(setq projectile-enable-caching t)
+(setq projectile-require-project-root nil) ;; use projectile everywhere
+#+END_SRC
 
+** Ido
+
+#+BEGIN_SRC emacs-lisp
+(require 'ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(setq ido-enable-flex-matching t)
+#+END_SRC
+
+** Helm
+
+#+BEGIN_SRC emacs-lisp
+(setq helm-buffers-fuzzy-matching 1)
+(helm-projectile-on)
+#+END_SRC
+
+** Markdown Mode
+
+#+BEGIN_SRC emacs-lisp
+(require 'markdown-mode)
+(setq markdown-command "pandoc")
+#+END_SRC
+
+** Auto complete
+
+#+BEGIN_SRC emacs-lisp
+(ac-config-default)
+#+END_SRC
+
+* Feeds
+  
+Set up elfeed.
+  
 #+BEGIN_SRC emacs-lisp
 (require 'elfeed)
 (require 'elfeed-goodies)
@@ -269,133 +308,9 @@ Set it all up.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
-My most used filters have shortcuts.
-
-#+BEGIN_SRC emacs-lisp
-(defun elfeed-select-filter ()
-  (interactive)
-  (let ((x (read-string (concat "[ia] it-all  "
-                                "[nz] nzz.ch  "
-                                "[is] it-selcted  "
-                                ":  "))))
-    (cond ((string= x "ia")
-           (elfeed-search-set-filter "@6-months-ago +it"))
-          ((string= x "20")
-           (elfeed-search-set-filter "@6-months-ago +20min"))
-          ((string= x "nzz")
-           (elfeed-search-set-filter "@6-months-ago +nzz"))
-          ((string= x "is")
-           (elfeed-search-set-filter "@6-months-ago +it -zdnet -hn")))))
-#+END_SRC
-
-Quickly toggle the +unread filter.
-
-#+BEGIN_SRC emacs-lisp
-(defun elfeed-toggle-filter-unread ()
-  (interactive)
-  (if (string-match ".*+unread.*" elfeed-search-filter)
-    (elfeed-search-set-filter (replace-regexp-in-string "+unread" ""
-                                                       elfeed-search-filter))
-      (elfeed-search-set-filter (concat "+unread "
-                                        elfeed-search-filter)))
-  (elfeed-search-set-filter (replace-regexp-in-string "  " " " elfeed-search-filter)))
-
-#+END_SRC
-
-Clear the filter
-
-#+BEGIN_SRC emacs-lisp
-(defun elfeed-reset-filter ()
-  (interactive)
-  (elfeed-search-set-filter "@6-months-ago "))
-#+END_SRC
-
-Last but not least my elfeed keybindings.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'elfeed-search-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "c") 'elfeed-reset-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "r") 'elfeed-toggle-filter-unread)
-            (define-key evil-normal-state-local-map
-              (kbd ";") 'elfeed-select-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "F") 'elfeed-search-live-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "!") 'elfeed-search-untag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "u") 'elfeed-search-tag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "O") 'elfeed-search-browse-url)
-            (define-key evil-normal-state-local-map
-              (kbd "U") 'elfeed-update)
-            (define-key evil-normal-state-local-map
-              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
-(add-hook 'elfeed-show-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "n") 'elfeed-goodies/split-show-next)
-            (define-key evil-normal-state-local-map
-              (kbd "p") 'elfeed-goodies/split-show-prev)))
-#+END_SRC
-
-*** Projectile
-
-#+BEGIN_SRC emacs-lisp
-(projectile-global-mode)
-(setq projectile-completion-system 'grizzl) ;; to compare with default (ido)
-(setq projectile-enable-caching t)
-(setq projectile-require-project-root nil) ;; use projectile everywhere
-#+END_SRC
-
-*** Ido
-
-#+BEGIN_SRC emacs-lisp
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t)
-#+END_SRC
-
-*** Helm
-
-#+BEGIN_SRC emacs-lisp
-(setq helm-buffers-fuzzy-matching 1)
-(helm-projectile-on)
-#+END_SRC
-
-*** Faces
-
-#+BEGIN_SRC emacs-lisp
-(custom-set-faces
- '(show-paren-match ((((class color) (background dark)) (:background "firebrick")))))
-#+END_SRC
-
-*** Themes
-
-Toggle dark and light theme.
-
-#+BEGIN_SRC emacs-lisp
-(defun toggle-dark-light-theme ()
-  (interactive)
-  (let ((is-light (cl-find 'leuven custom-enabled-themes)))
-    (dolist (theme custom-enabled-themes)
-      (disable-theme theme))
-    (load-theme (if is-light 'wombat  'leuven))))
-(load-theme 'leuven t)
-#+END_SRC
-
-*** Font
-
-#+BEGIN_SRC emacs-lisp
-(setq default-frame-alist
-      '((font . "DejaVu Sans Mono-12")))
-#+END_SRC
-
-*** Mail
-
+* Mail
+** Setup 
+   
 Load it.
 
 #+BEGIN_SRC emacs-lisp
@@ -477,6 +392,7 @@ Some self explanatory settings.
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
+** Forgotten Attachment
 
 Check for forgotten attachments (TODO: Refactor)
 
@@ -516,21 +432,15 @@ Check for forgotten attachments (TODO: Refactor)
     (split-string (buffer-string) "\n" t)))
 #+END_SRC
 
-*** Markdown Mode
+* Programming 
+** Autocomplete
 
 #+BEGIN_SRC emacs-lisp
-(require 'markdown-mode)
-(setq markdown-command "pandoc")
-#+END_SRC
-
-*** Auto complete
-
-#+BEGIN_SRC emacs-lisp
+(require 'auto-complete-config)
 (ac-config-default)
 #+END_SRC
 
-** Programming
-*** Latex
+** Latex
 
 To make evince go to the updated page when using auctex to compile.
 
@@ -625,7 +535,7 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
        (file-exists-p (concat path "make.sh"))))
 
 #+END_SRC
-*** 80 columns indicator.
+** 80 columns indicator.
 
 #+BEGIN_SRC emacs-lisp
 (require 'fill-column-indicator)
@@ -633,18 +543,16 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 (setq fci-rule-color "red")
 #+END_SRC
 
-*** Matching Brackets
-#+BEGIN_SRC emacs-lisp
-(show-paren-mode 1)
-(setq show-paren-style 'mixed)
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-#+END_SRC
-*** Python
+** Matching Brackets
 
 #+BEGIN_SRC emacs-lisp
-(elpy-enable)
+;; (show-paren-mode 1)
+;; (setq show-paren-style 'mixed)
+;; (require 'rainbow-delimiters)
+;; (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 #+END_SRC
+
+** Python
 
 Use jupyter/ipython if present
 
@@ -659,10 +567,8 @@ Auto complete with jedi
 ;;(add-hook 'python-mode-hook 'jedi:setup)
 ;;(setq jedi:complete-on-dot t)
 #+END_SRC
+** Indents
 
-*** Indents
-
-Set tab width to 2 for all buffers
 
 #+BEGIN_SRC emacs-lisp
 (setq-default tab-width 2)
@@ -680,7 +586,7 @@ Set tab width to 2 for all buffers
 
 Use 2 spaces instead of a tab.
 
-*** Whitespaces
+** Whitespaces
 
 To see whitespaces and indentation
 
@@ -688,7 +594,7 @@ To see whitespaces and indentation
 (require 'whitespace)
 #+END_SRC
 
-** Keybindings
+* Keybindings
 
 Evil Normal State
     
@@ -749,11 +655,11 @@ Global minor mode
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-j")      'drag-stuff-down)
     (define-key map (kbd "C-k")      'drag-stuff-up)
+    (define-key map (kbd "C-x C-m")  'magit-status)
+    (define-key map (kbd "C-x C-b")  'helm-mini)
     (define-key map (kbd "C-c C--")  'comment-region)
     (define-key map (kbd "C-c C-a")  'org-agenda)
-    (define-key map (kbd "C-x C-b")  'helm-mini)
     (define-key map (kbd "C-c C-d")  'fci-mode)
-    (define-key map (kbd "C-c C-g")  'magit-status)
     (define-key map (kbd "C-c C-m")  'mu4e)
     (define-key map (kbd "C-c C-n")  'elfeed)
     (define-key map (kbd "C-c C-ö")  'uncomment-region)
@@ -774,3 +680,4 @@ Global minor mode
 
 (my-global-keys 1)
 #+END_SRC
+
