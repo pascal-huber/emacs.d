@@ -7,6 +7,7 @@
 * [mu](https://www.djcbsoftware.nl/code/mu/)
 * [offlineimap](http://www.offlineimap.org/)
 * [pandoc](http://pandoc.org/)
+* [js-beautify](https://github.com/beautify-web/js-beautify)
 
 # Installation:
 

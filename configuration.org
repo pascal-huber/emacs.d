@@ -1,4 +1,5 @@
 #+TITLE: Emacs Configuration
+#+OPTIONS: toc:2
 
 * Dependencies
 
@@ -49,7 +50,8 @@
                       ruby-electric
                       smex
                       tern
-                      tern-auto-complete))
+                      tern-auto-complete
+                      web-beautify))
 
 (dolist (p my-packages)
   (unless (package-installed-p p)
@@ -71,7 +73,6 @@ No fancy stuff for me.
 
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode t)
-;(add-hook 'prog-mode-hook 'linum-mode)
 (column-number-mode)
 #+END_SRC
 
@@ -116,7 +117,6 @@ Toggle dark and light theme.
 #+END_SRC
 
 * Basic Configuration
-
 ** Symlinks
 
 Always Follow Symlinks, no questions asked.
@@ -141,7 +141,67 @@ Store backup files in ~/.emacs.backup
 (setq backup-directory-alist '(("" . "~/.emacs.backup")))
 #+END_SRC
 
+** Password Cache
+   
+Don't ant it.
+
+#+BEGIN_SRC emacs-lisp
+(setq password-cache nil)
+(setq password-cache-expiry 0) ; in seconds
+#+END_SRC
+
 * Basic Helpers
+** Sudo-mode
+
+Save file with root.
+
+#+BEGIN_SRC emacs-lisp
+(defun sudo-save ()
+  (interactive)
+  (cond
+   ((not buffer-file-name)
+    (write-file (concat "/sudo:root@localhost:"
+                        (ido-read-file-name "File:"))))
+   ((and (not (file-writable-p buffer-file-name))
+         (not (string-prefix-p "/sudo:root@localhost"
+                               buffer-file-name)))
+    (write-file (concat "/sudo:root@localhost:"
+                        buffer-file-name)))
+   (message "cant save with sudo-save, sorry")))
+#+END_SRC
+
+Sudo mode definition
+
+#+BEGIN_SRC emacs-lisp
+(defvar sudo-keybindings
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-x C-s")     'sudo-save)
+    map)
+  "sudo-keybindings")
+
+(define-minor-mode sudo-mode
+  "sudo-mode"
+  :init-value nil
+  :lighter " sudo-mode"
+  :keymap sudo-keybindings
+  (face-remap-add-relative 
+   'mode-line '((:foreground "black" :background "OrangeRed2")
+                mode-line)))
+#+END_SRC
+
+Activate sudo-mode if file to be opened is not writable. Also ask me if I want to open the file as root.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'find-file-hook 'find-file-sudo)
+(defun find-file-sudo ()
+  (if (not (file-writable-p buffer-file-name))
+      (progn 
+        (if (y-or-n-p "open as root?")
+            (find-alternate-file (concat "/sudo:root@localhost:"
+                                         buffer-file-name)))
+        (sudo-mode 1))))
+#+END_SRC
+
 ** Evil
 
 I am evil.
@@ -177,59 +237,21 @@ Highlight `FIXME`, `BUG` and `TODO`.
 #+END_SRC
     
 ** Spell Checking
-
-For normal online spell checking I use hunspell.
-
+   
 #+BEGIN_SRC emacs-lisp
-(setq ispell-program-name "hunspell")
-(setq ispell-local-dictionary "de_CH")
-(setq ispell-nondefault-dictionary "en_GB")
-(setq ispell-local-dictionary-alist '(("en_GB"
-                                       "[[:alpha:]]"
-                                       "[^[:alpha:]]"
-                                       "[']"
-                                       nil nil nil
-                                       utf-8)
-                                      ("de_CH"
-                                       "[[:alpha:]]"
-                                       "[^[:alpha:]]"
-                                       "[']"
-                                       nil nil nil
-                                       utf-8)))
-
-(dolist (hook '(text-mode-hook))
-  (add-hook hook (lambda () (flyspell-mode 1))))
-(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-  (add-hook hook (lambda () (flyspell-mode -1))))
-
 (require 'ispell)
+(setq ispell-program-name "hunspell")
+(setq ispell-local-dictionary "en_GB")
 
 (defun flyspell-check-next-highlighted-word ()
-   "Custom function to spell check next highlighted word"
+  "Custom function to spell check next highlighted word"
   (interactive)
   (flyspell-goto-next-error)
   (ispell-word))
 #+END_SRC
 
-Change language
-
-#+BEGIN_SRC emacs-lisp
-(defun spell-checker-change-language ()
-  (interactive)
-  (cl-rotatef ispell-local-dictionary
-              ispell-nondefault-dictionary)
-  (message (concat "Switched language to: " ispell-local-dictionary)))
-#+END_SRC
-
-** Drag stuff
-
-#+BEGIN_SRC emacs-lisp
-(require 'drag-stuff)
-(drag-stuff-global-mode 1)
-#+END_SRC
-
 ** Org Mode
-    
+
 Nice bullets.
 
 #+BEGIN_SRC emacs-lisp
@@ -241,20 +263,6 @@ My org directory.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-files '("~/org"))
-#+END_SRC
-
-** Sudo files
-
-I want to be asked if the file should be opened by root if it is not writable (this includes nonexistent files in write-protected folders).
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'find-file-hook 'find-file-sudo)
-(defun find-file-sudo ()
-  (when (and (not (file-writable-p buffer-file-name))
-             (y-or-n-p "open file as root?"))
-    (find-alternate-file (concat "/sudo:root@localhost:"
-                                 buffer-file-name))
-    (message "file opened as root")))
 #+END_SRC
 
 ** Projectile
@@ -289,13 +297,8 @@ I want to be asked if the file should be opened by root if it is not writable (t
 (setq markdown-command "pandoc")
 #+END_SRC
 
-** Auto complete
-
-#+BEGIN_SRC emacs-lisp
-(ac-config-default)
-#+END_SRC
-
-* Feeds
+* Programs
+** Feeds
   
 Set up elfeed.
   
@@ -308,9 +311,9 @@ Set up elfeed.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
-* Mail
-** Setup 
-   
+** Mail
+*** Setup
+
 Load it.
 
 #+BEGIN_SRC emacs-lisp
@@ -392,7 +395,7 @@ Some self explanatory settings.
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
-** Forgotten Attachment
+*** Forgotten Attachment
 
 Check for forgotten attachments (TODO: Refactor)
 
@@ -432,12 +435,83 @@ Check for forgotten attachments (TODO: Refactor)
     (split-string (buffer-string) "\n" t)))
 #+END_SRC
 
-* Programming 
+* Programming
 ** Autocomplete
 
 #+BEGIN_SRC emacs-lisp
 (require 'auto-complete-config)
 (ac-config-default)
+#+END_SRC
+
+** 80 columns indicator.
+
+#+BEGIN_SRC emacs-lisp
+(require 'fill-column-indicator)
+(setq fci-rule-width 1)
+(setq fci-rule-color "red")
+#+END_SRC
+
+** Web-beautify
+
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
+
+Keybinding to beautify manually.
+
+#+BEGIN_SRC emacs-lisp
+(require 'web-beautify) ;; Not necessary if using ELPA package
+(eval-after-load 'js2-mode
+  '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
+;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
+(eval-after-load 'js
+  '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
+
+(eval-after-load 'json-mode
+  '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
+
+(eval-after-load 'sgml-mode
+  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
+
+(eval-after-load 'web-mode
+  '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+
+(eval-after-load 'css-mode
+  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+#+END_SRC
+
+Beautify before saving.
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load 'js2-mode
+  '(add-hook 'js2-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
+
+;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
+(eval-after-load 'js
+  '(add-hook 'js-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
+
+(eval-after-load 'json-mode
+  '(add-hook 'json-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
+
+(eval-after-load 'sgml-mode
+  '(add-hook 'html-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
+
+(eval-after-load 'web-mode
+  '(add-hook 'web-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
+
+(eval-after-load 'css-mode
+  '(add-hook 'css-mode-hook
+             (lambda ()
+               (add-hook 'before-save-hook 'web-beautify-css-buffer t t))))
 #+END_SRC
 
 ** Latex
@@ -457,7 +531,6 @@ Use evince and firefox
        (("^pdf$" "." "evince -f %o")
         ("^html?$" "." "firefox %o"))))
 #+END_SRC
-
 
 I put a `make.sh` in the root of latex documents along with the main tex file `main.tex` and of course the `.gitignore`.
 
@@ -533,14 +606,6 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
   (and (file-exists-p (concat path ".gitignore"))
        (file-exists-p (concat path "main.tex"))
        (file-exists-p (concat path "make.sh"))))
-
-#+END_SRC
-** 80 columns indicator.
-
-#+BEGIN_SRC emacs-lisp
-(require 'fill-column-indicator)
-(setq fci-rule-width 1)
-(setq fci-rule-color "red")
 #+END_SRC
 
 ** Matching Brackets
@@ -597,14 +662,20 @@ To see whitespaces and indentation
 * Keybindings
 
 Evil Normal State
-    
+
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 #+END_SRC
 
-Escape == C-g 
+Evil Insert State
+
+#+BEGIN_SRC emacs-lisp
+;(define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
+#+END_SRC
+
+Escape == C-g
 
 #+BEGIN_SRC emacs-lisp
 (defun my-esc (prompt)
@@ -614,7 +685,6 @@ Escape == C-g
         (evil-normal-state-p)
         (evil-replace-state-p)
         (evil-visual-state-p))
-;        (evil-god-state-bail))
     [escape])
    (t (kbd "C-g"))))
 (define-key key-translation-map (kbd "C-g") 'my-esc)
@@ -644,13 +714,13 @@ Evil Motion (binds normal, visual, and operator states all at once)
 Global
 
 #+BEGIN_SRC emacs-lisp
-(define-key global-map (kbd "RET") 'newline-and-indent)
+;(define-key global-map (kbd "RET") 'newline-and-indent)
 #+END_SRC
 
 Global minor mode
 
 #+BEGIN_SRC emacs-lisp
-(defvar my-keys-minor-mode-map
+(defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-j")      'drag-stuff-down)
@@ -660,6 +730,7 @@ Global minor mode
     (define-key map (kbd "C-c C--")  'comment-region)
     (define-key map (kbd "C-c C-a")  'org-agenda)
     (define-key map (kbd "C-c C-d")  'fci-mode)
+    (define-key map (kbd "C-c C-i")  'indent-region)
     (define-key map (kbd "C-c C-m")  'mu4e)
     (define-key map (kbd "C-c C-n")  'elfeed)
     (define-key map (kbd "C-c C-ö")  'uncomment-region)
@@ -667,17 +738,15 @@ Global minor mode
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
     (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
-    (define-key map (kbd "<f9>")     'ispell-word)
-    (define-key map (kbd "C-<f9>")   'flyspell-check-next-highlighted-word)
-    (define-key map (kbd "M-<f9>")   'flyspell-check-previous-highlighted-word)
+    (define-key map (kbd "<f8>")     'ispell-word)
+    (define-key map (kbd "<f9>")     'ispell)
     map)
   "my-keys-minor-mode keymap.")
 
-(define-minor-mode my-global-keys
+(define-minor-mode my-global-keys-mode
   :init-value t
-  :keymap my-keys-minor-mode-map
+  :keymap my-global-keymap
   :lighter " my-keys")
 
-(my-global-keys 1)
+(my-global-keys-mode 1)
 #+END_SRC
-
