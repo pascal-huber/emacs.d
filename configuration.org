@@ -1,5 +1,4 @@
 #+TITLE: Emacs Configuration
-#+OPTIONS: toc:2
 
 * Dependencies
 
@@ -7,7 +6,6 @@
 (require 'package)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("leuven" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
@@ -16,6 +14,7 @@
                       ac-math
                       auctex
                       auto-complete
+                      dash
                       dictcc
                       dictionary
                       drag-stuff
@@ -35,7 +34,6 @@
                       fsharp-mode
                       helm-projectile
                       js2-mode
-                      leuven-theme
                       lua-mode
                       magit
                       markdown-mode
@@ -77,22 +75,61 @@ No fancy stuff for me.
 #+END_SRC
 
 ** Themes
-   
-Toggle dark and light theme.
+
+Load Moe Theme (TODO: fix this)
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/moe-theme/")
 (add-to-list 'load-path "~/.emacs.d/themes/moe-theme/")
 (require 'moe-theme)
+#+END_SRC
 
-(defun toggle-dark-light-theme ()
+Theme handling that allows minor modes to have their own mode-line-color.
+
+#+BEGIN_SRC emacs-lisp
+
+(require 'dash)
+
+(defun next-theme ()
+  "Loads next theme in the theme-list"
   (interactive)
-  (let ((is-light (cl-find 'leuven custom-enabled-themes)))
-    (dolist (theme custom-enabled-themes)
-      (disable-theme theme))
-    (load-theme (if is-light 'moe-dark  'leuven))))
-(load-theme 'moe-dark t)
-#+END_SRC 
+  (setq theme-list (-rotate 1 theme-list))
+  (load-theme (nth 0 (nth 0 theme-list)) t)
+  (update-mode-line))
+
+(defun update-mode-line ()
+  "Sets the mode-line face"
+  (interactive)
+  (cond ((bound-and-true-p sudo-mode)
+         (face-remap-add-relative 'mode-line
+                                  '((:foreground
+                                     "005f87"
+                                     :background
+                                     "OrangeRed2")
+                                    mode-line)))
+        (t (face-remap-add-relative 'mode-line
+           `(,(nth 1 (nth 0 theme-list))
+             mode-line)))))
+
+(defun reset-theme ()
+  "Loads the default theme settings"
+  (interactive)
+  (setq theme-list
+        (list (list 'moe-dark
+                    '(:foreground
+                      "#005f87"
+                      :background
+                      "#afd7ff"))
+              (list 'moe-light
+                    '(:foreground
+                      "#005f87"
+                      :background
+                      "#335EA8"))))
+  (load-theme (nth 0 (nth 0 theme-list)) t)
+  (update-mode-line))
+
+(reset-theme)
+#+END_SRC
 
 ** Matching Brackets
 
@@ -142,7 +179,7 @@ Store backup files in ~/.emacs.backup
 #+END_SRC
 
 ** Password Cache
-   
+
 Don't ant it.
 
 #+BEGIN_SRC emacs-lisp
@@ -167,12 +204,16 @@ Save file with root.
                                buffer-file-name)))
     (write-file (concat "/sudo:root@localhost:"
                         buffer-file-name)))
-   (message "cant save with sudo-save, sorry")))
+   ((file-writable-p buffer-file-name)
+    (write-file buffer-file-name))
+   (message "can't save with sudo-save, sorry"))
+  (sudo-mode))
 #+END_SRC
 
 Sudo mode definition
 
 #+BEGIN_SRC emacs-lisp
+
 (defvar sudo-keybindings
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-x C-s")     'sudo-save)
@@ -184,9 +225,7 @@ Sudo mode definition
   :init-value nil
   :lighter " sudo-mode"
   :keymap sudo-keybindings
-  (face-remap-add-relative 
-   'mode-line '((:foreground "black" :background "OrangeRed2")
-                mode-line)))
+  (update-mode-line))
 #+END_SRC
 
 Activate sudo-mode if file to be opened is not writable. Also ask me if I want to open the file as root.
@@ -194,14 +233,16 @@ Activate sudo-mode if file to be opened is not writable. Also ask me if I want t
 #+BEGIN_SRC emacs-lisp
 (add-hook 'find-file-hook 'find-file-sudo)
 (defun find-file-sudo ()
-  (if (not (file-writable-p buffer-file-name))
-      (progn 
-        (if (y-or-n-p "open as root?")
-            (find-alternate-file (concat "/sudo:root@localhost:"
-                                         buffer-file-name)))
-        (sudo-mode 1))))
+  (cond ((not (file-writable-p buffer-file-name))
+         (progn
+           (if (y-or-n-p "open as root?")
+               (find-alternate-file (concat "/sudo:root@localhost:"
+                                            buffer-file-name)))
+           (sudo-mode 1)))
+        ((and (file-writable-p buffer-file-name)
+              (string-prefix-p ":/sudo:root@localhost" buffer-file-name))
+         (sudo-mode 1))))
 #+END_SRC
-
 ** Evil
 
 I am evil.
@@ -231,13 +272,13 @@ A better M-x.
 ** Fixme-mode
 
 Highlight `FIXME`, `BUG` and `TODO`.
-    
+
 #+BEGIN_SRC emacs-lisp
 (fixme-mode t)
 #+END_SRC
-    
+
 ** Spell Checking
-   
+
 #+BEGIN_SRC emacs-lisp
 (require 'ispell)
 (setq ispell-program-name "hunspell")
@@ -299,9 +340,9 @@ My org directory.
 
 * Programs
 ** Feeds
-  
+
 Set up elfeed.
-  
+
 #+BEGIN_SRC emacs-lisp
 (require 'elfeed)
 (require 'elfeed-goodies)
@@ -443,7 +484,7 @@ Check for forgotten attachments (TODO: Refactor)
 (ac-config-default)
 #+END_SRC
 
-** 80 columns indicator.
+** 70 columns indicator.
 
 #+BEGIN_SRC emacs-lisp
 (require 'fill-column-indicator)
@@ -477,41 +518,6 @@ Keybinding to beautify manually.
 
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-#+END_SRC
-
-Beautify before saving.
-
-#+BEGIN_SRC emacs-lisp
-(eval-after-load 'js2-mode
-  '(add-hook 'js2-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
-
-;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
-(eval-after-load 'js
-  '(add-hook 'js-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
-
-(eval-after-load 'json-mode
-  '(add-hook 'json-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-js-buffer t t))))
-
-(eval-after-load 'sgml-mode
-  '(add-hook 'html-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
-
-(eval-after-load 'web-mode
-  '(add-hook 'web-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
-
-(eval-after-load 'css-mode
-  '(add-hook 'css-mode-hook
-             (lambda ()
-               (add-hook 'before-save-hook 'web-beautify-css-buffer t t))))
 #+END_SRC
 
 ** Latex
@@ -737,7 +743,7 @@ Global minor mode
     (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
-    (define-key map (kbd "<f5>")     'toggle-dark-light-theme)
+    (define-key map (kbd "<f5>")     'next-theme)
     (define-key map (kbd "<f8>")     'ispell-word)
     (define-key map (kbd "<f9>")     'ispell)
     map)
