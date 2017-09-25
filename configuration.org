@@ -352,6 +352,35 @@ Set up elfeed.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(add-hook 'elfeed-search-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "c") 'elfeed-reset-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "r") 'elfeed-toggle-filter-unread)
+            (define-key evil-normal-state-local-map
+              (kbd ";") 'elfeed-select-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "F") 'elfeed-search-live-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "!") 'elfeed-search-untag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "u") 'elfeed-search-tag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "O") 'elfeed-search-browse-url)
+            (define-key evil-normal-state-local-map
+              (kbd "U") 'elfeed-update)
+            (define-key evil-normal-state-local-map
+              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
+(add-hook 'elfeed-show-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "n") 'elfeed-goodies/split-show-next)
+            (define-key evil-normal-state-local-map
+              (kbd "p") 'elfeed-goodies/split-show-prev)))
+#+END_SRC
+
 ** Mail
 *** Setup
 
