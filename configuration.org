@@ -32,6 +32,8 @@
                       fill-column-indicator
                       fixme-mode
                       fsharp-mode
+                      grizzl
+                      haml-mode
                       helm-projectile
                       js2-mode
                       lua-mode
@@ -40,17 +42,17 @@
                       moe-theme
                       mu4e-alert
                       mu4e-maildirs-extension
-                      neotree
                       openwith
                       org-bullets
                       projectile
                       rainbow-delimiters
-                      ruby-electric
                       smex
                       tern
                       tern-auto-complete
-                      web-beautify))
+                      web-beautify
+                      yaml-mode))
 
+                      ;;ruby-electric
 (dolist (p my-packages)
   (unless (package-installed-p p)
     (package-install p)))
@@ -84,49 +86,24 @@ Load Moe Theme (TODO: fix this)
 (require 'moe-theme)
 #+END_SRC
 
-Theme handling that allows minor modes to have their own mode-line-color.
+Theme rotation
 
 #+BEGIN_SRC emacs-lisp
-
 (require 'dash)
 
 (defun next-theme ()
   "Loads next theme in the theme-list"
   (interactive)
   (setq theme-list (-rotate 1 theme-list))
-  (load-theme (nth 0 (nth 0 theme-list)) t)
-  (update-mode-line))
-
-(defun update-mode-line ()
-  "Sets the mode-line face"
-  (interactive)
-  (cond ((bound-and-true-p sudo-mode)
-         (face-remap-add-relative 'mode-line
-                                  '((:foreground
-                                     "005f87"
-                                     :background
-                                     "OrangeRed2")
-                                    mode-line)))
-        (t (face-remap-add-relative 'mode-line
-           `(,(nth 1 (nth 0 theme-list))
-             mode-line)))))
+  (load-theme (nth 0 theme-list) t))
 
 (defun reset-theme ()
   "Loads the default theme settings"
   (interactive)
-  (setq theme-list
-        (list (list 'moe-dark
-                    '(:foreground
-                      "#005f87"
-                      :background
-                      "#afd7ff"))
-              (list 'moe-light
-                    '(:foreground
-                      "#005f87"
-                      :background
-                      "#335EA8"))))
-  (load-theme (nth 0 (nth 0 theme-list)) t)
-  (update-mode-line))
+  (setq theme-list (list
+                    'moe-dark
+                    'moe-light))
+  (load-theme (nth 0 theme-list) t))
 
 (reset-theme)
 #+END_SRC
@@ -149,11 +126,13 @@ Theme handling that allows minor modes to have their own mode-line-color.
 
 ** Emojify
 
+# TODO: Emojify-mode for emails
+
 #+BEGIN_SRC emacs-lisp
 ;(global-emojify-mode)
 #+END_SRC
 
-* Basic Configuration
+* General Setup
 ** Symlinks
 
 Always Follow Symlinks, no questions asked.
@@ -162,32 +141,23 @@ Always Follow Symlinks, no questions asked.
 (setq vc-follow-symlinks nil)
 #+END_SRC
 
-** Clipboard
-
-Copy to clipboard.
-
-#+BEGIN_SRC emacs-lisp
-(setq x-select-enable-clipboard 't)
-#+END_SRC
-
 ** Backup files
 
-Store backup files in ~/.emacs.backup
+No backup files.
 
 #+BEGIN_SRC emacs-lisp
-(setq backup-directory-alist '(("" . "~/.emacs.backup")))
+(setq make-backup-files nil)
 #+END_SRC
 
-** Password Cache
-
-Don't ant it.
+** Kill buffers
 
 #+BEGIN_SRC emacs-lisp
-(setq password-cache nil)
-(setq password-cache-expiry 0) ; in seconds
+(defun kill-other-buffers ()
+      "Kill all other buffers."
+      (interactive)
+      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 #+END_SRC
 
-* Basic Helpers
 ** Sudo-mode
 
 Save file with root.
@@ -195,54 +165,11 @@ Save file with root.
 #+BEGIN_SRC emacs-lisp
 (defun sudo-save ()
   (interactive)
-  (cond
-   ((not buffer-file-name)
-    (write-file (concat "/sudo:root@localhost:"
-                        (ido-read-file-name "File:"))))
-   ((and (not (file-writable-p buffer-file-name))
-         (not (string-prefix-p "/sudo:root@localhost"
-                               buffer-file-name)))
-    (write-file (concat "/sudo:root@localhost:"
-                        buffer-file-name)))
-   ((file-writable-p buffer-file-name)
-    (write-file buffer-file-name))
-   (message "can't save with sudo-save, sorry"))
-  (sudo-mode))
+  (if (not buffer-file-name)
+      (write-file (concat "/sudo:root@localhost:" (ido-read-file-name "File:")))
+    (write-file (concat "/sudo:root@localhost:" buffer-file-name))))
 #+END_SRC
 
-Sudo mode definition
-
-#+BEGIN_SRC emacs-lisp
-
-(defvar sudo-keybindings
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x C-s")     'sudo-save)
-    map)
-  "sudo-keybindings")
-
-(define-minor-mode sudo-mode
-  "sudo-mode"
-  :init-value nil
-  :lighter " sudo-mode"
-  :keymap sudo-keybindings
-  (update-mode-line))
-#+END_SRC
-
-Activate sudo-mode if file to be opened is not writable. Also ask me if I want to open the file as root.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'find-file-hook 'find-file-sudo)
-(defun find-file-sudo ()
-  (cond ((not (file-writable-p buffer-file-name))
-         (progn
-           (if (y-or-n-p "open as root?")
-               (find-alternate-file (concat "/sudo:root@localhost:"
-                                            buffer-file-name)))
-           (sudo-mode 1)))
-        ((and (file-writable-p buffer-file-name)
-              (string-prefix-p ":/sudo:root@localhost" buffer-file-name))
-         (sudo-mode 1))))
-#+END_SRC
 ** Evil
 
 I am evil.
@@ -300,12 +227,6 @@ Nice bullets.
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
 
-My org directory.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/org"))
-#+END_SRC
-
 ** Projectile
 
 #+BEGIN_SRC emacs-lisp
@@ -331,14 +252,6 @@ My org directory.
 (helm-projectile-on)
 #+END_SRC
 
-** Markdown Mode
-
-#+BEGIN_SRC emacs-lisp
-(require 'markdown-mode)
-(setq markdown-command "pandoc")
-#+END_SRC
-
-* Programs
 ** Feeds
 
 Set up elfeed.
@@ -350,35 +263,6 @@ Set up elfeed.
 (elfeed-goodies/setup)
 (elfeed-org)
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'elfeed-search-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "c") 'elfeed-reset-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "r") 'elfeed-toggle-filter-unread)
-            (define-key evil-normal-state-local-map
-              (kbd ";") 'elfeed-select-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "F") 'elfeed-search-live-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "!") 'elfeed-search-untag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "u") 'elfeed-search-tag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "O") 'elfeed-search-browse-url)
-            (define-key evil-normal-state-local-map
-              (kbd "U") 'elfeed-update)
-            (define-key evil-normal-state-local-map
-              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
-(add-hook 'elfeed-show-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "n") 'elfeed-goodies/split-show-next)
-            (define-key evil-normal-state-local-map
-              (kbd "p") 'elfeed-goodies/split-show-prev)))
 #+END_SRC
 
 ** Mail
@@ -505,7 +389,7 @@ Check for forgotten attachments (TODO: Refactor)
     (split-string (buffer-string) "\n" t)))
 #+END_SRC
 
-* Programming
+* Programming Setup
 ** Autocomplete
 
 #+BEGIN_SRC emacs-lisp
@@ -521,10 +405,21 @@ Check for forgotten attachments (TODO: Refactor)
 (setq fci-rule-color "red")
 #+END_SRC
 
-** Web-beautify
+** Web mode
 
 #+BEGIN_SRC emacs-lisp
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 #+END_SRC
+
+** Web-beautify
 
 Keybinding to beautify manually.
 
@@ -643,15 +538,6 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
        (file-exists-p (concat path "make.sh"))))
 #+END_SRC
 
-** Matching Brackets
-
-#+BEGIN_SRC emacs-lisp
-;; (show-paren-mode 1)
-;; (setq show-paren-style 'mixed)
-;; (require 'rainbow-delimiters)
-;; (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-#+END_SRC
-
 ** Python
 
 Use jupyter/ipython if present
@@ -668,7 +554,6 @@ Auto complete with jedi
 ;;(setq jedi:complete-on-dot t)
 #+END_SRC
 ** Indents
-
 
 #+BEGIN_SRC emacs-lisp
 (setq-default tab-width 2)
@@ -694,7 +579,46 @@ To see whitespaces and indentation
 (require 'whitespace)
 #+END_SRC
 
-* Keybindings
+** Markdown Mode
+
+#+BEGIN_SRC emacs-lisp
+(require 'markdown-mode)
+(setq markdown-command "pandoc")
+#+END_SRC
+
+* Keybinding
+** Elfeed
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'elfeed-search-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "c") 'elfeed-reset-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "r") 'elfeed-toggle-filter-unread)
+            (define-key evil-normal-state-local-map
+              (kbd ";") 'elfeed-select-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "F") 'elfeed-search-live-filter)
+            (define-key evil-normal-state-local-map
+              (kbd "!") 'elfeed-search-untag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "u") 'elfeed-search-tag-all-unread)
+            (define-key evil-normal-state-local-map
+              (kbd "O") 'elfeed-search-browse-url)
+            (define-key evil-normal-state-local-map
+              (kbd "U") 'elfeed-update)
+            (define-key evil-normal-state-local-map
+              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
+(add-hook 'elfeed-show-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map
+              (kbd "n") 'elfeed-goodies/split-show-next)
+            (define-key evil-normal-state-local-map
+              (kbd "p") 'elfeed-goodies/split-show-prev)))
+#+END_SRC
+
+** Evil
 
 Evil Normal State
 
@@ -704,11 +628,7 @@ Evil Normal State
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 #+END_SRC
 
-Evil Insert State
-
-#+BEGIN_SRC emacs-lisp
-;(define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
-#+END_SRC
+** Evil Escape
 
 Escape == C-g
 
@@ -727,17 +647,7 @@ Escape == C-g
 (set-quit-char "C-g")
 #+END_SRC
 
-mu4e
-
-#+BEGIN_SRC emacs-lisp
-(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
-(add-hook 'mu4e-view-mode-hook
-  (lambda()
-    (local-set-key (kbd "<tab>") 'shr-next-link)
-    (local-set-key (kbd "i") 'mu4e-view-toggle-html)
-    (local-set-key (kbd "h") 'evil-backward-char)
-    (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-#+END_SRC
+** Evil God Mode
 
 Evil Motion (binds normal, visual, and operator states all at once)
 
@@ -746,13 +656,19 @@ Evil Motion (binds normal, visual, and operator states all at once)
 (evil-global-set-key 'motion [escape] 'evil-god-state-bail)
 #+END_SRC
 
-Global
+** mu4e 
 
-#+BEGIN_SRC emacs-lisp
-;(define-key global-map (kbd "RET") 'newline-and-indent)
+#+BEGIN_SRC emacs-lisp 
+(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index) 
+(add-hook 'mu4e-view-mode-hook
+          (lambda()
+            (local-set-key (kbd "<tab>") 'shr-next-link)
+            (local-set-key (kbd "i") 'mu4e-view-toggle-html)
+            (local-set-key (kbd "h") 'evil-backward-char)
+            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
 #+END_SRC
 
-Global minor mode
+** Global minor mode
 
 #+BEGIN_SRC emacs-lisp
 (defvar my-global-keymap
@@ -763,7 +679,6 @@ Global minor mode
     (define-key map (kbd "C-x C-m")  'magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
     (define-key map (kbd "C-c C--")  'comment-region)
-    (define-key map (kbd "C-c C-a")  'org-agenda)
     (define-key map (kbd "C-c C-d")  'fci-mode)
     (define-key map (kbd "C-c C-i")  'indent-region)
     (define-key map (kbd "C-c C-m")  'mu4e)
@@ -776,7 +691,7 @@ Global minor mode
     (define-key map (kbd "<f8>")     'ispell-word)
     (define-key map (kbd "<f9>")     'ispell)
     map)
-  "my-keys-minor-mode keymap.")
+  "my-global-keys-mode keymap.")
 
 (define-minor-mode my-global-keys-mode
   :init-value t
