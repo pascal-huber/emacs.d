@@ -18,6 +18,7 @@
                       dictcc
                       dictionary
                       drag-stuff
+                      dumb-jump
                       elfeed
                       elfeed-org
                       elfeed-goodies
@@ -233,7 +234,7 @@ Nice bullets.
 (projectile-global-mode)
 (setq projectile-completion-system 'grizzl) ;; to compare with default (ido)
 (setq projectile-enable-caching t)
-(setq projectile-require-project-root nil) ;; use projectile everywhere
+;;(setq projectile-require-project-root nil) ;; use projectile everywhere
 #+END_SRC
 
 ** Ido
