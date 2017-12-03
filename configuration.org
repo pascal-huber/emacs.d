@@ -410,14 +410,17 @@ Check for forgotten attachments (TODO: Refactor)
 
 #+BEGIN_SRC emacs-lisp
 (require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.pug\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.haml?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
+
+(setq web-mode-markup-indent-offset 2)
+(setq web-mode-code-indent-offset 2)
+(setq web-mode-css-indent-offset 2)
+(setq web-mode-script-padding 2)
 #+END_SRC
 
 ** Web-beautify
@@ -566,8 +569,6 @@ Auto complete with jedi
           (lambda ()
             (setq sh-basic-offset 2
                   sh-indentation 2)))
-
-(setq web-mode-markup-indent-offset 2)
 #+END_SRC
 
 Use 2 spaces instead of a tab.
