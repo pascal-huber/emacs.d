@@ -12,6 +12,7 @@
 
 (defvar my-packages '(
                       ac-math
+                      airline-themes
                       auctex
                       auto-complete
                       dash
@@ -46,6 +47,7 @@
                       openwith
                       org-bullets
                       projectile
+                      powerline
                       rainbow-delimiters
                       smex
                       tern
@@ -88,6 +90,16 @@ Load Moe Theme (TODO: fix this)
 (require 'moe-theme)
 #+END_SRC
 
+Powerline Theme
+
+#+BEGIN_SRC emacs-lisp
+(require 'powerline)
+;(powerline-moe-theme)
+;(moe-theme-set-color 'b/w)
+;(powerline-center-theme)
+(require 'airline-themes)
+#+END_SRC
+
 Theme rotation
 
 #+BEGIN_SRC emacs-lisp
@@ -96,12 +108,18 @@ Theme rotation
 (defun next-theme ()
   "Loads next theme in the theme-list"
   (interactive)
+  (setq powerline-theme-list (-rotate 1 powerline-theme-list))
+  (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (-rotate 1 theme-list))
   (load-theme (nth 0 theme-list) t))
 
 (defun reset-theme ()
   "Loads the default theme settings"
   (interactive)
+  (setq powerline-theme-list (list
+                    'airline-badwolf
+                    'airline-papercolor))
+  (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (list
                     'moe-dark
                     'moe-light))
