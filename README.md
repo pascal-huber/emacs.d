@@ -2,7 +2,7 @@
 
 [see configuration.org](configuration.org)
 
-# Dependencies
+# dependencies
 
 * [mu](https://www.djcbsoftware.nl/code/mu/)
 * [offlineimap](http://www.offlineimap.org/)
