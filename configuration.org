@@ -51,6 +51,7 @@
                       tern
                       tern-auto-complete
                       web-beautify
+                      web-mode
                       yaml-mode))
 
                       ;;ruby-electric
