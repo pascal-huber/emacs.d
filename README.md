@@ -23,4 +23,3 @@ $ sudo pacman -S offlineimap
 $ pacaur -S mu
 $ mu index --maildir=~/.mail
 ```
-

@@ -29,6 +29,7 @@
                       evil-ediff
                       evil-god-state
                       evil-leader
+                      evil-magit
                       evil-mu4e
                       evil-org
                       fill-column-indicator
@@ -39,17 +40,15 @@
                       helm-projectile
                       js2-mode
                       lua-mode
-                      magit
                       markdown-mode
-                      moe-theme
                       mu4e-alert
                       mu4e-maildirs-extension
                       openwith
                       org-bullets
                       projectile
-                      powerline
                       rainbow-delimiters
                       smex
+                      spaceline
                       tern
                       tern-auto-complete
                       web-beautify
@@ -80,6 +79,14 @@ No fancy stuff for me.
 (column-number-mode)
 #+END_SRC
 
+** Modeline 
+   
+#+BEGIN_SRC emacs-lisp
+(require 'spaceline-config)
+(spaceline-spacemacs-theme)
+(spaceline-helm-mode 1)
+#+END_SRC
+
 ** Themes
 
 Load Moe Theme (TODO: fix this)
@@ -90,16 +97,6 @@ Load Moe Theme (TODO: fix this)
 (require 'moe-theme)
 #+END_SRC
 
-Powerline Theme
-
-#+BEGIN_SRC emacs-lisp
-(require 'powerline)
-;(powerline-moe-theme)
-;(moe-theme-set-color 'b/w)
-;(powerline-center-theme)
-(require 'airline-themes)
-#+END_SRC
-
 Theme rotation
 
 #+BEGIN_SRC emacs-lisp
@@ -108,18 +105,12 @@ Theme rotation
 (defun next-theme ()
   "Loads next theme in the theme-list"
   (interactive)
-  (setq powerline-theme-list (-rotate 1 powerline-theme-list))
-  (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (-rotate 1 theme-list))
   (load-theme (nth 0 theme-list) t))
 
 (defun reset-theme ()
   "Loads the default theme settings"
   (interactive)
-  (setq powerline-theme-list (list
-                    'airline-badwolf
-                    'airline-papercolor))
-  (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (list
                     'moe-dark
                     'moe-light))
@@ -668,6 +659,12 @@ To see whitespaces and indentation
 #+BEGIN_SRC emacs-lisp
 (require 'markdown-mode)
 (setq markdown-command "pandoc")
+#+END_SRC
+
+** Magit
+
+#+BEGIN_SRC emacs-lisp
+(require 'evil-magit)
 #+END_SRC
 
 * Keybinding
