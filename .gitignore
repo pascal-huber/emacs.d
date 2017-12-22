@@ -1,14 +1,6 @@
+/*
 
-# Ignore everything
-*
-
-# But not these files...
-!elfeed.org
-!configuration.org
 !.gitignore
+!configuration.org
 !README.md
-!i3.el
-!i3-integration.el
-
-# even if they are in the lisp folder
-!lisp/
+!/themes/

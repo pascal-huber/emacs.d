@@ -20,7 +20,7 @@ $ ln -s ~/git/emacs ~/.emacs.d
 get mu4e ready
 ```
 $ sudo pacman -S offlineimap 
-$ yaourt -s mu
+$ pacaur -S mu
 $ mu index --maildir=~/.mail
 ```
 
