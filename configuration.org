@@ -93,33 +93,29 @@ No fancy stuff for me.
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
 
-
 (use-package spaceline-config :ensure spaceline
   :config
   (spaceline-helm-mode 1)
   (spaceline-install
    'main
-   '(
-     (evil-state :when active)
+   '((evil-state :when active)
      (buffer-modified)
      ((remote-host buffer-id) :face highlight-face)
      (process :when active))
    '((selection-info :face region :when mark-active)
-     ((flycheck-error flycheck-warning flycheck-info) :when active)
+     (projectile-root)
      (which-function)
      (version-control :when active)
      (line-column)
      (buffer-position)
      (major-mode))))
 
+(setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+
 (setq-default
  powerline-height 20
- powerline-default-separator 'wave
- spaceline-flycheck-bullet "❖ %s"
  spaceline-separator-dir-left '(right . right)
  spaceline-separator-dir-right '(left . left))
-
-
 #+END_SRC
 
 ** Themes
