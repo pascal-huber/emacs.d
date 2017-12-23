@@ -81,7 +81,6 @@ No fancy stuff for me.
 (column-number-mode)
 #+END_SRC
 
-
 ** Modeline 
    
 #+BEGIN_SRC emacs-lisp
@@ -99,6 +98,7 @@ No fancy stuff for me.
       ((remote-host buffer-id) :face highlight-face)
       (process :when active))
     '((selection-info :face region :when mark-active)
+      (minor-modes)
       (projectile-root)
       (which-function)
       (version-control :when active)
@@ -107,7 +107,9 @@ No fancy stuff for me.
       (major-mode))))
 
 ;; Never set mode-line inactive
-(defun powerline-selected-window-active () "Return whether the current window is active." t)
+(defun powerline-selected-window-active () 
+  "Return whether the current window is active."
+  t)
 
 (setq-default
  powerline-height 20
@@ -182,10 +184,14 @@ Theme rotation
 
 ** Emojify
 
-# TODO: Emojify-mode for emails
+Emojify-mode for emails
 
 #+BEGIN_SRC emacs-lisp
-;(global-emojify-mode)
+(defun emojify-inhibit-major-modes
+ '(mu4e-view-mode)
+ :type '(repeat symbol)
+ :group: 'emojify)
+(add-hook 'after-init-hook #'global-emojify-mode)
 #+END_SRC
 
 * General Setup
