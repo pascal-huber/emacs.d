@@ -307,7 +307,7 @@ Set up elfeed.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 
 (defun elfeed-search-format-date (date)
-  (format-time-string "%d.%m.%Y %H:%M" (seconds-to-time date)))
+  (format-time-string "%d.%m.%Y" (seconds-to-time date)))
   
 (defun elfeed-goodies/search-header-draw ()
   "Returns the string to be used as the Elfeed header."
