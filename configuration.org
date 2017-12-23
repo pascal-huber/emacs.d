@@ -50,7 +50,6 @@
                       rainbow-delimiters
                       smex
                       spaceline
-                      spaceline-all-the-icons
                       tern
                       tern-auto-complete
                       web-beautify
@@ -81,18 +80,17 @@ No fancy stuff for me.
 (column-number-mode)
 #+END_SRC
 
+** Scrobblar 
+
+#+BEGIN_SRC emacs-lisp
+(scroll-bar-mode -1)
+#+END_SRC
+
 ** Modeline 
    
 #+BEGIN_SRC emacs-lisp
 (require 'spaceline-config)
 (spaceline-spacemacs-theme)
-(require 'spaceline-all-the-icons)
-(use-package spaceline-all-the-icons 
-  :after spaceline
-  :config (progn
-            (spaceline-all-the-icons-theme)
-            (setq spaceline-all-the-icons-separator-type 'slant)))
-
 #+END_SRC
 
 ** Themes
