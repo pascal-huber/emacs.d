@@ -99,7 +99,9 @@ No fancy stuff for me.
   (spaceline-helm-mode 1)
   (spaceline-install
    'main
-   '((buffer-modified)
+   '(
+     (evil-state :when active)
+     (buffer-modified)
      ((remote-host buffer-id) :face highlight-face)
      (process :when active))
    '((selection-info :face region :when mark-active)
@@ -107,11 +109,11 @@ No fancy stuff for me.
      (which-function)
      (version-control :when active)
      (line-column)
-     (global :when active)
+     (buffer-position)
      (major-mode))))
 
 (setq-default
- powerline-height 24
+ powerline-height 20
  powerline-default-separator 'wave
  spaceline-flycheck-bullet "❖ %s"
  spaceline-separator-dir-left '(right . right)
