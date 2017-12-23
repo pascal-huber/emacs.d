@@ -81,11 +81,6 @@ No fancy stuff for me.
 (column-number-mode)
 #+END_SRC
 
-** Scrobblar 
-
-#+BEGIN_SRC emacs-lisp
-(scroll-bar-mode -1)
-#+END_SRC
 
 ** Modeline 
    
@@ -809,4 +804,12 @@ Evil Motion (binds normal, visual, and operator states all at once)
   :lighter " my-keys")
 
 (my-global-keys-mode 1)
+#+END_SRC
+
+* The End 
+  
+Prevent scroll-bar-mode from beeing overwritten.
+
+#+BEGIN_SRC emacs-lisp
+(scroll-bar-mode -1)
 #+END_SRC
