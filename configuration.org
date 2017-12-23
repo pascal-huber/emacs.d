@@ -52,6 +52,7 @@
                       spaceline
                       tern
                       tern-auto-complete
+                      use-package
                       web-beautify
                       web-mode
                       yaml-mode))
@@ -97,23 +98,22 @@ No fancy stuff for me.
   :config
   (spaceline-helm-mode 1)
   (spaceline-install
-   'main
-   '((evil-state :when active)
-     (buffer-modified)
-     ((remote-host buffer-id) :face highlight-face)
-     (process :when active))
-   '((selection-info :face region :when mark-active)
-     (projectile-root)
-     (which-function)
-     (version-control :when active)
-     (line-column)
-     (buffer-position)
-     (major-mode))))
-
-(setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+    'main
+    '((evil-state :when active)
+      (buffer-modified)
+      ((remote-host buffer-id) :face highlight-face)
+      (process :when active))
+    '((selection-info :face region :when mark-active)
+      (projectile-root)
+      (which-function)
+      (version-control :when active)
+      (line-column)
+      (buffer-position)
+      (major-mode))))
 
 (setq-default
  powerline-height 20
+ spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
  spaceline-separator-dir-left '(right . right)
  spaceline-separator-dir-right '(left . left))
 #+END_SRC
