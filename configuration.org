@@ -57,7 +57,6 @@
                       web-mode
                       yaml-mode))
 
-                      ;;ruby-electric
 (dolist (p my-packages)
   (unless (package-installed-p p)
     (package-install p)))
@@ -84,6 +83,8 @@ No fancy stuff for me.
 ** Modeline 
    
 #+BEGIN_SRC emacs-lisp
+(require 'powerline)
+
 (use-package spaceline :ensure t
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
@@ -128,16 +129,6 @@ Load Moe Theme (TODO: fix this)
 (require 'moe-theme)
 #+END_SRC
 
-Powerline Theme
-
-#+BEGIN_SRC emacs-lisp
-(require 'powerline)
-;(powerline-moe-theme)
-;(moe-theme-set-color 'b/w)
-;(powerline-center-theme)
-;;(require 'airline-themes)
-#+END_SRC
-
 Theme rotation
 
 #+BEGIN_SRC emacs-lisp
@@ -146,18 +137,12 @@ Theme rotation
 (defun next-theme ()
   "Loads next theme in the theme-list"
   (interactive)
-  ;;(setq powerline-theme-list (-rotate 1 powerline-theme-list))
-  ;;(load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (-rotate 1 theme-list))
   (load-theme (nth 0 theme-list) t))
 
 (defun reset-theme ()
   "Loads the default theme settings"
   (interactive)
-  ;; (setq powerline-theme-list (list
-  ;;                   'airline-badwolf
-  ;;                   'airline-papercolor))
-  ;; (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (list
                     'moe-dark
                     'moe-light))
@@ -184,13 +169,9 @@ Theme rotation
 
 ** Emojify
 
-Emojify-mode for emails
+Emojify-mode
 
 #+BEGIN_SRC emacs-lisp
-(defun emojify-inhibit-major-modes
- '(mu4e-view-mode)
- :type '(repeat symbol)
- :group: 'emojify)
 (add-hook 'after-init-hook #'global-emojify-mode)
 #+END_SRC
 
@@ -293,9 +274,8 @@ Nice bullets.
 
 #+BEGIN_SRC emacs-lisp
 (projectile-global-mode)
-(setq projectile-completion-system 'grizzl) ;; to compare with default (ido)
+(setq projectile-completion-system 'grizzl) 
 (setq projectile-enable-caching t)
-;;(setq projectile-require-project-root nil) ;; use projectile everywhere
 #+END_SRC
 
 ** Ido
@@ -530,10 +510,10 @@ Check for forgotten attachments
 Keybinding to beautify manually.
 
 #+BEGIN_SRC emacs-lisp
-(require 'web-beautify) ;; Not necessary if using ELPA package
+(require 'web-beautify)
 (eval-after-load 'js2-mode
   '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
-;; Or if you're using 'js-mode' (a.k.a 'javascript-mode')
+
 (eval-after-load 'js
   '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
 
