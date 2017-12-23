@@ -50,6 +50,7 @@
                       rainbow-delimiters
                       smex
                       spaceline
+                      spaceline-all-the-icons
                       tern
                       tern-auto-complete
                       web-beautify
@@ -85,7 +86,13 @@ No fancy stuff for me.
 #+BEGIN_SRC emacs-lisp
 (require 'spaceline-config)
 (spaceline-spacemacs-theme)
-(spaceline-helm-mode 1)
+(require 'spaceline-all-the-icons)
+(use-package spaceline-all-the-icons 
+  :after spaceline
+  :config (progn
+            (spaceline-all-the-icons-theme)
+            (setq spaceline-all-the-icons-separator-type 'slant)))
+
 #+END_SRC
 
 ** Themes
@@ -105,7 +112,7 @@ Powerline Theme
 ;(powerline-moe-theme)
 ;(moe-theme-set-color 'b/w)
 ;(powerline-center-theme)
-(require 'airline-themes)
+;;(require 'airline-themes)
 #+END_SRC
 
 Theme rotation
@@ -116,18 +123,18 @@ Theme rotation
 (defun next-theme ()
   "Loads next theme in the theme-list"
   (interactive)
-  (setq powerline-theme-list (-rotate 1 powerline-theme-list))
-  (load-theme (nth 0 powerline-theme-list) t)
+  ;;(setq powerline-theme-list (-rotate 1 powerline-theme-list))
+  ;;(load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (-rotate 1 theme-list))
   (load-theme (nth 0 theme-list) t))
 
 (defun reset-theme ()
   "Loads the default theme settings"
   (interactive)
-  (setq powerline-theme-list (list
-                    'airline-badwolf
-                    'airline-papercolor))
-  (load-theme (nth 0 powerline-theme-list) t)
+  ;; (setq powerline-theme-list (list
+  ;;                   'airline-badwolf
+  ;;                   'airline-papercolor))
+  ;; (load-theme (nth 0 powerline-theme-list) t)
   (setq theme-list (list
                     'moe-dark
                     'moe-light))
@@ -444,42 +451,20 @@ Some self explanatory settings.
 
 *** Forgotten Attachment
 
-Check for forgotten attachments (TODO: Refactor)
+Check for forgotten attachments
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'message-send-hook 'check-forgotten-attachment)
-(setq suspicious-regex-list '("^.*attach.*$"
-                              "^.*angehäng.*$"
-                              "^.*angehaeng.*$"
-                              "^.*anhang.*$"))
-(setq attachment-regex-list '("^.*<#part.*$"))
-
-(defun check-forgotten-attachment ()
-  "Returns t if the mail doesn't containany suspicious"
-  "words or if the user approved, else nil"
-  (interactive)
-  (let ((line-list (read-lines (buffer-file-name))))
-    (if (> (regex-test line-list suspicious-regex-list) 0)
-        (unless (or (> (regex-test line-list attachment-regex-list) 0)
-                    (yes-or-no-p "Did you add all your attachments?"))
-          (error "add the damn attachment(s)")))))
-
-(defun regex-test (file-lines regex-list)
-  "Returns the number of regex-matches in a list of strings"
-  (interactive)
-  (let ((matches 0))
-    (dolist (line file-lines)
-        (unless (string= ">" (substring line 0 1)) ; no check if line starts with ">"
-            (dolist (regex regex-list)
-                (if (string-match regex line)
-                    (incf matches)))))
-    (+ matches 0))) ; bump, there must be a better way to make sure the right value is returned
-
-(defun read-lines (filePath)
-  "Return a list of lines of a file at filePath."
-  (with-temp-buffer
-    (insert-file-contents filePath)
-    (split-string (buffer-string) "\n" t)))
+(defvar my-message-attachment-regexp "\\([Ww]e send\\|[Ii] send\\|attach\\|angehängt\\|[aA]nhang\\|[aA]ngehängt\\|[sS]chicke\\|haenge\\|hänge\\)")
+(defun my-message-check-attachment nil
+  "Check if there is an attachment in the message if I claim it."
+  (save-excursion
+    (message-goto-body)
+    (when (search-forward-regexp my-message-attachment-regexp nil t nil)
+      (message-goto-body)
+      (unless (message-y-or-n-p
+               "Did you attach all documents?" nil nil)
+        (error "No message sent, add them attachments!")))))
+(add-hook 'message-send-hook 'my-message-check-attachment)
 #+END_SRC
 
 * Programming Setup
@@ -782,6 +767,7 @@ Evil Motion (binds normal, visual, and operator states all at once)
     (define-key map (kbd "C-c C-m")  'mu4e)
     (define-key map (kbd "C-c C-n")  'elfeed)
     (define-key map (kbd "C-c C-ö")  'uncomment-region)
+    (define-key map (kbd "C-c C-o")  'helm-projectile-switch-project)
     (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
     (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
