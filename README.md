@@ -23,3 +23,12 @@ $ sudo pacman -S offlineimap
 $ pacaur -S mu
 $ mu index --maildir=~/.mail
 ```
+
+(Re)compile the modeline with `M-x spaceline-compile`.
+
+Python:
+```
+$ sudo pacman -S python-pip python-virtualenv python2-virtualenv
+$ pip install --user jedi flake8 autopep8 yapf
+$ mkdir $WORKON_HOME
+```

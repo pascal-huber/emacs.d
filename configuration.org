@@ -53,6 +53,7 @@
                       tern
                       tern-auto-complete
                       use-package
+                      virtualenvwrapper
                       web-beautify
                       web-mode
                       yaml-mode))
@@ -88,13 +89,16 @@ No fancy stuff for me.
 (use-package spaceline :ensure t
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+  
+(spaceline-define-segment virtualenvwrapper-segment venv-current-name)
 
 (use-package spaceline-config :ensure spaceline
   :config
   (spaceline-helm-mode 1)
   (spaceline-install
     'main
-    '((evil-state :when active)
+    '((evil-state :when active :face highlight-face)
+      (virtualenvwrapper-segment)
       (buffer-modified)
       ((remote-host buffer-id) :face highlight-face)
       (process :when active))
@@ -107,10 +111,8 @@ No fancy stuff for me.
       (buffer-position)
       (major-mode))))
 
-;; Never set mode-line inactive
-(defun powerline-selected-window-active () 
-  "Return whether the current window is active."
-  t)
+;; mode-line always active
+(defun powerline-selected-window-active () t)
 
 (setq-default
  powerline-height 20
@@ -626,19 +628,37 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 
 ** Python
 
-Use jupyter/ipython if present
-
 #+BEGIN_SRC emacs-lisp
-;;(when (executable-find "ipython3")
-;;  (setq python-shell-interpreter "ipython3")
-;;  (setq python-shell-interpreter-args "--simple-prompt --pprint"))
+(elpy-enable)
 #+END_SRC
 
-Auto complete with jedi
+*** Virtualenv
+
 #+BEGIN_SRC emacs-lisp
-;;(add-hook 'python-mode-hook 'jedi:setup)
-;;(setq jedi:complete-on-dot t)
+(require 'virtualenvwrapper)
+(venv-initialize-eshell)
 #+END_SRC
+
+*** MGMT 
+
+Virtual-Environment handling  shell:
+   - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
+   - activate virtualenv: `workon theproject`
+   - exit the env: `deactivate`
+   - delete the env: `rmvirtualenv theproject`
+     
+Virtual-Envirnoment handling with emacs:
+   - create a virtualenv: `M-x venv-mkvirtualenv-using`
+   - activate virtualenv: `M-x venv-workon`
+   - exit the env with: `M-x venv-deactivate`
+   - delete the env: `M-x venv-rmvirtualenv`
+
+pip in Virtual-Envirnoment 
+   - save pip dependencies: `pip freeze > requirements.txt`
+   - install pip dependencies `pip install -r requirements.txt`
+
+Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
+
 ** Indents
 
 #+BEGIN_SRC emacs-lisp
