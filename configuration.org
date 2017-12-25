@@ -533,22 +533,21 @@ Keybinding to beautify manually.
 #+END_SRC
 
 ** Latex
+*** Using Okular 
 
-To make evince go to the updated page when using auctex to compile.
+SyncTeX setup for okular. Follow https://www.emacswiki.org/emacs/AUCTeX#toc26 to configure okular.
 
-#+BEGIN_SRC emacs-lisp
-(setq TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o")))
-(setq TeX-view-program-selection '((output-pdf "Evince")))
-#+END_SRC
-
-Use evince and firefox
+In Okular, use "Shift + Left Click" to jump to the according line.
 
 #+BEGIN_SRC emacs-lisp
-(setq TeX-output-view-style
-      (quote
-       (("^pdf$" "." "evince -f %o")
-        ("^html?$" "." "firefox %o"))))
+(setq-default TeX-master nil)
+(setq TeX-source-correlate-mode t
+      TeX-source-correlate-start-server t)
+(eval-after-load "tex"
+  '(setcar (cdr (assoc 'output-pdf TeX-view-program-selection)) "Okular"))
 #+END_SRC
+
+*** Using make.sh
 
 I put a `make.sh` in the root of latex documents along with the main tex file `main.tex` and of course the `.gitignore`.
 
