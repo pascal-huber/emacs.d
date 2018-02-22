@@ -24,7 +24,6 @@
                       elfeed-org
                       elfeed-goodies
                       elpy
-                      emojify
                       evil
                       evil-ediff
                       evil-god-state
@@ -45,6 +44,7 @@
                       mu4e-maildirs-extension
                       openwith
                       org-bullets
+                      php-mode
                       projectile
                       powerline
                       rainbow-delimiters
@@ -81,7 +81,7 @@ No fancy stuff for me.
 (column-number-mode)
 #+END_SRC
 
-** Modeline 
+** Spaceline
    
 #+BEGIN_SRC emacs-lisp
 (require 'powerline)
@@ -90,7 +90,48 @@ No fancy stuff for me.
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
   
+#+END_SRC
+
+Segment for Python venv
+   
+#+BEGIN_SRC emacs-lisp
 (spaceline-define-segment virtualenvwrapper-segment venv-current-name)
+#+END_SRC
+
+File permissions segment for files with "special" permissions.
+
+#+BEGIN_SRC emacs-lisp
+(setq buffer-file-permissions-string nil)
+(defun buffer-file-permissions-update()
+  (interactive)
+  (if (and (buffer-file-name)
+           (not (file-ownership-preserved-p (buffer-file-name))))
+     (setq buffer-file-permissions-string 
+           (concat (if (file-readable-p (buffer-file-name)) "r" "-")
+                   (if (file-writable-p (buffer-file-name)) "w" "-")))
+    (setq buffer-file-permissions-string nil)))
+
+(add-hook 'buffer-list-update-hook 'buffer-file-permissions-update)
+(spaceline-define-segment buffer-file-permissions-segment buffer-file-permissions-string)
+(defface alert
+  '((((class color) (min-colors 88) (background light))
+     :background "red" :foreground "yellow" :weight bold)
+    (((class color) (min-colors 88) (background dark))
+     :background "red" :foreground "yellow" :weight bold)
+    (((class color) (min-colors 16) (background light))
+     :background "red" :foreground "yellow" :weight bold)
+    (((class color) (min-colors 16) (background dark))
+     :background "red" :foreground "yellow" :weight bold)
+    (((class color) (min-colors 8))
+     :background "red" :foreground "yellow" :weight bold)
+    (t :inverse-video t))
+  "Ugly Alert Theme"
+  :group 'basic-faces)
+#+END_SRC
+
+Spaceline config
+
+#+BEGIN_SRC emacs-lisp
 
 (use-package spaceline-config :ensure spaceline
   :config
@@ -99,13 +140,13 @@ No fancy stuff for me.
     'main
     '((evil-state :when active :face highlight-face)
       (virtualenvwrapper-segment)
+      (buffer-file-permissions-segment :face alert)
       (buffer-modified)
       ((remote-host buffer-id) :face highlight-face)
       (process :when active))
     '((selection-info :face region :when mark-active)
       (minor-modes)
       (projectile-root)
-      (which-function)
       (version-control :when active)
       (line-column)
       (buffer-position)
@@ -140,7 +181,8 @@ Theme rotation
   "Loads next theme in the theme-list"
   (interactive)
   (setq theme-list (-rotate 1 theme-list))
-  (load-theme (nth 0 theme-list) t))
+  (load-theme (nth 0 theme-list) t)
+  (buffer-file-permissions-update))
 
 (defun reset-theme ()
   "Loads the default theme settings"
@@ -166,15 +208,7 @@ Theme rotation
 
 #+BEGIN_SRC emacs-lisp
 (setq default-frame-alist
-      '((font . "DejaVu Sans Mono-12")))
-#+END_SRC
-
-** Emojify
-
-Emojify-mode
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook #'global-emojify-mode)
+      '((font . "DejaVu Sans Mono")))
 #+END_SRC
 
 * General Setup
@@ -208,11 +242,25 @@ No backup files.
 Save file with root.
 
 #+BEGIN_SRC emacs-lisp
+(defun sudo-file-name (filename)
+  (if (not (string-prefix-p "/sudo:root@localhost:" filename))
+      (concat "/sudo:root@localhost:" filename)
+    filename))
+
 (defun sudo-save ()
   (interactive)
   (if (not buffer-file-name)
-      (write-file (concat "/sudo:root@localhost:" (ido-read-file-name "File:")))
-    (write-file (concat "/sudo:root@localhost:" buffer-file-name))))
+      (write-file (sudo-file-name (ido-read-file-name "File:")))
+    (write-file (sudo-file-name buffer-file-name)))
+(buffer-file-permissions-update	))
+#+END_SRC
+
+** Browser
+
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-generic-program "/usr/bin/chromium"
+      browse-url-generic-args '("--incognito")
+      browse-url-browser-function 'browse-url-generic)
 #+END_SRC
 
 ** Evil
@@ -309,7 +357,7 @@ Set up elfeed.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 
 (defun elfeed-search-format-date (date)
-  (format-time-string "%d.%m.%Y" (seconds-to-time date)))
+  (format-time-string "%d" (seconds-to-time date)))
   
 (defun elfeed-goodies/search-header-draw ()
   "Returns the string to be used as the Elfeed header."
@@ -500,6 +548,7 @@ Check for forgotten attachments
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
 
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
@@ -533,6 +582,15 @@ Keybinding to beautify manually.
 #+END_SRC
 
 ** Latex
+   
+Don't add auctex variables in the tex files. Note that the main file has to be saved once for this to work.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-parse-self t)
+(setq TeX-auto-save t)
+(setq-default TeX-master nil)
+#+END_SRC
+
 *** Using Okular 
 
 SyncTeX setup for okular. Follow https://www.emacswiki.org/emacs/AUCTeX#toc26 to configure okular.
@@ -540,7 +598,6 @@ SyncTeX setup for okular. Follow https://www.emacswiki.org/emacs/AUCTeX#toc26 to
 In Okular, use "Shift + Left Click" to jump to the according line.
 
 #+BEGIN_SRC emacs-lisp
-(setq-default TeX-master nil)
 (setq TeX-source-correlate-mode t
       TeX-source-correlate-start-server t)
 (eval-after-load "tex"
@@ -657,6 +714,12 @@ pip in Virtual-Envirnoment
    - install pip dependencies `pip install -r requirements.txt`
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
+
+** PHP
+   
+#+BEGIN_SRC emacs-lisp
+(require 'php-mode)
+#+END_SRC
 
 ** Indents
 
