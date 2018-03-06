@@ -76,57 +76,99 @@ No fancy stuff for me.
 
 ** Line- and Columnnumbers
 
+Too many numbers?
+
 #+BEGIN_SRC emacs-lisp
-(global-linum-mode t)
-(column-number-mode)
+;(global-linum-mode t)
+;(column-number-mode)
 #+END_SRC
 
 ** Spaceline
-   
+
 #+BEGIN_SRC emacs-lisp
 (require 'powerline)
 
 (use-package spaceline :ensure t
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
-  
+#+END_SRC
+
+Space line faces
+
+#+BEGIN_SRC emacs-lisp
+(defun spaceline-light()
+  (interactive)
+  (set-face-attribute 'mode-line nil
+                      :foreground "black"
+                      :background "gray66")
+  (set-face-attribute 'powerline-active1 nil
+                      :foreground "black"
+                      :background "gray77")
+  (set-face-attribute 'powerline-active2 nil
+                      :foreground "black"
+                      :background "gray88")
+  (powerline-reset))
+
+(defun spaceline-dark()
+  (interactive)
+  (set-face-attribute 'mode-line nil
+                      :foreground "black"
+                      :background "gray53")
+  (set-face-attribute 'powerline-active1 nil
+                      :foreground "black"
+                      :background "gray66")
+  (set-face-attribute 'powerline-active2 nil
+                      :foreground "black"
+                      :background "gray40")
+  (powerline-reset))
+
+(defface red-face
+  '((t :foreground "yellow"
+       :background "red"
+       :weight bold))
+  "Ugly Alert Theme"
+  :group 'basic-faces)
 #+END_SRC
 
 Segment for Python venv
-   
+
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment virtualenvwrapper-segment venv-current-name)
+#+END_SRC
+
+Custom Git status using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]]
+
+#+BEGIN_SRC emacs-lisp
+(defun git-branch-name ()
+  (replace-regexp-in-string "^ Git[:-]" "" vc-mode))
+
+(spaceline-define-segment my-version-control
+  "Version control information."
+  (when vc-mode
+    (powerline-raw
+     (s-trim (concat "\ue725 " (git-branch-name)
+                     (when (buffer-file-name)
+                       (pcase (vc-state (buffer-file-name))
+                         (`up-to-date " \uf00c")
+                         (`edited " \uf069")
+                         (`added " \uf44d")
+                         (`unregistered " ?")
+                         (`removed " \uf00d")
+                         (`needs-merge " \uf419")
+                         (`needs-update " \uf062")
+                         (`ignored " i")
+                         (_ " !?"))))))))
 #+END_SRC
 
 File permissions segment for files with "special" permissions.
 
 #+BEGIN_SRC emacs-lisp
-(setq buffer-file-permissions-string nil)
-(defun buffer-file-permissions-update()
-  (interactive)
+(spaceline-define-segment buffer-special-file-permissions
   (if (and (buffer-file-name)
            (not (file-ownership-preserved-p (buffer-file-name))))
-     (setq buffer-file-permissions-string 
-           (concat (if (file-readable-p (buffer-file-name)) "r" "-")
-                   (if (file-writable-p (buffer-file-name)) "w" "-")))
-    (setq buffer-file-permissions-string nil)))
-
-(add-hook 'buffer-list-update-hook 'buffer-file-permissions-update)
-(spaceline-define-segment buffer-file-permissions-segment buffer-file-permissions-string)
-(defface alert
-  '((((class color) (min-colors 88) (background light))
-     :background "red" :foreground "yellow" :weight bold)
-    (((class color) (min-colors 88) (background dark))
-     :background "red" :foreground "yellow" :weight bold)
-    (((class color) (min-colors 16) (background light))
-     :background "red" :foreground "yellow" :weight bold)
-    (((class color) (min-colors 16) (background dark))
-     :background "red" :foreground "yellow" :weight bold)
-    (((class color) (min-colors 8))
-     :background "red" :foreground "yellow" :weight bold)
-    (t :inverse-video t))
-  "Ugly Alert Theme"
-  :group 'basic-faces)
+      (powerline-raw
+       (concat (if (file-readable-p (buffer-file-name)) "r" "-")
+               (if (file-writable-p (buffer-file-name)) "w" "-")))))
 #+END_SRC
 
 Spaceline config
@@ -136,18 +178,19 @@ Spaceline config
 (use-package spaceline-config :ensure spaceline
   :config
   (spaceline-helm-mode 1)
+  (spaceline-spacemacs-theme)
   (spaceline-install
     'main
     '((evil-state :when active :face highlight-face)
       (virtualenvwrapper-segment)
-      (buffer-file-permissions-segment :face alert)
+      (buffer-special-file-permissions :face red-face)
       (buffer-modified)
-      ((remote-host buffer-id) :face highlight-face)
+      ((remote-host buffer-id))
       (process :when active))
     '((selection-info :face region :when mark-active)
       (minor-modes)
       (projectile-root)
-      (version-control :when active)
+      (my-version-control :when active)
       (line-column)
       (buffer-position)
       (major-mode))))
@@ -159,12 +202,13 @@ Spaceline config
  powerline-height 20
  spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
  spaceline-separator-dir-left '(right . right)
- spaceline-separator-dir-right '(left . left))
+ spaceline-separator-dir-right '(left . left)
+ powerline-text-scale-factor 0.82)
 #+END_SRC
 
 ** Themes
 
-Load Moe Theme (TODO: fix this)
+Load Moe Theme
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/moe-theme/")
@@ -182,6 +226,8 @@ Theme rotation
   (interactive)
   (setq theme-list (-rotate 1 theme-list))
   (load-theme (nth 0 theme-list) t)
+  (setq theme-face-list (-rotate 1 theme-face-list))
+  (funcall (nth 0 theme-face-list))
   (buffer-file-permissions-update))
 
 (defun reset-theme ()
@@ -190,7 +236,11 @@ Theme rotation
   (setq theme-list (list
                     'moe-dark
                     'moe-light))
-  (load-theme (nth 0 theme-list) t))
+  (setq theme-face-list (list
+                    'spaceline-dark
+                    'spaceline-light))
+  (load-theme (nth 0 theme-list) t)
+  (funcall (nth 0 theme-face-list)))
 
 (reset-theme)
 #+END_SRC
@@ -324,7 +374,7 @@ Nice bullets.
 
 #+BEGIN_SRC emacs-lisp
 (projectile-global-mode)
-(setq projectile-completion-system 'grizzl) 
+(setq projectile-completion-system 'grizzl)
 (setq projectile-enable-caching t)
 #+END_SRC
 
@@ -358,7 +408,7 @@ Set up elfeed.
 
 (defun elfeed-search-format-date (date)
   (format-time-string "%d" (seconds-to-time date)))
-  
+
 (defun elfeed-goodies/search-header-draw ()
   "Returns the string to be used as the Elfeed header."
   (if (zerop (elfeed-db-last-update))
@@ -582,7 +632,7 @@ Keybinding to beautify manually.
 #+END_SRC
 
 ** Latex
-   
+
 Don't add auctex variables in the tex files. Note that the main file has to be saved once for this to work.
 
 #+BEGIN_SRC emacs-lisp
@@ -591,7 +641,7 @@ Don't add auctex variables in the tex files. Note that the main file has to be s
 (setq-default TeX-master nil)
 #+END_SRC
 
-*** Using Okular 
+*** Using Okular
 
 SyncTeX setup for okular. Follow https://www.emacswiki.org/emacs/AUCTeX#toc26 to configure okular.
 
@@ -695,28 +745,28 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 (venv-initialize-eshell)
 #+END_SRC
 
-*** MGMT 
+*** MGMT
 
 Virtual-Environment handling  shell:
    - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
    - activate virtualenv: `workon theproject`
    - exit the env: `deactivate`
    - delete the env: `rmvirtualenv theproject`
-     
+
 Virtual-Envirnoment handling with emacs:
    - create a virtualenv: `M-x venv-mkvirtualenv-using`
    - activate virtualenv: `M-x venv-workon`
    - exit the env with: `M-x venv-deactivate`
    - delete the env: `M-x venv-rmvirtualenv`
 
-pip in Virtual-Envirnoment 
+pip in Virtual-Envirnoment
    - save pip dependencies: `pip freeze > requirements.txt`
    - install pip dependencies `pip install -r requirements.txt`
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 
 ** PHP
-   
+
 #+BEGIN_SRC emacs-lisp
 (require 'php-mode)
 #+END_SRC
@@ -828,10 +878,10 @@ Evil Motion (binds normal, visual, and operator states all at once)
 (evil-global-set-key 'motion [escape] 'evil-god-state-bail)
 #+END_SRC
 
-** mu4e 
+** mu4e
 
-#+BEGIN_SRC emacs-lisp 
-(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index) 
+#+BEGIN_SRC emacs-lisp
+(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
 (add-hook 'mu4e-view-mode-hook
           (lambda()
             (local-set-key (kbd "<tab>") 'shr-next-link)
@@ -874,8 +924,8 @@ Evil Motion (binds normal, visual, and operator states all at once)
 (my-global-keys-mode 1)
 #+END_SRC
 
-* The End 
-  
+* The End
+
 Prevent scroll-bar-mode from beeing overwritten.
 
 #+BEGIN_SRC emacs-lisp
