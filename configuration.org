@@ -4,6 +4,7 @@
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
+(package-initialize)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("marmalade" . "https://marmalade-repo.org/packages/")
@@ -40,6 +41,7 @@
                       js2-mode
                       lua-mode
                       markdown-mode
+                      moe-theme
                       mu4e-alert
                       mu4e-maildirs-extension
                       openwith
@@ -174,7 +176,6 @@ File permissions segment for files with "special" permissions.
 Spaceline config
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package spaceline-config :ensure spaceline
   :config
   (spaceline-helm-mode 1)
@@ -184,8 +185,8 @@ Spaceline config
     '((evil-state :when active :face highlight-face)
       (virtualenvwrapper-segment)
       (buffer-special-file-permissions :face red-face)
-      (buffer-modified)
       ((remote-host buffer-id))
+      (buffer-modified)
       (process :when active))
     '((selection-info :face region :when mark-active)
       (minor-modes)
@@ -208,17 +209,10 @@ Spaceline config
 
 ** Themes
 
-Load Moe Theme
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/moe-theme/")
-(add-to-list 'load-path "~/.emacs.d/themes/moe-theme/")
-(require 'moe-theme)
-#+END_SRC
-
 Theme rotation
 
 #+BEGIN_SRC emacs-lisp
+(require 'moe-theme)
 (require 'dash)
 
 (defun next-theme ()

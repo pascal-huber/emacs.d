@@ -8,6 +8,7 @@
 * [offlineimap](http://www.offlineimap.org/)
 * [pandoc](http://pandoc.org/)
 * [js-beautify](https://github.com/beautify-web/js-beautify)
+* [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
 
 # Installation:
 
