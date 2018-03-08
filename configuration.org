@@ -16,6 +16,9 @@
                       airline-themes
                       auctex
                       auto-complete
+                      company
+                      company-tern
+                      company-web
                       dash
                       dictcc
                       dictionary
@@ -39,6 +42,7 @@
                       haml-mode
                       helm-projectile
                       js2-mode
+                      js2-refactor
                       lua-mode
                       markdown-mode
                       moe-theme
@@ -58,7 +62,8 @@
                       virtualenvwrapper
                       web-beautify
                       web-mode
-                      yaml-mode))
+                      yaml-mode
+                      xref-js2))
 
 (dolist (p my-packages)
   (unless (package-installed-p p)
@@ -125,12 +130,62 @@ Space line faces
   (powerline-reset))
 
 (defface red-face
-  '((t :foreground "yellow"
-       :background "red"
-       :weight bold))
+  '((t :inherit 'mode-line
+       :foreground "yellow"
+       :background "red"))
   "Ugly Alert Theme"
-  :group 'basic-faces)
+  :group 'spaceline)
 #+END_SRC
+
+Customized Flycheck
+
+#+BEGIN_SRC emacs-lisp
+
+(defface my-flycheck-warning-face
+  '((t (:foreground "black"
+        :background "orange"
+        :inherit 'mode-line)))
+  "Flycheck warning face"
+  :group 'spaceline)
+
+(defface my-flycheck-error-face
+  '((t (:foreground "black"
+        :background "red"
+        :inherit 'mode-line)))
+  "Flycheck warning face"
+  :group 'spaceline)
+
+(defface my-flycheck-info-face
+  '((t (:foreground "black"
+        :background "green"
+        :inherit 'mode-line)))
+  "Flycheck warning face"
+  :group 'spaceline)
+
+(spaceline-define-segment my-flycheck-warning-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'warning (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "\uf071 %s" c))))))
+
+(spaceline-define-segment my-flycheck-error-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'error (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "\uf12a %s" c))))))
+
+(spaceline-define-segment my-flycheck-info-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'info (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "\uf05a %s" c))))))
+#+END_SRC
+
+
+
 
 Segment for Python venv
 
@@ -188,12 +243,15 @@ Spaceline config
       ((remote-host buffer-id))
       (buffer-modified)
       (process :when active))
-    '((selection-info :face region :when mark-active)
-      (minor-modes)
+    '((minor-modes)
+      (anzu)
       (projectile-root)
       (my-version-control :when active)
       (line-column)
       (buffer-position)
+      (my-flycheck-info-segment :face my-flycheck-info-face)
+      (my-flycheck-warning-segment :face my-flycheck-warning-face)
+      (my-flycheck-error-segment :face my-flycheck-error-face)
       (major-mode))))
 
 ;; mode-line always active
@@ -569,6 +627,20 @@ Check for forgotten attachments
 #+END_SRC
 
 * Programming Setup
+** General Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+(setq js-indent-level 2)
+(setq python-indent 2)
+(setq css-indent-offset 2)
+(add-hook 'sh-mode-hook
+          (lambda ()
+            (setq sh-basic-offset 2
+                  sh-indentation 2)))
+#+END_SRC
+
 ** Autocomplete
 
 #+BEGIN_SRC emacs-lisp
@@ -588,18 +660,111 @@ Check for forgotten attachments
 
 #+BEGIN_SRC emacs-lisp
 (require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
 
-(setq web-mode-markup-indent-offset 2)
-(setq web-mode-code-indent-offset 2)
-(setq web-mode-css-indent-offset 2)
-(setq web-mode-script-padding 2)
+(defun my-web-mode-indent-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-script-padding 2)
+  (setq web-mode-style-padding 2)
+  (setq web-mode-script-padding 2)
+  (setq web-mode-block-padding 0)
+  (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-enable-current-column-highlight t))
+
+(add-hook 'web-mode-hook 'my-web-mode-indent-hook)
 #+END_SRC
 
+Auto complete
+
+#+BEGIN_SRC emacs-lisp
+(require 'company)                                   ; load company mode
+(require 'company-web-html)                          ; load company mode html backend
+(require 'company-web-jade)                          ; load company mode jade backend
+(require 'company-web-slim)                          ; load company mode slim backend
+(add-hook 'web-mode-hook 'company-mode)
+(define-key web-mode-map (kbd "M-SPC") 'company-complete)
+
+;; JavaScript with Tern
+(defun my-web-mode-tern-hook ()
+  "Hook for `web-mode'."
+    (set (make-local-variable 'company-backends)
+         '(company-tern company-web-html company-yasnippet company-files)))
+(add-hook 'web-mode-hook 'my-web-mode-tern-hook)
+
+;; Enable JavaScript completion between <script>...</script> etc.
+(advice-add 'company-tern :before
+            #'(lambda (&rest _)
+                (if (equal major-mode 'web-mode)
+                    (let ((web-mode-cur-language
+                          (web-mode-language-at-pos)))
+                      (if (or (string= web-mode-cur-language "javascript")
+                              (string= web-mode-cur-language "jsx"))
+                          (unless tern-mode (tern-mode))
+                        (if tern-mode (tern-mode -1)))))))
+
+#+END_SRC
+
+linting
+
+#+BEGIN_SRC emacs-lisp
+(require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(json-jsonlist)))
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(javascript-jshint)))
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+#+END_SRC
+
+** JS2-mode
+
+#+BEGIN_SRC emacs-lisp
+;; (require 'js2-mode)
+;; (require 'js2-refactor)
+;; (require 'xref-js2)
+
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+;; (add-hook 'js2-mode-hook #'js2-refactor-mode)
+
+;; (js2r-add-keybindings-with-prefix "C-c C-r")
+;; (define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+;; (add-hook 'js2-mode-hook (lambda ()
+;;   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+#+END_SRC
+   
+js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it.
+
+#+BEGIN_SRC emacs-lisp
+;; (define-key js-mode-map (kbd "M-.") nil)
+#+END_SRC
+   
+Company for auto-complete
+
+#+BEGIN_SRC emacs-lisp
+;; (require 'company)
+;; (require 'company-tern)
+
+;; (add-to-list 'company-backends 'company-tern)
+;; (add-hook 'js2-mode-hook (lambda ()
+;;                            (tern-mode)
+;;                            (company-mode)))
+                           
+;; ;; Disable completion keybindings, as we use xref-js2 instead
+;; (define-key tern-mode-keymap (kbd "M-.") nil)
+;; (define-key tern-mode-keymap (kbd "M-,") nil)
+#+END_SRC
+   
 ** Web-beautify
 
 Keybinding to beautify manually.
@@ -620,6 +785,10 @@ Keybinding to beautify manually.
 
 (eval-after-load 'web-mode
   '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+(eval-after-load 'web-mode
+  '(define-key web-mode-map (kbd "C-c n") 'web-beautify-js))
+(eval-after-load 'web-mode
+  '(define-key web-mode-map (kbd "C-c m") 'web-beautify-css))
 
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
@@ -765,22 +934,6 @@ Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 (require 'php-mode)
 #+END_SRC
 
-** Indents
-
-#+BEGIN_SRC emacs-lisp
-(setq-default tab-width 2)
-(setq-default indent-tabs-mode nil)
-(setq js-indent-level 2)
-(setq python-indent 2)
-(setq css-indent-offset 2)
-(add-hook 'sh-mode-hook
-          (lambda ()
-            (setq sh-basic-offset 2
-                  sh-indentation 2)))
-#+END_SRC
-
-Use 2 spaces instead of a tab.
-
 ** Whitespaces
 
 To see whitespaces and indentation
@@ -801,7 +954,7 @@ To see whitespaces and indentation
 #+BEGIN_SRC emacs-lisp
 (require 'evil-magit)
 #+END_SRC
-
+   
 * Keybinding
 ** Elfeed
 
