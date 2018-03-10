@@ -72,7 +72,7 @@
   (unless (package-installed-p p)
     (package-install p)))
 #+END_SRC
-  
+
 * User Interface
 ** Menu, Toolbar and Splashscreen
 
@@ -623,9 +623,9 @@ Check for forgotten attachments
 #+END_SRC
 
 ** Kill Ring and Clipboard
-   
+
 Monitors system clipboard and puts everything in the kill-ring.
-   
+
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'after-init-hook 'clipmon-mode-start)
 
@@ -636,7 +636,7 @@ Monitors system clipboard and puts everything in the kill-ring.
 (define-key browse-kill-ring-mode-map (kbd "j") 'browse-kill-ring-forward)
 (define-key browse-kill-ring-mode-map (kbd "k") 'browse-kill-ring-previous)
 #+END_SRC
-   
+
 * Programming Setup
 ** General Indentation
 
@@ -665,6 +665,11 @@ Monitors system clipboard and puts everything in the kill-ring.
 (require 'fill-column-indicator)
 (setq fci-rule-width 1)
 (setq fci-rule-color "red")
+#+END_SRC
+
+** Rainbow Mode
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
 
 ** Web mode
@@ -753,13 +758,13 @@ linting
 ;; (add-hook 'js2-mode-hook (lambda ()
 ;;   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 #+END_SRC
-   
+
 js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it.
 
 #+BEGIN_SRC emacs-lisp
 ;; (define-key js-mode-map (kbd "M-.") nil)
 #+END_SRC
-   
+
 Company for auto-complete
 
 #+BEGIN_SRC emacs-lisp
@@ -770,12 +775,12 @@ Company for auto-complete
 ;; (add-hook 'js2-mode-hook (lambda ()
 ;;                            (tern-mode)
 ;;                            (company-mode)))
-                           
+
 ;; ;; Disable completion keybindings, as we use xref-js2 instead
 ;; (define-key tern-mode-keymap (kbd "M-.") nil)
 ;; (define-key tern-mode-keymap (kbd "M-,") nil)
 #+END_SRC
-   
+
 ** Web-beautify
 
 Keybinding to beautify manually.
@@ -959,7 +964,7 @@ To see whitespaces and indentation
 #+BEGIN_SRC emacs-lisp
 (require 'evil-magit)
 #+END_SRC
-   
+
 * Keybinding
 ** elfeed
 
