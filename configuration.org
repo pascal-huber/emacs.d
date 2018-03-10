@@ -16,6 +16,7 @@
                       airline-themes
                       auctex
                       auto-complete
+                      beacon
                       browse-kill-ring
                       clipmon
                       company
@@ -71,7 +72,7 @@
   (unless (package-installed-p p)
     (package-install p)))
 #+END_SRC
-
+  
 * User Interface
 ** Menu, Toolbar and Splashscreen
 
@@ -293,6 +294,13 @@ Spaceline config
 (setq show-paren-style 'mixed)
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+** Beacon
+
+#+BEGIN_SRC emacs-lisp
+(beacon-mode 1)
+(setq beacon-color "orange")
 #+END_SRC
 
 ** Font
