@@ -86,8 +86,7 @@ No fancy stuff for me.
 Too many numbers?
 
 #+BEGIN_SRC emacs-lisp
-;(global-linum-mode t)
-;(column-number-mode)
+(global-linum-mode t)
 #+END_SRC
 
 ** Spaceline
@@ -267,34 +266,22 @@ Spaceline config
 
 ** Themes
 
-Theme rotation
-
 #+BEGIN_SRC emacs-lisp
 (require 'moe-theme)
 (require 'dash)
 
+(setq theme-list (list (list '(load-theme moe-dark t)
+                             '(spaceline-dark))
+                       (list '(load-theme moe-light t)
+                             '(spaceline-light))))
+
 (defun next-theme ()
-  "Loads next theme in the theme-list"
+  "Loads next theme in the theme-list and rotates the list"
   (interactive)
-  (setq theme-list (-rotate 1 theme-list))
-  (load-theme (nth 0 theme-list) t)
-  (setq theme-face-list (-rotate 1 theme-face-list))
-  (funcall (nth 0 theme-face-list))
-  (buffer-file-permissions-update))
+  (cl-loop for f in (nth 0 theme-list) do (apply f))
+  (setq theme-list (-rotate 1 theme-list)))
 
-(defun reset-theme ()
-  "Loads the default theme settings"
-  (interactive)
-  (setq theme-list (list
-                    'moe-dark
-                    'moe-light))
-  (setq theme-face-list (list
-                    'spaceline-dark
-                    'spaceline-light))
-  (load-theme (nth 0 theme-list) t)
-  (funcall (nth 0 theme-face-list)))
-
-(reset-theme)
+(next-theme)
 #+END_SRC
 
 ** Matching Brackets
@@ -353,8 +340,7 @@ Save file with root.
   (interactive)
   (if (not buffer-file-name)
       (write-file (sudo-file-name (ido-read-file-name "File:")))
-    (write-file (sudo-file-name buffer-file-name)))
-(buffer-file-permissions-update	))
+    (write-file (sudo-file-name buffer-file-name))))
 #+END_SRC
 
 ** Browser
@@ -897,19 +883,6 @@ I put a `make.sh` in the root of latex documents along with the main tex file `m
 
 ** Python
 
-#+BEGIN_SRC emacs-lisp
-(elpy-enable)
-#+END_SRC
-
-*** Virtualenv
-
-#+BEGIN_SRC emacs-lisp
-(require 'virtualenvwrapper)
-(venv-initialize-eshell)
-#+END_SRC
-
-*** MGMT
-
 Virtual-Environment handling  shell:
    - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
    - activate virtualenv: `workon theproject`
@@ -927,6 +900,12 @@ pip in Virtual-Envirnoment
    - install pip dependencies `pip install -r requirements.txt`
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
+
+#+BEGIN_SRC emacs-lisp
+(elpy-enable)
+(require 'virtualenvwrapper)
+(venv-initialize-eshell)
+#+END_SRC
 
 ** PHP
 
