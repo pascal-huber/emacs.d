@@ -16,6 +16,8 @@
                       airline-themes
                       auctex
                       auto-complete
+                      browse-kill-ring
+                      clipmon
                       company
                       company-tern
                       company-web
@@ -612,6 +614,21 @@ Check for forgotten attachments
 (add-hook 'message-send-hook 'my-message-check-attachment)
 #+END_SRC
 
+** Kill Ring and Clipboard
+   
+Monitors system clipboard and puts everything in the kill-ring.
+   
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'after-init-hook 'clipmon-mode-start)
+
+(require 'browse-kill-ring)
+(setq browse-kill-ring-highlight-inserted-item t
+      browse-kill-ring-highlight-current-entry nil
+      browse-kill-ring-show-preview t)
+(define-key browse-kill-ring-mode-map (kbd "j") 'browse-kill-ring-forward)
+(define-key browse-kill-ring-mode-map (kbd "k") 'browse-kill-ring-previous)
+#+END_SRC
+   
 * Programming Setup
 ** General Indentation
 
@@ -901,6 +918,7 @@ pip in Virtual-Envirnoment
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 
+
 #+BEGIN_SRC emacs-lisp
 (elpy-enable)
 (require 'virtualenvwrapper)
@@ -935,7 +953,7 @@ To see whitespaces and indentation
 #+END_SRC
    
 * Keybinding
-** Elfeed
+** elfeed
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'elfeed-search-mode-hook
@@ -966,17 +984,21 @@ To see whitespaces and indentation
               (kbd "p") 'elfeed-goodies/split-show-prev)))
 #+END_SRC
 
-** Evil
-
-Evil Normal State
+** evil
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-normal-state-map (kbd "C-p") 'browse-kill-ring)
+
+(define-key evil-insert-state-map (kbd "C-p") 'browse-kill-ring)
+
+;; Evil Motion (binds normal, visual, and operator states all at once)
+(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
+(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
 #+END_SRC
 
-** Evil Escape
 
 Escape == C-g
 
@@ -993,15 +1015,6 @@ Escape == C-g
 (define-key key-translation-map (kbd "C-g") 'my-esc)
 (define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
 (set-quit-char "C-g")
-#+END_SRC
-
-** Evil God Mode
-
-Evil Motion (binds normal, visual, and operator states all at once)
-
-#+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
-(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
 #+END_SRC
 
 ** mu4e
