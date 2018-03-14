@@ -478,7 +478,7 @@ Nice bullets.
       (projectile-project-p)
     nil))
 
-(defun my-projectile-open ()
+(defun my-helm-projectile-find-file ()
   "projectile-find-file if a project is present, 
    projectile-switch-project otherwise"
   (interactive)
@@ -486,6 +486,13 @@ Nice bullets.
       (helm-projectile-find-file)
     (helm-projectile-switch-project)))
 
+(defun my-helm-projectile-switch-to-buffer ()
+  "projectile-find-file if a project is present, 
+   projectile-switch-project otherwise"
+  (interactive)
+  (if (projectile-project-path)
+      (helm-projectile-switch-to-buffer)
+    (helm-projectile-switch-project)))
 #+END_SRC
 
 ** Ido
@@ -1116,11 +1123,11 @@ Escape == C-g
     (define-key map (kbd "C-x C-e")  'elfeed)
     (define-key map (kbd "C-x C-d")  'fci-mode)
     (define-key map (kbd "C-x C-i")  'indent-region)
-    (define-key map (kbd "C-x C-j")  'helm-projectile-switch-to-buffer)
+    (define-key map (kbd "C-x C-j")  'my-helm-projectile-switch-to-buffer)
     (define-key map (kbd "C-x C-n")  'mu4e)
     (define-key map (kbd "C-x C-ö")  'uncomment-region)
     (define-key map (kbd "C-x C-o")  'helm-projectile-switch-project)
-    (define-key map (kbd "C-x C-p")  'my-projectile-open)
+    (define-key map (kbd "C-x C-p")  'my-helm-projectile-find-file)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
     (define-key map (kbd "<f5>")     'next-theme)
     (define-key map (kbd "<f8>")     'ispell-word)
