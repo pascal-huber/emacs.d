@@ -19,12 +19,14 @@
                       beacon
                       browse-kill-ring
                       clipmon
+                      comment-tags
                       company
                       company-tern
                       company-web
                       dash
                       dictcc
                       dictionary
+                      diminish
                       drag-stuff
                       dumb-jump
                       elfeed
@@ -39,7 +41,6 @@
                       evil-mu4e
                       evil-org
                       fill-column-indicator
-                      fixme-mode
                       fsharp-mode
                       grizzl
                       haml-mode
@@ -54,8 +55,8 @@
                       openwith
                       org-bullets
                       php-mode
-                      projectile
                       powerline
+                      projectile
                       rainbow-delimiters
                       smex
                       spaceline
@@ -72,7 +73,7 @@
   (unless (package-installed-p p)
     (package-install p)))
 #+END_SRC
-
+  
 * User Interface
 ** Menu, Toolbar and Splashscreen
 
@@ -133,8 +134,8 @@ Space line faces
 
 (defface red-face
   '((t :inherit 'mode-line
-       :foreground "yellow"
-       :background "red"))
+       :foreground "white"
+       :background "red4"))
   "Ugly Alert Theme"
   :group 'spaceline)
 #+END_SRC
@@ -186,13 +187,18 @@ Customized Flycheck
          (if c (format "\uf05a %s" c))))))
 #+END_SRC
 
-
-
-
 Segment for Python venv
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment virtualenvwrapper-segment venv-current-name)
+#+END_SRC
+
+God Mode Indicator
+
+#+BEGIN_SRC emacs-lisp
+(setq god-local-mode nil)
+(spaceline-define-segment my-god-mode-indicator
+  (if god-local-mode (format " \uf1e2 ")))
 #+END_SRC
 
 Custom Git status using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]]
@@ -230,6 +236,21 @@ File permissions segment for files with "special" permissions.
                (if (file-writable-p (buffer-file-name)) "w" "-")))))
 #+END_SRC
 
+Do not show the following minor modes
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "god-mode"
+  '(diminish 'god-local-mode))
+(eval-after-load "rainbow-mode"
+  '(diminish 'rainbow-mode))
+(eval-after-load "projectile"
+  '(diminish 'projectile-mode))
+(eval-after-load "beacon"
+  '(diminish 'beacon-mode))
+(eval-after-load "auto-revert"
+  '(diminish 'auto-revert-mode))
+#+END_SRC
+
 Spaceline config
 
 #+BEGIN_SRC emacs-lisp
@@ -239,7 +260,8 @@ Spaceline config
   (spaceline-spacemacs-theme)
   (spaceline-install
     'main
-    '((evil-state :when active :face highlight-face)
+    '((my-god-mode-indicator :face red-face)
+      (evil-state :when active :face highlight-face)
       (virtualenvwrapper-segment)
       (buffer-special-file-permissions :face red-face)
       ((remote-host buffer-id))
@@ -333,10 +355,11 @@ No backup files.
 (defun kill-other-buffers ()
       "Kill all other buffers."
       (interactive)
-      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+      (mapc 'kill-buffer
+            (delq (current-buffer) (buffer-list))))
 #+END_SRC
 
-** Sudo-mode
+** Sudo Save
 
 Save file with root.
 
@@ -387,12 +410,36 @@ A better M-x.
 (smex-initialize)
 #+END_SRC
 
-** Fixme-mode
+** comment-tags
 
-Highlight `FIXME`, `BUG` and `TODO`.
+Highlight and list comment tags such as 'TODO', 'FIXME', 'XXX'
+
+Commands:
+
+    - =b= to list tags in current buffer (comment-tags-list-tags-buffer).
+    - =a= to list tags in all buffers (comment-tags-list-tags-buffers).
+    - =s= to jump to tag in current buffer by a word or phrase using reading-completion (comment-tags-find-tags-buffer).
+    - =n= to jump to next tag from point (comment-tags-next-tag).
+    - =p= to jump to previous tag from point (comment-tags-previous-tag).
 
 #+BEGIN_SRC emacs-lisp
-(fixme-mode t)
+  (setq comment-tags-keymap-prefix (kbd "C-c t"))
+  (with-eval-after-load "comment-tags"
+    (setq comment-tags-keyword-faces
+          `(("TODO" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("FIXME" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("BUG" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("HACK" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("KLUDGE" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("XXX" . ,(list :weight 'bold :foreground "#DF5427"))
+            ("INFO" . ,(list :weight 'bold :foreground "#1FDA9A"))
+            ("DONE" . ,(list :weight 'bold :foreground "#1FDA9A"))))
+    (setq comment-tags-comment-start-only t
+          comment-tags-require-colon t
+          comment-tags-case-sensitive t
+          comment-tags-show-faces t
+          comment-tags-lighter nil))
+  (add-hook 'prog-mode-hook 'comment-tags-mode)
 #+END_SRC
 
 ** Spell Checking
@@ -424,6 +471,21 @@ Nice bullets.
 (projectile-global-mode)
 (setq projectile-completion-system 'grizzl)
 (setq projectile-enable-caching t)
+
+(defun projectile-project-path ()
+  (if (and (fboundp 'projectile-project-p)
+           (stringp (projectile-project-p)))
+      (projectile-project-p)
+    nil))
+
+(defun my-projectile-open ()
+  "projectile-find-file if a project is present, 
+   projectile-switch-project otherwise"
+  (interactive)
+  (if (projectile-project-path)
+      (helm-projectile-find-file)
+    (helm-projectile-switch-project)))
+
 #+END_SRC
 
 ** Ido
@@ -1004,14 +1066,12 @@ To see whitespaces and indentation
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-p") 'browse-kill-ring)
+(evil-global-set-key 'normal "," 'evil-execute-in-god-state)
+(evil-global-set-key 'normal [escape] 'evil-god-state-bail)
 
 (define-key evil-insert-state-map (kbd "C-p") 'browse-kill-ring)
-
-;; Evil Motion (binds normal, visual, and operator states all at once)
-(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
-(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
+(define-key evil-insert-state-map (kbd "C-v") 'evil-visual-paste)
 #+END_SRC
-
 
 Escape == C-g
 
@@ -1052,15 +1112,15 @@ Escape == C-g
     (define-key map (kbd "C-k")      'drag-stuff-up)
     (define-key map (kbd "C-x C-m")  'magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
-    (define-key map (kbd "C-c C--")  'comment-region)
-    (define-key map (kbd "C-c C-d")  'fci-mode)
-    (define-key map (kbd "C-c C-i")  'indent-region)
-    (define-key map (kbd "C-c C-m")  'mu4e)
-    (define-key map (kbd "C-c C-n")  'elfeed)
-    (define-key map (kbd "C-c C-ö")  'uncomment-region)
-    (define-key map (kbd "C-c C-o")  'helm-projectile-switch-project)
-    (define-key map (kbd "C-c C-p")  'helm-projectile-find-file)
-    (define-key map (kbd "C-c C-w")  'toggle-truncate-lines)
+    (define-key map (kbd "C-x C--")  'comment-region)
+    (define-key map (kbd "C-x C-e")  'elfeed)
+    (define-key map (kbd "C-x C-d")  'fci-mode)
+    (define-key map (kbd "C-x C-i")  'indent-region)
+    (define-key map (kbd "C-x C-j")  'helm-projectile-switch-to-buffer)
+    (define-key map (kbd "C-x C-n")  'mu4e)
+    (define-key map (kbd "C-x C-ö")  'uncomment-region)
+    (define-key map (kbd "C-x C-o")  'helm-projectile-switch-project)
+    (define-key map (kbd "C-x C-p")  'my-projectile-open)
     (define-key map (kbd "<f2>")     'spell-checker-change-language)
     (define-key map (kbd "<f5>")     'next-theme)
     (define-key map (kbd "<f8>")     'ispell-word)
@@ -1075,7 +1135,7 @@ Escape == C-g
 
 (my-global-keys-mode 1)
 #+END_SRC
-
+   
 * The End
 
 Prevent scroll-bar-mode from beeing overwritten.
