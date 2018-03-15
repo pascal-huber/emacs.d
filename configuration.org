@@ -1106,8 +1106,9 @@ Move the cursor
 Enter and Quit God-Mode
 
 #+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'normal "," 'evil-execute-in-god-state)
-(evil-global-set-key 'normal [escape] 'evil-god-state-bail)
+(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
+(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
+(evil-global-set-key 'visual "," 'nil)
 #+END_SRC
 
 Indent Region
@@ -1165,6 +1166,7 @@ Escape == C-g
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'smex)
+    (define-key map (kbd "C-x C-e")  'elfeed)
     (define-key map (kbd "C-x C-n")  'mu4e)
     (define-key map (kbd "C-x C-m")  'magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
