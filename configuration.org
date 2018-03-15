@@ -18,7 +18,6 @@
                       auto-complete
                       beacon
                       browse-kill-ring
-                      clipmon
                       comment-tags
                       company
                       company-tern
@@ -696,8 +695,6 @@ Check for forgotten attachments
 Monitors system clipboard and puts everything in the kill-ring.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'after-init-hook 'clipmon-mode-start)
-
 (require 'browse-kill-ring)
 (setq browse-kill-ring-highlight-inserted-item t
       browse-kill-ring-highlight-current-entry nil
