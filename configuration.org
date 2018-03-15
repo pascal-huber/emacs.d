@@ -198,7 +198,7 @@ God Mode Indicator
 #+BEGIN_SRC emacs-lisp
 (setq god-local-mode nil)
 (spaceline-define-segment my-god-mode-indicator
-  (if god-local-mode (format " \uf1e2 ")))
+  (if god-local-mode (format " \ue231 ")))
 #+END_SRC
 
 Custom Git status using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]]
