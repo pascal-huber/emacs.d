@@ -419,6 +419,29 @@ Evil commands
 (evil-ex-define-cmd "ww" 'sudo-save)
 #+END_SRC
 
+** God Mode 
+
+Run God Mode in Evil Visual mode
+
+#+BEGIN_SRC emacs-lisp
+(defun evil-visual-activate-hook (&optional command)
+  "Enable Visual state if the region is activated."
+  (unless (evil-visual-state-p)
+    (evil-delay nil
+        ;; the activation may only be momentary, so re-check
+        ;; in `post-command-hook' before entering Visual state
+        '(unless (or (evil-visual-state-p)
+                     (evil-insert-state-p)
+                     (evil-emacs-state-p)
+                     (evil-god-state-p))
+           (when (and (region-active-p)
+                      (not deactivate-mark))
+             (evil-visual-state)))
+      'post-command-hook nil t
+      "evil-activate-visual-state")))
+(evil-visual-activate-hook)
+#+END_SRC
+
 ** Smex
 
 A better M-x.
@@ -1116,7 +1139,6 @@ Enter and Quit God-Mode
 #+BEGIN_SRC emacs-lisp
 (evil-global-set-key 'motion "," 'evil-execute-in-god-state)
 (evil-global-set-key 'motion [escape] 'evil-god-state-bail)
-(evil-global-set-key 'visual "," 'nil)
 #+END_SRC
 
 Indent Region
@@ -1175,6 +1197,7 @@ Escape == C-g
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-x C-e")  'elfeed)
+    (define-key map (kbd "C-x C-i")  'indent-region)
     (define-key map (kbd "C-x C-n")  'mu4e)
     (define-key map (kbd "C-x C-m")  'my-projectile-magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
