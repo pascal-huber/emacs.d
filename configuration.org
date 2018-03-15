@@ -38,6 +38,7 @@
                       evil-leader
                       evil-magit
                       evil-mu4e
+                      evil-nerd-commenter
                       evil-org
                       fill-column-indicator
                       fsharp-mode
@@ -342,10 +343,28 @@ Always Follow Symlinks, no questions asked.
 
 ** Backup files
 
-No backup files.
+Paranoid, I know...
 
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)
+(setq
+   backup-by-copying t
+   backup-directory-alist
+    '(("." . "~/.saves"))
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   vc-make-backup-files t
+   version-control t)
+
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+               (> (- current (float-time (fifth (file-attributes file))))
+                  week))
+      (message "%s" file)
+      (delete-file file))))
 #+END_SRC
 
 ** Kill buffers
@@ -734,6 +753,7 @@ Monitors system clipboard and puts everything in the kill-ring.
 #+END_SRC
 
 ** Rainbow Mode
+
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
@@ -1032,6 +1052,18 @@ To see whitespaces and indentation
 #+END_SRC
 
 * Keybinding
+** mu4e
+
+#+BEGIN_SRC emacs-lisp
+(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
+(add-hook 'mu4e-view-mode-hook
+          (lambda()
+            (local-set-key (kbd "<tab>") 'shr-next-link)
+            (local-set-key (kbd "i") 'mu4e-view-toggle-html)
+            (local-set-key (kbd "h") 'evil-backward-char)
+            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+#+END_SRC
+
 ** elfeed
 
 #+BEGIN_SRC emacs-lisp
@@ -1062,19 +1094,52 @@ To see whitespaces and indentation
             (define-key evil-normal-state-local-map
               (kbd "p") 'elfeed-goodies/split-show-prev)))
 #+END_SRC
-
 ** evil
+
+Move the cursor
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-normal-state-map (kbd "C-p") 'browse-kill-ring)
+#+END_SRC
+
+Enter and Quit God-Mode
+
+#+BEGIN_SRC emacs-lisp
 (evil-global-set-key 'normal "," 'evil-execute-in-god-state)
 (evil-global-set-key 'normal [escape] 'evil-god-state-bail)
+#+END_SRC
 
-(define-key evil-insert-state-map (kbd "C-p") 'browse-kill-ring)
-(define-key evil-insert-state-map (kbd "C-v") 'evil-visual-paste)
+Indent Region
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'visual "i" 'indent-region)
+#+END_SRC
+
+Drag Stuff
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'insert (kbd "C-j") 'drag-stuff-down)
+(evil-global-set-key 'normal (kbd "C-j") 'drag-stuff-down)
+(evil-global-set-key 'visual (kbd "C-j") 'drag-stuff-down)
+(evil-global-set-key 'insert (kbd "C-k") 'drag-stuff-up)
+(evil-global-set-key 'normal (kbd "C-k") 'drag-stuff-up)
+(evil-global-set-key 'visual (kbd "C-k") 'drag-stuff-up)
+#+END_SRC
+
+Browse Kill Ring
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'insert (kbd "C-p") 'browse-kill-ring)
+(evil-global-set-key 'normal (kbd "C-p") 'browse-kill-ring)
+#+END_SRC
+
+Comment and uncomment
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'insert (kbd "C--") 'evilnc-comment-or-uncomment-lines)
+(evil-global-set-key 'normal (kbd "C--") 'evilnc-comment-or-uncomment-lines)
+(evil-global-set-key 'visual (kbd "C--") 'evilnc-comment-or-uncomment-lines)
 #+END_SRC
 
 Escape == C-g
@@ -1094,48 +1159,26 @@ Escape == C-g
 (set-quit-char "C-g")
 #+END_SRC
 
-** mu4e
-
-#+BEGIN_SRC emacs-lisp
-(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
-(add-hook 'mu4e-view-mode-hook
-          (lambda()
-            (local-set-key (kbd "<tab>") 'shr-next-link)
-            (local-set-key (kbd "i") 'mu4e-view-toggle-html)
-            (local-set-key (kbd "h") 'evil-backward-char)
-            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-#+END_SRC
-
-** Global minor mode
+** global
 
 #+BEGIN_SRC emacs-lisp
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'smex)
-    (define-key map (kbd "C-j")      'drag-stuff-down)
-    (define-key map (kbd "C-k")      'drag-stuff-up)
+    (define-key map (kbd "C-x C-n")  'mu4e)
     (define-key map (kbd "C-x C-m")  'magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
-    (define-key map (kbd "C-x C--")  'comment-region)
-    (define-key map (kbd "C-x C-e")  'elfeed)
-    (define-key map (kbd "C-x C-d")  'fci-mode)
-    (define-key map (kbd "C-x C-i")  'indent-region)
     (define-key map (kbd "C-x C-j")  'my-helm-projectile-switch-to-buffer)
-    (define-key map (kbd "C-x C-n")  'mu4e)
-    (define-key map (kbd "C-x C-ö")  'uncomment-region)
     (define-key map (kbd "C-x C-o")  'helm-projectile-switch-project)
     (define-key map (kbd "C-x C-p")  'my-helm-projectile-find-file)
-    (define-key map (kbd "<f2>")     'spell-checker-change-language)
     (define-key map (kbd "<f5>")     'next-theme)
-    (define-key map (kbd "<f8>")     'ispell-word)
-    (define-key map (kbd "<f9>")     'ispell)
     map)
   "my-global-keys-mode keymap.")
 
 (define-minor-mode my-global-keys-mode
   :init-value t
   :keymap my-global-keymap
-  :lighter " my-keys")
+  :lighter "keys")
 
 (my-global-keys-mode 1)
 #+END_SRC
