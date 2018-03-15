@@ -511,6 +511,14 @@ Nice bullets.
   (if (projectile-project-path)
       (helm-projectile-switch-to-buffer)
     (helm-projectile-switch-project)))
+
+(defun my-projectile-magit-status ()
+  "Executes magit-status if a project is present,
+   projectile-switch-project otherwise"
+  (interactive)
+  (if (projectile-project-path)
+      (magit-status)
+    (helm-projectile-switch-project)))
 #+END_SRC
 
 ** Ido
@@ -1168,7 +1176,7 @@ Escape == C-g
     (define-key map (kbd "M-x")      'smex)
     (define-key map (kbd "C-x C-e")  'elfeed)
     (define-key map (kbd "C-x C-n")  'mu4e)
-    (define-key map (kbd "C-x C-m")  'magit-status)
+    (define-key map (kbd "C-x C-m")  'my-projectile-magit-status)
     (define-key map (kbd "C-x C-b")  'helm-mini)
     (define-key map (kbd "C-x C-j")  'my-helm-projectile-switch-to-buffer)
     (define-key map (kbd "C-x C-o")  'helm-projectile-switch-project)
