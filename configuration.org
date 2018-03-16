@@ -1,5 +1,10 @@
 #+TITLE: Emacs Configuration
 
+* Future
+  
+Check if these packages are of any use:
+    - [[https://github.com/Wilfred/ag.el][ag]]
+
 * Dependencies
 
 #+BEGIN_SRC emacs-lisp
