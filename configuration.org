@@ -264,7 +264,7 @@ Make =evil-god-state= work also in visual-mode.
     (evil-delay nil
         '(unless (or (evil-visual-state-p)
                      (evil-insert-state-p)
-                    (evil-emacs-state-p)
+                     (evil-emacs-state-p)
                      (evil-god-state-p))
            (when (and (region-active-p)
                       (not deactivate-mark))
@@ -938,7 +938,7 @@ C-m ef=). Find the list of available refactorings [[https://github.com/clojure-e
 ** Ido
 
 #+BEGIN_SRC emacs-lisp
-(define-key ido-common-completion-map (kbd "C-n")   'ido-next-match)
+(define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
 (define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
 #+END_SRC
 
@@ -1235,7 +1235,6 @@ Call =(next-theme)= to load the next theme.
   (setq theme-list (-rotate 1 theme-list)))
 
 (add-hook 'after-init-hook #'next-theme)
-;(next-theme)
 #+END_SRC
 
 ** Beacon
@@ -1257,11 +1256,9 @@ Whenever the window scrolls a light will shine on top of your cursor so you know
 
 ** Menu, toolbar and Splashscreen
 
-No fancy stuff for me.
-
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-splash-screen t)
-;(menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+(menu-bar-mode 1)
 #+END_SRC
