@@ -7,7 +7,7 @@ $ cd ~/git
 $ git clone http://github.com/pascalhuber/emacs
 $ ln -s ~/git/emacs ~/.emacs.d
 #+END_SRC
-  
+
 ** Mu4e
 
 Install and configure the following.
@@ -109,6 +109,7 @@ $ mkdir $WORKON_HOME
                       evil-god-state
                       haml-mode
                       helm-projectile
+                      inf-ruby
                       js2-mode
                       js2-refactor
                       lua-mode
@@ -150,7 +151,7 @@ Always Follow Symlinks, no questions asked.
 #+END_SRC
 
 ** Backup and Auto-Save Files
-   
+
 Backup and Auto-Save to =/tmp=.
 
 #+BEGIN_SRC emacs-lisp
@@ -943,7 +944,7 @@ C-m ef=). Find the list of available refactorings [[https://github.com/clojure-e
 #+END_SRC
 
 ** Evil
-   
+
 Escape with =C-g=
 
 #+BEGIN_SRC emacs-lisp
@@ -962,7 +963,7 @@ Escape with =C-g=
 #+END_SRC
 
 Move cursor up and down on visual lines
-   
+
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
@@ -1251,6 +1252,11 @@ Whenever the window scrolls a light will shine on top of your cursor so you know
 #+BEGIN_SRC emacs-lisp
 (setq default-frame-alist
       '((font . "DejaVu Sans Mono")))
+#+END_SRC
+
+Scale font locally with =C-x C-+= and =C-x C--=.
+
+#+BEGIN_SRC emacs-lisp
 (default-text-scale-mode 1)
 #+END_SRC
 
@@ -1261,4 +1267,27 @@ Whenever the window scrolls a light will shine on top of your cursor so you know
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode 1)
+#+END_SRC
+* Testing Possible Next Features
+** Rspec-mode
+
+Setup =rspec-mode=. Run test at point using =C-c , s=.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
+(require 'rspec-mode)
+(eval-after-load 'rspec-mode
+ '(rspec-install-snippets))
+#+END_SRC
+
+Setup for =byebug=.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ansi-color)
+(defun setup-ruby-compilation-buffer ()
+  (read-only-mode 0)
+  (shell-mode)
+  (inf-ruby-minor-mode)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+(add-hook 'compilation-filter-hook 'setup-ruby-compilation-buffer)
 #+END_SRC
