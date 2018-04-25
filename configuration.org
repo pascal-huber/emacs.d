@@ -229,9 +229,15 @@ Use =chromium --incognito= as browser.
 
 ** Org Mode
 
+Indent "correctly" by default.
+ 
+#+BEGIN_SRC emacs-lisp
+(setq org-startup-indented t)
+#+END_SRC
+
 Some nice bullets instead of asterisks.
 
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
@@ -1269,6 +1275,7 @@ Scale font locally with =C-x C-+= and =C-x C--=.
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
 #+END_SRC
+
 * Testing Possible Next Features
 ** Rspec-mode
 
