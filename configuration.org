@@ -985,19 +985,20 @@ Redo with =U=
 #+BEGIN_SRC emacs-lisp
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-x")    'smex)
-    (define-key map (kbd "M-X")    'smex-major-mode-commands)
-    (define-key map (kbd "C-x b")  'helm-mini)
-    (define-key map (kbd "C-c a")  'browse-kill-ring)
-    (define-key map (kbd "C-c b")  'menu-bar-mode)
-    (define-key map (kbd "C-c e")  'elfeed)
-    (define-key map (kbd "C-c i")  'indent-region)
-    (define-key map (kbd "C-c j")  'helm-projectile-switch-to-buffer)
-    (define-key map (kbd "C-c r")  'my-mu4e)
-    (define-key map (kbd "C-c m")  'magit-status)
-    (define-key map (kbd "C-c o")  'helm-projectile-switch-project)
-    (define-key map (kbd "C-c p")  'helm-projectile-find-file)
-    (define-key map (kbd "<f5>")   'next-theme)
+    (define-key map (kbd "M-x")      'smex)
+    (define-key map (kbd "M-X")      'smex-major-mode-commands)
+    (define-key map (kbd "C-x b")    'helm-mini)
+    (define-key map (kbd "C-x C-f")  'helm-find-files)
+    (define-key map (kbd "C-c a")    'browse-kill-ring)
+    (define-key map (kbd "C-c b")    'menu-bar-mode)
+    (define-key map (kbd "C-c e")    'elfeed)
+    (define-key map (kbd "C-c i")    'indent-region)
+    (define-key map (kbd "C-c j")    'helm-projectile-switch-to-buffer)
+    (define-key map (kbd "C-c r")    'my-mu4e)
+    (define-key map (kbd "C-c m")    'magit-status)
+    (define-key map (kbd "C-c o")    'helm-projectile-switch-project)
+    (define-key map (kbd "C-c p")    'helm-projectile-find-file)
+    (define-key map (kbd "<f5>")     'next-theme)
     map)
   "my-global-keys-mode keymap.")
 
@@ -1291,3 +1292,5 @@ Setup for =byebug=.
   (ansi-color-apply-on-region (point-min) (point-max)))
 (add-hook 'compilation-filter-hook 'setup-ruby-compilation-buffer)
 #+END_SRC
+
+
