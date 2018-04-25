@@ -1267,7 +1267,7 @@ Scale font locally with =C-x C-+= and =C-x C--=.
 (setq inhibit-splash-screen t)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-(menu-bar-mode 1)
+(menu-bar-mode -1)
 #+END_SRC
 * Testing Possible Next Features
 ** Rspec-mode
