@@ -552,6 +552,61 @@ Check for forgotten attachments
 (define-key browse-kill-ring-mode-map (kbd "k") 'browse-kill-ring-previous)
 #+END_SRC
 
+** Project Terminals
+
+Start/Stop urxvt clients in project folder.
+
+Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem to work with i3. Thus, =-title= is used to place the terminals on the correct workspace.
+
+#+BEGIN_SRC emacs-lisp
+(defun project-terminal-command-list (directory workspace-number)
+  "Command list to start a terminal in DIRECTORY on WORKSPACE-NUMBER."
+  (list "/usr/bin/urxvtc"
+        "-cd" directory
+        "-title" (concat "project-terminal-"
+                         (number-to-string (mod workspace-number 10)))))
+
+(setq project-terminal-amount-prompt
+      "How many terminals does my master wish to spawn? :")
+(setq project-terminal-amount-default 3)
+
+(setq project-terminal-workspace-prompt
+      "On which workspace does my master wish to spawn them? :")
+(setq project-terminal-workspace-default 6)
+
+(defun spawn-one-project-terminal ( &optional workspace-number)
+  "Start one terminal in the current project directory on WORKSPACE-NUMBER."
+  (interactive)
+  (unless workspace-number
+    (setq workspace-number
+          (read-number project-terminal-workspace-prompt
+                       project-terminal-workspace-default)))
+  (let ((dir (projectile-project-p)))
+    (if dir
+        (progn
+          (setq project-terminal-buffer
+                (get-buffer-create "project-terminals"))
+           (make-process
+            :name (concat "project-terminal-" dir)
+            :buffer project-terminal-buffer
+            :command (project-terminal-command-list dir workspace-number)))
+      (message "You're not in a project"))))
+
+(defun spawn-some-project-terminals (&optional amount workspace-number)
+  "Start AMOUNT terminals on WORKSPACE-NUMBER in the current project directory."
+  (interactive)
+  (unless amount
+    (setq amount (read-number project-terminal-amount-prompt
+                              project-terminal-amount-default)))
+  (unless workspace-number
+    (setq workspace-number
+          (read-number project-terminal-workspace-prompt
+                       project-terminal-workspace-default)))
+  (while (> amount 0)
+    (spawn-one-project-terminal workspace-number)
+    (setq amount (- amount 1))))
+#+END_SRC
+
 * Programming
 ** Matching Brackets
 
@@ -1001,6 +1056,7 @@ Redo with =U=
     (define-key map (kbd "C-c i")    'indent-region)
     (define-key map (kbd "C-c j")    'helm-projectile-switch-to-buffer)
     (define-key map (kbd "C-c r")    'my-mu4e)
+    (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
     (define-key map (kbd "C-c m")    'magit-status)
     (define-key map (kbd "C-c o")    'helm-projectile-switch-project)
     (define-key map (kbd "C-c p")    'helm-projectile-find-file)
