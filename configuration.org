@@ -1310,17 +1310,16 @@ Whenever the window scrolls a light will shine on top of your cursor so you know
 (setq beacon-color "orange")
 #+END_SRC
 
-** Default Font and Scaling
-
-#+BEGIN_SRC emacs-lisp
-(setq default-frame-alist
-      '((font . "DejaVu Sans Mono")))
-#+END_SRC
+** Font
 
 Scale font locally with =C-x C-+= and =C-x C--=.
 
 #+BEGIN_SRC emacs-lisp
-(default-text-scale-mode 1)
+(set-face-attribute 'default nil
+                    :family "DejaVu Sans Mono"
+                    :height 120
+                    :weight 'normal
+                    :width 'normal)
 #+END_SRC
 
 ** Menu, toolbar and Splashscreen
