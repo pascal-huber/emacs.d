@@ -118,7 +118,6 @@ $ mkdir $WORKON_HOME
                       mu4e-alert
                       mu4e-maildirs-extension
                       openwith
-                      org-bullets
                       org-ref
                       php-mode
                       powerline
@@ -225,21 +224,6 @@ Use =chromium --incognito= as browser.
 (setq browse-url-generic-program "/usr/bin/chromium"
       browse-url-generic-args '("--incognito")
       browse-url-browser-function 'browse-url-generic)
-#+END_SRC
-
-** Org Mode
-
-Indent "correctly" by default.
- 
-#+BEGIN_SRC emacs-lisp
-(setq org-startup-indented t)
-#+END_SRC
-
-Some nice bullets instead of asterisks.
-
-#+BEGIN_SRC emacs-lisp
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
 
 ** Evil
