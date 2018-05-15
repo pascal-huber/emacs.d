@@ -1084,7 +1084,7 @@ Redo with =U=
 #+END_SRC
 
 *** Segments and Faces
-
+**** Faces
 
 #+BEGIN_SRC emacs-lisp
 (defun spaceline-light()
@@ -1121,7 +1121,7 @@ Redo with =U=
   :group 'spaceline)
 #+END_SRC
 
-Customized Flycheck
+**** Flycheck
 
 #+BEGIN_SRC emacs-lisp
 
@@ -1168,7 +1168,7 @@ Customized Flycheck
          (if c (format "\uf05a %s" c))))))
 #+END_SRC
 
-Face for evil-god-state
+**** Face for evil-god-state
 
 #+BEGIN_SRC emacs-lisp
 (defface spaceline-evil-god
@@ -1181,13 +1181,13 @@ Face for evil-god-state
              '(god . spaceline-evil-god))
 #+END_SRC
 
-Segment for Python venv
+**** Python Virtual Environment
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment virtualenvwrapper-segment venv-current-name)
 #+END_SRC
 
-Custom Git status using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]]
+**** Git status (using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]])
 
 #+BEGIN_SRC emacs-lisp
 (defun git-branch-name ()
@@ -1212,7 +1212,9 @@ Custom Git status using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]]
                          (_ " !?"))))))))
 #+END_SRC
 
-File permissions segment for files with "special" permissions.
+**** File permissions 
+
+Indicate if current file has "special" permissions.
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment buffer-special-file-permissions
