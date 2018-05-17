@@ -139,7 +139,9 @@ $ mkdir $WORKON_HOME
 
 (dolist (p my-packages)
   (unless (package-installed-p p)
-    (package-install p)))
+    (package-refresh-contents)
+    (package-install p))
+  (add-to-list 'package-selected-packages p))
 #+END_SRC
 
 * Main
