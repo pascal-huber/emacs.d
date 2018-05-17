@@ -741,95 +741,13 @@ Keybinding to beautify manually.
 (setq-default TeX-master nil)
 #+END_SRC
 
-*** Okular Sync
-
-SyncTeX setup for okular. Follow https://www.emacswiki.org/emacs/AUCTeX#toc26 to configure okular.
-
-In Okular, use "Shift + Left Click" to jump to the according line.
+In Evince use =Control + Left Click= for backward search.
 
 #+BEGIN_SRC emacs-lisp
-(setq TeX-source-correlate-mode t
-      TeX-source-correlate-start-server t)
-(eval-after-load "tex"
-  '(setcar (cdr (assoc 'output-pdf TeX-view-program-selection)) "Okular"))
-#+END_SRC
-
-*** Using make.sh
-
-I put a `make.sh` in the root of latex documents along with the main tex file `main.tex` and of course the `.gitignore`.
-
-#+BEGIN_SRC emacs-lisp
-(defun my-latex-compile-quick ()
-  "runs make.sh -q -s (..) in the latex root"
-  (interactive)
-  (let* ((main-folder (get-latex-main-folder
-                       (file-name-directory buffer-file-name)))
-         (command (concat "sh " main-folder "make.sh " "-q "
-                          "-s " (number-to-string
-                                 (line-number-at-pos)) ":"
-                          (buffer-file-name))))
-    (start-process "my-latex" "latex-make"
-                   (concat main-folder "make.sh") "-q"
-                   "-s" (concat (number-to-string
-                                 (line-number-at-pos)) ":"
-                                 (buffer-file-name)))))
-
-(defun my-latex-compile-full ()
-  "runs make.sh -f -s (..) in the latex root"
-  (interactive)
-  (let* ((main-folder (get-latex-main-folder
-                       (file-name-directory buffer-file-name)))
-         (command (concat "sh " main-folder "make.sh " "-f "
-                          "-s " (number-to-string
-                                 (line-number-at-pos)) ":"
-                          (buffer-file-name))))
-    (start-process "my-latex" "latex-make"
-                   (concat main-folder "make.sh") "-f"
-                   "-s" (concat (number-to-string
-                                 (line-number-at-pos)) ":"
-                                 (buffer-file-name)))))
-
-(defun update-evince ()
-  "updates evince"
-  (interactive)
-  (let* ((main-folder (get-latex-main-folder
-                       (file-name-directory buffer-file-name)))
-         (command (concat "sh " main-folder "make.sh " "-f "
-                          "-s " (number-to-string
-                                 (line-number-at-pos)) ":"
-                          (buffer-file-name))))
-    (start-process "my-latex" "latex-make"
-                   (concat main-folder "make.sh") "-f"
-                   "-s" (concat (number-to-string
-                                 (line-number-at-pos)) ":"
-                                 (buffer-file-name)))))
-
-(defun my-latex-clean ()
-  "runs make.sh -c in the latex root"
-  (interactive)
-  (let ((main-folder (get-latex-main-folder
-                      (file-name-directory buffer-file-name))))
-    (shell-command-to-string (concat "sh " main-folder
-                                     "make.sh clean"))))
-
-(defun get-latex-main-folder (path)
-  "recursively gets the root folder of the latex project"
-  (interactive)
-  (if (not (string= path "/"))
-      (if (is-latex-root path)
-          path
-        (get-latex-main-folder (folder-up path)))))
-
-(defun folder-up (path)
-  "removes last folder of path"
-  (file-name-directory (directory-file-name path)))
-
-(defun is-latex-root (path)
-  "returns t if the path is the root folder of the latex project"
-  (interactive)
-  (and (file-exists-p (concat path ".gitignore"))
-       (file-exists-p (concat path "main.tex"))
-       (file-exists-p (concat path "make.sh"))))
+(setq TeX-PDF-mode t)
+(setq TeX-view-program-selection '((output-pdf "Evince")))
+(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+(setq TeX-source-correlate-start-server t)
 #+END_SRC
 
 ** Python
