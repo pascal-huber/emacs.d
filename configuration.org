@@ -85,6 +85,8 @@ $ mkdir $WORKON_HOME
                       company
                       company-tern
                       company-web
+                      counsel
+                      counsel-projectile
                       dash
                       default-text-scale
                       dictcc
@@ -108,8 +110,8 @@ $ mkdir $WORKON_HOME
                       grizzl
                       evil-god-state
                       haml-mode
-                      helm-projectile
                       inf-ruby
+                      ivy
                       js2-mode
                       js2-refactor
                       lua-mode
@@ -123,8 +125,8 @@ $ mkdir $WORKON_HOME
                       powerline
                       projectile
                       rainbow-delimiters
-                      smex
                       spaceline
+                      swiper
                       tern
                       tern-auto-complete
                       unbound
@@ -265,19 +267,10 @@ Make =evil-god-state= work also in visual-mode.
 (evil-visual-activate-hook)
 #+END_SRC
 
-** Line- and Columnnumbers
+** Line numbers
 
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode t)
-#+END_SRC
-
-** Smex
-
-A better M-x.
-
-#+BEGIN_SRC emacs-lisp
-(require 'smex)
-(smex-initialize)
 #+END_SRC
 
 ** Spell Checking
@@ -309,20 +302,27 @@ Switch =ispell= language.
 (setq projectile-enable-caching t)
 #+END_SRC
 
-** Ido
+** Ivy
+
+Ivy completion instead of ido
 
 #+BEGIN_SRC emacs-lisp
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t)
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
 #+END_SRC
 
-** Helm
+Completion (back to defaul?)
 
 #+BEGIN_SRC emacs-lisp
-(setq helm-buffers-fuzzy-matching 1)
-(helm-projectile-on)
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-plus)))
+#+END_SRC
+
+** Counsel
+   
+#+BEGIN_SRC emacs-lisp
+(counsel-projectile-mode)
 #+END_SRC
 
 ** Feeds
@@ -1007,7 +1007,7 @@ Escape with =C-g=
 (set-quit-char "C-g")
 #+END_SRC
 
-Move cursor up and down on visual lines
+Move cursor up and down on visual lines with =j= and =k=
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -1020,9 +1020,17 @@ Redo with =U=
 (evil-global-set-key 'normal "U" 'undo-tree-redo)
 #+END_SRC
 
+God state with =,=
+
 #+BEGIN_SRC emacs-lisp
 (evil-global-set-key 'motion "," 'evil-execute-in-god-state)
 (evil-global-set-key 'motion [escape] 'evil-god-state-bail)
+#+END_SRC
+
+Swiper instead of evil-search-forward with =/= 
+
+#+BEGIN_SRC emacs-lisp
+(evil-global-set-key 'normal "/" 'swiper)
 #+END_SRC
 
 ** Global
@@ -1030,20 +1038,20 @@ Redo with =U=
 #+BEGIN_SRC emacs-lisp
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-x")      'smex)
-    (define-key map (kbd "M-X")      'smex-major-mode-commands)
-    (define-key map (kbd "C-x b")    'helm-mini)
-    (define-key map (kbd "C-x C-f")  'helm-find-files)
+    (define-key map (kbd "M-x")      'counsel-M-x)
+    (define-key map (kbd "C-s")      'swiper)
+    (define-key map (kbd "C-x b")    'counsel-ibuffer)
+    (define-key map (kbd "C-x C-f")  'counsel-find-file)
     (define-key map (kbd "C-c a")    'browse-kill-ring)
     (define-key map (kbd "C-c b")    'menu-bar-mode)
     (define-key map (kbd "C-c e")    'elfeed)
     (define-key map (kbd "C-c i")    'indent-region)
-    (define-key map (kbd "C-c j")    'helm-projectile-switch-to-buffer)
     (define-key map (kbd "C-c r")    'my-mu4e)
     (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
     (define-key map (kbd "C-c m")    'magit-status)
-    (define-key map (kbd "C-c o")    'helm-projectile-switch-project)
-    (define-key map (kbd "C-c p")    'helm-projectile-find-file)
+    (define-key map (kbd "<f1> f")   'counsel-describe-function)
+    (define-key map (kbd "<f1> v")   'counsel-describe-variable)
+    (define-key map (kbd "<f2> u")   'counsel-unicode-char)
     (define-key map (kbd "<f5>")     'next-theme)
     map)
   "my-global-keys-mode keymap.")
@@ -1231,7 +1239,6 @@ Do not show the following minor modes
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config :ensure spaceline
   :config
-  (spaceline-helm-mode 1)
   (spaceline-spacemacs-theme)
   (spaceline-install
     'main
@@ -1340,5 +1347,4 @@ Setup for =byebug=.
   (ansi-color-apply-on-region (point-min) (point-max)))
 (add-hook 'compilation-filter-hook 'setup-ruby-compilation-buffer)
 #+END_SRC
-
 
