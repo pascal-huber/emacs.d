@@ -73,7 +73,6 @@ $ mkdir $WORKON_HOME
 
 (defvar my-packages '(
                       ac-math
-                      ac-cider
                       airline-themes
                       auctex
                       auto-complete
@@ -786,79 +785,6 @@ Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 (require 'markdown-mode)
 (setq markdown-command "pandoc")
 #+END_SRC
-
-** Clojure
-*** Cider
-
-https://github.com/clojure-emacs/cider
-
-Cider is short for The "Clojure Interactive Development Environment
-that Rocks for Emacs". For good reasons, it is the [[http://blog.cognitect.com/blog/2017/1/31/clojure-2018-results][most popular IDE]]
-for developing Clojure.
-
--  =M-x cider-jack-in= To start REPL
--  =C-c C-k= Evaluate current buffer
--  =C-c M-n= Change ns in cider-nrepl to current ns
--  =C-c C-d C-d= Display documentation for the symbol under point
--  =C-c C-d C-a= Apropos search for arbitrary text across function names
-   and documentation
-
-**** CIDER REPL Key Bindings
-
-- =C-↑, C-↓= Cycle through REPL history.
-- More Cider shortcuts [[https://github.com/clojure-emacs/cider#cider-mode][here]].
-
-**** Dependencies
-
-Create a =~/.lein/profiles.clj= file with:
-
-#+BEGIN_SRC clojure
-    {:user {:plugins [[cider/cider-nrepl "0.13.0-SNAPSHOT"]
-                      [refactor-nrepl "2.2.0"]]
-            :dependencies [[org.clojure/tools.nrepl "0.2.12"]]}}
-#+END_SRC
-
-**** Emacs configuration
-
-Setup Cider with =auto-complete=.
-
-#+BEGIN_SRC emacs-lisp
-(require 'ac-cider)
-;;(setq ac-quick-help-delay 0.5)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
-#+END_SRC
-
-When connecting to a repl, don't pop to the new repl buffer.
-
-#+BEGIN_SRC emacs-lisp
-(setq cider-repl-pop-to-buffer-on-connect nil)
-#+END_SRC
-
-*** Refactoring
-
-https://github.com/clojure-emacs/clj-refactor.el/
-
-A collection of Clojure refactoring functions for Emacs.
-
-#+BEGIN_SRC emacs-lisp
-(require 'clj-refactor)
-(add-hook 'clojure-mode-hook
-          (lambda ()
-            (clj-refactor-mode 1)))
-              ;; (setq cljr-warn-on-eval nil)
-              ;; (yas-minor-mode 1) ; for adding require/use/import statements
-              ;; ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-              ;; (cljr-add-keybindings-with-prefix "C-c C-m")))
-#+END_SRC
-
-=clj-refactor= enables refactorings like extracting functions (=C-c
-C-m ef=). Find the list of available refactorings [[https://github.com/clojure-emacs/clj-refactor.el/wiki][here]].
 
 * Keybindings
 ** Mu4e
