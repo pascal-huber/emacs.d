@@ -175,7 +175,7 @@ Backup and Auto-Save to =/tmp=.
         (delq (current-buffer) (buffer-list))))
 #+END_SRC
 
-Never kill *scratch* or *Messages*[ZWS]
+Never kill *\ast{}scratch\ast{}* or *\ast{}Messages\ast{}*
 
 #+BEGIN_SRC emacs-lisp
 (setq my-buffer-kill-regexp
