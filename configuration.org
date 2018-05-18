@@ -125,6 +125,7 @@ $ mkdir $WORKON_HOME
                       powerline
                       projectile
                       rainbow-delimiters
+                      smex
                       spaceline
                       swiper
                       tern
@@ -962,10 +963,9 @@ Swiper instead of evil-search-forward with =/=
     (define-key map (kbd "C-s")      'swiper)
     (define-key map (kbd "C-x b")    'counsel-ibuffer)
     (define-key map (kbd "C-x C-f")  'counsel-find-file)
-    (define-key map (kbd "C-c a")    'browse-kill-ring)
-    (define-key map (kbd "C-c b")    'menu-bar-mode)
     (define-key map (kbd "C-c e")    'elfeed)
     (define-key map (kbd "C-c i")    'indent-region)
+    (define-key map (kbd "C-c k")    'counsel-ag)
     (define-key map (kbd "C-c r")    'my-mu4e)
     (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
     (define-key map (kbd "C-c m")    'magit-status)
