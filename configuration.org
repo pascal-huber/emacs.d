@@ -964,6 +964,7 @@ Swiper instead of evil-search-forward with =/=
     (define-key map (kbd "C-x b")    'counsel-ibuffer)
     (define-key map (kbd "C-x C-f")  'counsel-find-file)
     (define-key map (kbd "C-c e")    'elfeed)
+    (define-key map (kbd "C-c f")    'counsel-projectile-find-file)
     (define-key map (kbd "C-c i")    'indent-region)
     (define-key map (kbd "C-c k")    'counsel-ag)
     (define-key map (kbd "C-c r")    'my-mu4e)
