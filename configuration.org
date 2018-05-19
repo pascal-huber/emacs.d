@@ -327,6 +327,24 @@ Completion (back to defaul?)
 (counsel-projectile-mode)
 #+END_SRC
 
+counsel-ag
+
+#+BEGIN_SRC emacs-lisp
+(defun ivy-with-thing-at-point (cmd)
+  (let ((ivy-initial-inputs-alist
+         (list
+          (cons cmd (thing-at-point 'symbol)))))
+    (funcall cmd)))
+
+(defun counsel-ag-thing-at-point ()
+  (interactive)
+  (ivy-with-thing-at-point 'counsel-ag))
+
+(defun swiper-thing-at-point ()
+  (interactive)
+  (ivy-with-thing-at-point 'swiper))
+#+END_SRC
+
 ** Feeds
 
 Set up elfeed.
@@ -752,6 +770,37 @@ In Evince use =Control + Left Click= for backward search.
 (setq TeX-source-correlate-start-server t)
 #+END_SRC
 
+** Rspec-mode
+   
+Put the following in the =Gemfile=.
+   
+#+BEGIN_SRC config
+gem 'spring-commands-rspec'
+#+END_SRC
+
+Usage:
+
+- =C-c , s= Verify the example or method defined at point
+- =C-c , m= Run all specs related to the current buffer
+- =C-c , a= Run spec for entire project
+- [[https://github.com/pezra/rspec-mode#usage][and more]]
+  
+Load it.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ansi-color)
+(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
+(require 'rspec-mode)
+(eval-after-load 'rspec-mode
+ '(rspec-install-snippets))
+#+END_SRC
+
+When you've hit the breakpoint, hit C-x C-q to enable inf-ruby.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
+#+END_SRC
+
 ** Python
 
 Virtual-Environment handling  shell:
@@ -892,9 +941,9 @@ Swiper instead of evil-search-forward with =/=
     (define-key map (kbd "C-c e")    'elfeed)
     (define-key map (kbd "C-c f")    'counsel-projectile-find-file)
     (define-key map (kbd "C-c i")    'indent-region)
-    (define-key map (kbd "C-c k")    'counsel-ag)
+    (define-key map (kbd "C-c k")    'counsel-ag-with-thing-at-point)
     (define-key map (kbd "C-c r")    'my-mu4e)
-    (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
+    (define-key map (kbd "C-c s")    'swiper-with-thing-at-point)
     (define-key map (kbd "C-c m")    'magit-status)
     (define-key map (kbd "<f1> f")   'counsel-describe-function)
     (define-key map (kbd "<f1> v")   'counsel-describe-variable)
@@ -1114,7 +1163,7 @@ Do not show the following minor modes
  spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
  spaceline-separator-dir-left '(right . right)
  spaceline-separator-dir-right '(left . left)
- powerline-text-scale-factor 0.82)
+ powerline-text-scale-factor 0.9)
 #+END_SRC
 
 Compile the modeline with =M-x spaceline-compile=.
@@ -1157,7 +1206,7 @@ Scale font locally with =C-x C-+= and =C-x C--=.
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
                     :family "DejaVu Sans Mono"
-                    :height 120
+                    :height 110
                     :weight 'normal
                     :width 'normal)
 #+END_SRC
@@ -1169,29 +1218,5 @@ Scale font locally with =C-x C-+= and =C-x C--=.
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
-#+END_SRC
-
-* Testing Possible Next Features
-** Rspec-mode
-
-Setup =rspec-mode=. Run test at point using =C-c , s=.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
-(require 'rspec-mode)
-(eval-after-load 'rspec-mode
- '(rspec-install-snippets))
-#+END_SRC
-
-Setup for =byebug=.
-
-#+BEGIN_SRC emacs-lisp
-(require 'ansi-color)
-(defun setup-ruby-compilation-buffer ()
-  (read-only-mode 0)
-  (shell-mode)
-  (inf-ruby-minor-mode)
-  (ansi-color-apply-on-region (point-min) (point-max)))
-(add-hook 'compilation-filter-hook 'setup-ruby-compilation-buffer)
 #+END_SRC
 
