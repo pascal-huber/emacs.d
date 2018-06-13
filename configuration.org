@@ -105,6 +105,7 @@ $ mkdir $WORKON_HOME
                       evil-mu4e
                       evil-nerd-commenter
                       evil-org
+                      evil-surround
                       fill-column-indicator
                       free-keys
                       fsharp-mode
@@ -255,6 +256,19 @@ Evil commands
 
 #+BEGIN_SRC emacs-lisp
 (evil-ex-define-cmd "ww" 'sudo-save)
+#+END_SRC
+
+** Evil surround
+
+- Add surrounding ="= with =S"= from visual-state (use =viw= to mark current word)
+- Change surrounding to =*= with =cs"*=
+- Remove surrounding =*= with =ds*=
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
 #+END_SRC
 
 ** God State
