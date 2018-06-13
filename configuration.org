@@ -994,7 +994,7 @@ Swiper instead of evil-search-forward with =/=
 #+END_SRC
 
 *** Segments and Faces
-**** Faces
+**** Main Faces
 
 #+BEGIN_SRC emacs-lisp
 (defun spaceline-light()
@@ -1078,7 +1078,9 @@ Swiper instead of evil-search-forward with =/=
          (if c (format "\uf05a %s" c))))))
 #+END_SRC
 
-**** Face for evil-god-state
+**** Evil
+
+=evil-god-state=
 
 #+BEGIN_SRC emacs-lisp
 (defface spaceline-evil-god
@@ -1089,6 +1091,32 @@ Swiper instead of evil-search-forward with =/=
 
 (add-to-list 'spaceline-evil-state-faces
              '(god . spaceline-evil-god))
+#+END_SRC
+
+=evil-operator-state=
+
+#+BEGIN_SRC emacs-lisp
+(defface spaceline-evil-operator
+  '((t (:background "cornflower blue"
+        :inherit 'spaceline-evil-normal)))
+  "Spaceline Evil Operator State"
+  :group 'spaceline)
+
+(add-to-list 'spaceline-evil-state-faces
+             '(operator . spaceline-evil-operator))
+#+END_SRC
+
+Setting the face according to =evil-state=.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-spaceline-highlight-face-evil-state ()
+  "Set the highlight face depending on the evil state.
+Set `spaceline-highlight-face-func' to
+`spaceline-highlight-face-evil-state' to use this."
+  (if (bound-and-true-p evil-local-mode)
+      (let* ((face (assq evil-state spaceline-evil-state-faces)))
+        (if face (cdr face) (spaceline-highlight-face-default)))
+    (spaceline-highlight-face-default)))
 #+END_SRC
 
 **** Python Virtual Environment
@@ -1183,7 +1211,7 @@ Do not show the following minor modes
 
 (setq-default
  powerline-height 20
- spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+ spaceline-highlight-face-func 'my-spaceline-highlight-face-evil-state
  spaceline-separator-dir-left '(right . right)
  spaceline-separator-dir-right '(left . left)
  powerline-text-scale-factor 0.9)
