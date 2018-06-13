@@ -271,9 +271,9 @@ Evil commands
 
 ** Evil surround
 
-- Add surrounding ="= with =S"= from visual-state (use =viw= to mark current word)
-- Change surrounding to =*= with =cs"*=
-- Remove surrounding =*= with =ds*=
+- Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current word)
+- Change surrounding ~​'​~ to ~*~ with ~cs'*~
+- Remove surrounding ~*~ with ~ds*~
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil-surround
