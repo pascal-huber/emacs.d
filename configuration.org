@@ -129,6 +129,7 @@ $ mkdir $WORKON_HOME
                       powerline
                       projectile
                       rainbow-delimiters
+                      rainbow-mode
                       smex
                       spaceline
                       swiper
