@@ -175,6 +175,13 @@ Backup and Auto-Save to =/tmp=.
       `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
+** Session
+
+#+BEGIN_SRC emacs-lisp
+(require 'session)
+    (add-hook 'after-init-hook 'session-initialize)
+#+END_SRC
+
 ** Kill Buffers
 
 #+BEGIN_SRC emacs-lisp
