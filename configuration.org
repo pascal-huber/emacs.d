@@ -659,6 +659,12 @@ Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem t
 (ac-config-default)
 #+END_SRC
 
+** Company Mode
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'global-company-mode)
+#+END_SRC
+
 ** 70 columns indicator.
 
 #+BEGIN_SRC emacs-lisp
