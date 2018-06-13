@@ -64,6 +64,7 @@ $ mkdir $WORKON_HOME
 #+END_SRC
 
 * Dependencies
+** Installation
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
@@ -76,6 +77,7 @@ $ mkdir $WORKON_HOME
                       airline-themes
                       auctex
                       auto-complete
+                      auto-package-update
                       beacon
                       browse-kill-ring
                       cider
@@ -142,8 +144,16 @@ $ mkdir $WORKON_HOME
     (package-refresh-contents)
     (package-install p))
   (add-to-list 'package-selected-packages p))
+
+(add-to-list 'load-path "~/.emacs.d/vendor/")
 #+END_SRC
 
+** Update
+
+#+BEGIN_SRC emacs-lisp
+(auto-package-update-maybe)
+#+END_SRC
+ 
 * Main
 ** Symlinks
 
