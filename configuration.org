@@ -112,6 +112,8 @@ $ mkdir $WORKON_HOME
                       grizzl
                       evil-god-state
                       haml-mode
+                      helm-ag
+                      helm-projectile
                       inf-ruby
                       ivy
                       js2-mode
@@ -335,6 +337,12 @@ Switch =ispell= language.
 (setq projectile-enable-caching t)
 #+END_SRC
 
+** Helm
+
+#+BEGIN_SRC emacs-lisp
+(helm-projectile-on)
+#+END_SRC
+
 ** Ivy
 
 Ivy completion instead of ido
@@ -350,30 +358,6 @@ Completion (back to defaul?)
 #+BEGIN_SRC emacs-lisp
 (setq ivy-re-builders-alist
       '((t . ivy--regex-plus)))
-#+END_SRC
-
-** Counsel
-   
-#+BEGIN_SRC emacs-lisp
-(counsel-projectile-mode)
-#+END_SRC
-
-counsel-ag
-
-#+BEGIN_SRC emacs-lisp
-(defun ivy-with-thing-at-point (cmd)
-  (let ((ivy-initial-inputs-alist
-         (list
-          (cons cmd (thing-at-point 'symbol)))))
-    (funcall cmd)))
-
-(defun counsel-ag-thing-at-point ()
-  (interactive)
-  (ivy-with-thing-at-point 'counsel-ag))
-
-(defun swiper-thing-at-point ()
-  (interactive)
-  (ivy-with-thing-at-point 'swiper))
 #+END_SRC
 
 ** Feeds
@@ -965,17 +949,23 @@ Swiper instead of evil-search-forward with =/=
 #+BEGIN_SRC emacs-lisp
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-x")      'counsel-M-x)
+    (define-key map (kbd "M-x")      'helm-M-x)
     (define-key map (kbd "C-s")      'swiper)
-    (define-key map (kbd "C-x b")    'counsel-ibuffer)
-    (define-key map (kbd "C-x C-f")  'counsel-find-file)
+    (define-key map (kbd "C-x C-f")  'helm-find-files)
+    (define-key map (kbd "C-x C-b")  'helm-buffers-list)
+    (define-key map (kbd "C-x b")    'helm-mini)
+    (define-key map (kbd "C-c b")    'helm-mini)
+    (define-key map (kbd "C-c c")    'helm-mini)
     (define-key map (kbd "C-c e")    'elfeed)
-    (define-key map (kbd "C-c f")    'counsel-projectile-find-file)
+    (define-key map (kbd "C-c f")    'helm-projectile-find-file)
     (define-key map (kbd "C-c i")    'indent-region)
-    (define-key map (kbd "C-c k")    'counsel-ag-with-thing-at-point)
+    (define-key map (kbd "C-c j")    'helm-projectile-switch-to-buffer)
+    (define-key map (kbd "C-c k")    'helm-ag)
     (define-key map (kbd "C-c r")    'my-mu4e)
-    (define-key map (kbd "C-c s")    'swiper-with-thing-at-point)
+    (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
     (define-key map (kbd "C-c m")    'magit-status)
+    (define-key map (kbd "C-c p b")  'helm-projectile-switch-to-buffer)
+    (define-key map (kbd "C-c p p")  'helm-projectile-switch-project)
     (define-key map (kbd "<f1> f")   'counsel-describe-function)
     (define-key map (kbd "<f1> v")   'counsel-describe-variable)
     (define-key map (kbd "<f2> u")   'counsel-unicode-char)
@@ -1166,6 +1156,7 @@ Do not show the following minor modes
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config :ensure spaceline
   :config
+  (spaceline-helm-mode 1)
   (spaceline-spacemacs-theme)
   (spaceline-install
     'main
