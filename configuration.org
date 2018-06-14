@@ -132,7 +132,6 @@ $ mkdir $WORKON_HOME
                       smex
                       spaceline
                       swiper
-                      swiper-helm
                       tern
                       tern-auto-complete
                       unbound
@@ -951,7 +950,7 @@ God state with =,=
 Swiper instead of evil-search-forward with =/= 
 
 #+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'normal "/" 'swiper-helm)
+(evil-global-set-key 'normal "/" 'swiper)
 #+END_SRC
 
 ** Global
@@ -960,7 +959,7 @@ Swiper instead of evil-search-forward with =/=
 (defvar my-global-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'helm-M-x)
-    (define-key map (kbd "C-s")      'swiper-helm)
+    (define-key map (kbd "C-s")      'swiper)
     (define-key map (kbd "C-x C-f")  'helm-find-files)
     (define-key map (kbd "C-x C-b")  'helm-buffers-list)
     (define-key map (kbd "C-x b")    'helm-mini)
