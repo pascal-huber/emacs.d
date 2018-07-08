@@ -386,19 +386,12 @@ Switch =ispell= language.
 
 ** Ivy
 
-Ivy completion instead of ido
+Ivy completion (instead of ido)
 
 #+BEGIN_SRC emacs-lisp
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
-#+END_SRC
-
-Ivy Completion
-
-#+BEGIN_SRC emacs-lisp
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-plus)))
 #+END_SRC
 
 ** Dired
@@ -985,13 +978,6 @@ Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
               (kbd "n") 'elfeed-goodies/split-show-next)
             (define-key evil-normal-state-local-map
               (kbd "p") 'elfeed-goodies/split-show-prev)))
-#+END_SRC
-
-** Ido
-
-#+BEGIN_SRC emacs-lisp
-(define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
-(define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
 #+END_SRC
 
 ** Evil
