@@ -167,6 +167,14 @@ Always Follow Symlinks, no questions asked.
 (setq vc-follow-symlinks nil)
 #+END_SRC
 
+** Disabled Commands
+
+Enable them all.
+
+#+BEGIN_SRC emacs-lisp
+(setq disabled-command-function nil)
+#+END_SRC
+
 ** Backup and Auto-Save Files
 
 Backup and Auto-Save to =/tmp=.
