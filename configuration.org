@@ -186,6 +186,14 @@ Backup and Auto-Save to =/tmp=.
       `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
+** Scroll
+
+When scrolling, keep the cursor at the same position.
+
+#+BEGIN_SRC emacs-lisp
+(setq scroll-preserve-screen-position 'keep)
+#+END_SRC
+
 ** Session
 
 #+BEGIN_SRC emacs-lisp
