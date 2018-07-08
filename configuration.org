@@ -1,5 +1,68 @@
 #+TITLE: Emacs Configuration
 
+* Content :TOC:
+- [[#installation][Installation]]
+  - [[#mu4e][Mu4e]]
+  - [[#spaceline][Spaceline]]
+  - [[#flyspell][Flyspell]]
+  - [[#markdown][Markdown]]
+  - [[#web-development][Web Development]]
+  - [[#python-development][Python Development]]
+- [[#dependencies][Dependencies]]
+  - [[#installation-1][Installation]]
+  - [[#update][Update]]
+- [[#main][Main]]
+  - [[#symlinks][Symlinks]]
+  - [[#disabled-commands][Disabled Commands]]
+  - [[#backup-and-auto-save-files][Backup and Auto-Save Files]]
+  - [[#scroll][Scroll]]
+  - [[#buffers-and-frames][Buffers and Frames]]
+  - [[#session][Session]]
+  - [[#kill-buffers][Kill Buffers]]
+  - [[#garbage-collection][Garbage Collection]]
+  - [[#sudo-save][Sudo Save]]
+  - [[#browser][Browser]]
+  - [[#evil][Evil]]
+  - [[#evil-surround][Evil surround]]
+  - [[#god-state][God State]]
+  - [[#spell-checking][Spell Checking]]
+  - [[#projectile][Projectile]]
+  - [[#helm][Helm]]
+  - [[#ivy][Ivy]]
+  - [[#dired][Dired]]
+  - [[#feeds][Feeds]]
+  - [[#mu4e-1][Mu4e]]
+  - [[#browse-kill-ring][Browse-Kill-Ring]]
+  - [[#project-terminals][Project Terminals]]
+  - [[#toc-org][Toc Org]]
+- [[#programming][Programming]]
+  - [[#matching-brackets][Matching Brackets]]
+  - [[#line-numbers][Line numbers]]
+  - [[#indentation][Indentation]]
+  - [[#autocomplete][Autocomplete]]
+  - [[#company-mode][Company Mode]]
+  - [[#70-columns-indicator][70 columns indicator.]]
+  - [[#rainbow-mode][Rainbow Mode]]
+  - [[#web-mode][Web mode]]
+  - [[#web-beautify][Web-beautify]]
+  - [[#latex][Latex]]
+  - [[#ruby][Ruby]]
+  - [[#rspec-mode][Rspec-mode]]
+  - [[#python][Python]]
+  - [[#markdown-mode][Markdown Mode]]
+- [[#keybindings][Keybindings]]
+  - [[#mu4e-2][Mu4e]]
+  - [[#elfeed][Elfeed]]
+  - [[#evil-1][Evil]]
+  - [[#global][Global]]
+- [[#user-interface][User Interface]]
+  - [[#spaceline-1][Spaceline]]
+  - [[#theme-rotation][Theme Rotation]]
+  - [[#beacon][Beacon]]
+  - [[#font][Font]]
+  - [[#fancy-stuff][Fancy stuff]]
+  - [[#frame-title][Frame Title]]
+
 * Installation
 
 #+BEGIN_SRC shell
@@ -135,6 +198,7 @@ $ mkdir $WORKON_HOME
                       swiper
                       tern
                       tern-auto-complete
+                      toc-org
                       unbound
                       use-package
                       virtualenvwrapper
@@ -157,7 +221,7 @@ $ mkdir $WORKON_HOME
 #+BEGIN_SRC emacs-lisp
 (auto-package-update-maybe)
 #+END_SRC
- 
+
 * Main
 ** Symlinks
 
@@ -399,7 +463,7 @@ Ivy completion (instead of ido)
 Usage:
  - =a= to open a file or directory in the current buffer
  - =RET= to open a file or directory in a new buffer
- - =o= to open a file or directory in a vertical split buffer 
+ - =o= to open a file or directory in a vertical split buffer
  - =C-o= to open a file or directory in a vertical split buffer but keep the focus in the current buffer.
  - =C-c C-o= to open a file or directory in a new frame.
 
@@ -692,6 +756,20 @@ Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem t
     (setq amount (- amount 1))))
 #+END_SRC
 
+** Toc Org
+
+Every time you’ll be saving an org file, the first headline with a =:TOC:= tag will be updated with the current table of contents.
+
+ - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2 (the default)
+ - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style hrefs in the table of contents (this style is default). The other supported href style is ‘org’, which is the default org style.
+
+
+#+begin_src emacs-lisp
+(if (require 'toc-org nil t)
+    (add-hook 'org-mode-hook 'toc-org-enable)
+  (warn "toc-org not found"))
+#+end_src
+
 * Programming
 ** Matching Brackets
 
@@ -874,9 +952,9 @@ No magic comments
 #+END_SRC
 
 ** Rspec-mode
-   
+
 Put the following in the =Gemfile=.
-   
+
 #+BEGIN_SRC config
 gem 'spring-commands-rspec'
 #+END_SRC
@@ -887,7 +965,7 @@ Usage:
 - =C-c , m= Run all specs related to the current buffer
 - =C-c , a= Run spec for entire project
 - [[https://github.com/pezra/rspec-mode#usage][and more]]
-  
+
 Load it.
 
 #+BEGIN_SRC emacs-lisp
@@ -1019,7 +1097,7 @@ God state with =,=
 (evil-global-set-key 'motion [escape] 'evil-god-state-bail)
 #+END_SRC
 
-Swiper instead of evil-search-forward with =/= 
+Swiper instead of evil-search-forward with =/=
 
 #+BEGIN_SRC emacs-lisp
 (evil-global-set-key 'normal "/" 'swiper)
@@ -1219,7 +1297,7 @@ Set `spaceline-highlight-face-func' to
      (s-trim (concat (git-branch-name))))))
 #+END_SRC
 
-**** File permissions 
+**** File permissions
 
 Indicate if current file has "special" permissions.
 
@@ -1344,7 +1422,7 @@ Disable fancy GUI stuff
 
 ** Frame Title
 
-Show the buffer-name, project-name and major-mode in the frame title. 
+Show the buffer-name, project-name and major-mode in the frame title.
 
 #+BEGIN_SRC emacs-lisp
 (setq frame-title-format
