@@ -470,9 +470,6 @@ Usage:
 Reuse buffer
 
 #+BEGIN_SRC emacs-lisp
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
