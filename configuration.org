@@ -11,10 +11,11 @@
 - [[#dependencies][Dependencies]]
   - [[#installation-1][Installation]]
   - [[#update][Update]]
-- [[#main][Main]]
+- [[#main-setup][Main Setup]]
   - [[#symlinks][Symlinks]]
   - [[#disabled-commands][Disabled Commands]]
-  - [[#backup-and-auto-save-files][Backup and Auto-Save Files]]
+  - [[#backup][Backup]]
+  - [[#auto-save][Auto-Save]]
   - [[#scroll][Scroll]]
   - [[#buffers-and-frames][Buffers and Frames]]
   - [[#session][Session]]
@@ -35,7 +36,7 @@
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#project-terminals][Project Terminals]]
   - [[#toc-org][Toc Org]]
-- [[#programming][Programming]]
+- [[#programming-setup][Programming Setup]]
   - [[#matching-brackets][Matching Brackets]]
   - [[#line-numbers][Line numbers]]
   - [[#indentation][Indentation]]
@@ -222,7 +223,7 @@ $ mkdir $WORKON_HOME
 (auto-package-update-maybe)
 #+END_SRC
 
-* Main
+* Main Setup
 ** Symlinks
 
 Always Follow Symlinks, no questions asked.
@@ -239,15 +240,65 @@ Enable them all.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** Backup and Auto-Save Files
+** Backup
 
-Backup and Auto-Save to =/tmp=.
+Always backup up by copying to =~/.emacs.d/backups/=.
 
 #+BEGIN_SRC emacs-lisp
+(setq backup-by-copying t)
 (setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
+          `(("." . ,(concat user-emacs-directory "backups/"))))
+#+END_SRC
+
+Also backup versioned files because we don't commit on every save.
+
+#+BEGIN_SRC emacs-lisp
+(setq vc-make-backup-files t)
+#+END_SRC
+
+Keep the 10 newest versions and the oldest one and use version numbers.
+
+#+BEGIN_SRC emacs-lisp
+(setq delete-old-versions t
+      kept-new-versions 10
+      kept-old-versions 1
+      version-control t)
+#+END_SRC
+
+By default, Emacs only backs up on the first save. Lets change this and force a backup on each save.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-force-backup-of-buffer ()
+  (setq buffer-backed-up nil))
+(add-hook 'before-save-hook  'my-force-backup-of-buffer)
+#+END_SRC
+
+Delete backup files older than 4 days on startup.
+
+#+BEGIN_SRC emacs-lisp
+(setq my-backup-time (* 60 60 24 4))
+
+(defun my-delete-old-backup-files ()
+  "Deletes old backup files."
+  (interactive)
+  (let ((current (float-time (current-time))))
+    (dolist (file (directory-files "~/.emacs.d/backups/" t))
+      (when (and (backup-file-name-p file)
+                 (> (- current (float-time (nth 5 (file-attributes file))))
+                    my-backup-time))
+        (message "Deleting %s" file)
+        (delete-file file)))))
+
+(my-delete-old-backup-files)
+#+END_SRC
+
+** Auto-Save
+
+Put auto-save files in =~/.emacs.d/auto-saves/=
+
+#+BEGIN_SRC emacs-lisp
 (setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+      `((".*" "~/.emacs.d/auto-saves/" t)))
 #+END_SRC
 
 ** Scroll
@@ -470,9 +521,6 @@ Usage:
 Reuse buffer
 
 #+BEGIN_SRC emacs-lisp
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
@@ -770,7 +818,7 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
   (warn "toc-org not found"))
 #+end_src
 
-* Programming
+* Programming Setup
 ** Matching Brackets
 
 #+BEGIN_SRC emacs-lisp
