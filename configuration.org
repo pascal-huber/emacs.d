@@ -31,7 +31,7 @@
   - [[#spell-checking][Spell Checking]]
   - [[#projectile][Projectile]]
   - [[#helm][Helm]]
-  - [[#ivy][Ivy]]
+  - [[#ido][Ido]]
   - [[#dired][Dired]]
   - [[#feeds][Feeds]]
   - [[#mu4e-1][Mu4e]]
@@ -180,8 +180,8 @@ $ mkdir $WORKON_HOME
                       haml-mode
                       helm-ag
                       helm-projectile
+                      ido
                       inf-ruby
-                      ivy
                       js2-mode
                       js2-refactor
                       lua-mode
@@ -519,14 +519,14 @@ Switch =ispell= language.
 (helm-projectile-on)
 #+END_SRC
 
-** Ivy
+** Ido
 
-Ivy completion (instead of ido)
+Ido completion (in favour of ido which gave me headaches)
 
 #+BEGIN_SRC emacs-lisp
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
+(require 'ido)
+(ido-mode 1)
+(ido-everywhere 1)
 #+END_SRC
 
 ** Dired
@@ -1391,8 +1391,6 @@ Do not show the following minor modes
   '(diminish 'auto-revert-mode))
 (eval-after-load "undo-tree"
   '(diminish 'undo-tree-mode))
-(eval-after-load "ivy"
-  '(diminish 'ivy-mode))
 #+END_SRC
 
 *** Putting it all together
