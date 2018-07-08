@@ -74,6 +74,7 @@ $ mkdir $WORKON_HOME
 
 (defvar my-packages '(
                       ac-math
+                      ag
                       airline-themes
                       auctex
                       auto-complete
