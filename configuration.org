@@ -872,6 +872,14 @@ In Evince use =Control + Left Click= for backward search.
 (setq TeX-source-correlate-start-server t)
 #+END_SRC
 
+** Ruby
+
+No magic comments
+
+#+BEGIN_SRC config
+(setq ruby-insert-encoding-magic-comment nil)
+#+END_SRC
+
 ** Rspec-mode
    
 Put the following in the =Gemfile=.
