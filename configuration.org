@@ -18,6 +18,7 @@
   - [[#auto-save][Auto-Save]]
   - [[#scroll][Scroll]]
   - [[#buffers-and-frames][Buffers and Frames]]
+  - [[#auto-revert][Auto revert]]
   - [[#session][Session]]
   - [[#kill-buffers][Kill Buffers]]
   - [[#garbage-collection][Garbage Collection]]
@@ -333,6 +334,15 @@ Open previous buffer in new frame.
 (defun my-open-last-buffer ()
   (interactive)
   (switch-to-buffer-other-frame (other-buffer)))
+#+END_SRC
+
+** Auto revert
+
+When something changes a file, automatically refresh the
+buffer containing that file so they can't get out of sync.
+
+#+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode t)
 #+END_SRC
 
 ** Session
