@@ -19,6 +19,7 @@
   - [[#scroll][Scroll]]
   - [[#buffers-and-frames][Buffers and Frames]]
   - [[#auto-revert][Auto revert]]
+  - [[#automatic-line-breaks][Automatic Line Breaks]]
   - [[#session][Session]]
   - [[#kill-buffers][Kill Buffers]]
   - [[#garbage-collection][Garbage Collection]]
@@ -338,11 +339,20 @@ Open previous buffer in new frame.
 
 ** Auto revert
 
-When something changes a file, automatically refresh the
-buffer containing that file so they can't get out of sync.
+When something changes a file, automatically refresh the buffer
+containing that file so they can't get out of sync.
 
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
+#+END_SRC
+
+** Automatic Line Breaks
+
+Automatic line breaks (not newlines) in text-modes. Use =M-q=
+(=fill-paragraph=) to reorganize after changing the paragraph.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
 ** Session
@@ -691,10 +701,10 @@ Show text, not html.
 No automatic line breaks.
 
 #+BEGIN_SRC emacs-lisp
-(defun no-auto-fill ()
-  "Turn off auto-fill-mode."
-  (auto-fill-mode -1))
-(add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
+;(defun no-auto-fill ()
+;  "Turn off auto-fill-mode."
+;  (auto-fill-mode -1))
+;(add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
 #+END_SRC
 
 View mail in browser (with "aV").
