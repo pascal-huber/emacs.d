@@ -1331,7 +1331,9 @@ Scale font locally with =C-x C-+= and =C-x C--=.
                     :width 'normal)
 #+END_SRC
 
-** Menu, toolbar and Splashscreen
+** Fancy stuff
+
+Disable fancy GUI stuff
 
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-splash-screen t)
@@ -1340,3 +1342,17 @@ Scale font locally with =C-x C-+= and =C-x C--=.
 (menu-bar-mode -1)
 #+END_SRC
 
+** Frame Title
+
+Show the buffer-name, project-name and major-mode in the frame title. 
+
+#+BEGIN_SRC emacs-lisp
+(setq frame-title-format
+      '(""
+        "%b"
+        (:eval
+         (let ((project-name (projectile-project-name)))
+           (unless (string= "-" project-name)
+             (format " | %s" project-name))))
+        " | %m"))
+#+END_SRC
