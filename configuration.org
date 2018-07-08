@@ -524,12 +524,9 @@ Reuse buffer
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
-Completion (back to defaul?)
 Open in new frame
 
 #+BEGIN_SRC emacs-lisp
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-plus)))
 (defun dired-find-file-other-frame ()
   "In Dired, visit this file or directory in another window."
   (interactive)
