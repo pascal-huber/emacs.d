@@ -394,11 +394,44 @@ Ivy completion instead of ido
 (setq ivy-count-format "(%d/%d) ")
 #+END_SRC
 
-Completion (back to defaul?)
+Ivy Completion
 
 #+BEGIN_SRC emacs-lisp
 (setq ivy-re-builders-alist
       '((t . ivy--regex-plus)))
+#+END_SRC
+
+** Dired
+
+Usage:
+ - =a= to open a file or directory in the current buffer
+ - =RET= to open a file or directory in a new buffer
+ - =o= to open a file or directory in a vertical split buffer 
+ - =C-o= to open a file or directory in a vertical split buffer but keep the focus in the current buffer.
+ - =C-c C-o= to open a file or directory in a new frame.
+
+Reuse buffer
+
+#+BEGIN_SRC emacs-lisp
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+(put 'dired-find-alternate-file 'disabled nil)
+#+END_SRC
+
+Completion (back to defaul?)
+Open in new frame
+
+#+BEGIN_SRC emacs-lisp
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-plus)))
+(defun dired-find-file-other-frame ()
+  "In Dired, visit this file or directory in another window."
+  (interactive)
+  (find-file-other-frame (dired-get-file-for-visit)))
+
+(eval-after-load "dired"
+  '(define-key dired-mode-map (kbd "C-c C-o") 'dired-find-file-other-frame))
 #+END_SRC
 
 ** Feeds
