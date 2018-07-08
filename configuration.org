@@ -315,12 +315,6 @@ Make =evil-god-state= work also in visual-mode.
 (evil-visual-activate-hook)
 #+END_SRC
 
-** Line numbers
-
-#+BEGIN_SRC emacs-lisp
-(global-linum-mode t)
-#+END_SRC
-
 ** Spell Checking
 
 #+BEGIN_SRC emacs-lisp
@@ -646,6 +640,14 @@ Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem t
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+** Line numbers
+
+Show line numbers in programming modes
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook '(lambda () (linum-mode)))
 #+END_SRC
 
 ** Indentation
