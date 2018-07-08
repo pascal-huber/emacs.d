@@ -1230,19 +1230,7 @@ Set `spaceline-highlight-face-func' to
   "Version control information."
   (when vc-mode
     (powerline-raw
-     (s-trim (concat "\ue725 " (git-branch-name)
-
-                     (when (buffer-file-name)
-                       (pcase (vc-state (buffer-file-name))
-                         (`up-to-date " \uf00c")
-                         (`edited " \uf069")
-                         (`added " \uf44d")
-                         (`unregistered " ?")
-                         (`removed " \uf00d")
-                         (`needs-merge " \uf419")
-                         (`needs-update " \uf062")
-                         (`ignored " i")
-                         (_ " !?"))))))))
+     (s-trim (concat (git-branch-name))))))
 #+END_SRC
 
 **** File permissions 
