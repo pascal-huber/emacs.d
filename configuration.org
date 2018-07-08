@@ -1200,8 +1200,7 @@ Swiper instead of evil-search-forward with =/=
 
 (define-minor-mode my-global-keys-mode
   :init-value t
-  :keymap my-global-keymap
-  :lighter "keys")
+  :keymap my-global-keymap)
 
 (my-global-keys-mode 1)
 #+END_SRC
@@ -1390,6 +1389,10 @@ Do not show the following minor modes
   '(diminish 'beacon-mode))
 (eval-after-load "auto-revert"
   '(diminish 'auto-revert-mode))
+(eval-after-load "undo-tree"
+  '(diminish 'undo-tree-mode))
+(eval-after-load "ivy"
+  '(diminish 'ivy-mode))
 #+END_SRC
 
 *** Putting it all together
