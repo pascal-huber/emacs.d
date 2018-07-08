@@ -194,6 +194,32 @@ When scrolling, keep the cursor at the same position.
 (setq scroll-preserve-screen-position 'keep)
 #+END_SRC
 
+** Buffers and Frames
+
+Split function wich open the previous buffer in the new window instead of showing the current buffer twice.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-vsplit-last-buffer ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+
+(defun my-hsplit-last-buffer ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+#+END_SRC
+
+Open previous buffer in new frame.
+
+#+BEGIN_SRC emacs-lisp
+(defun my-open-last-buffer ()
+  (interactive)
+  (switch-to-buffer-other-frame (other-buffer)))
+#+END_SRC
+
 ** Session
 
 #+BEGIN_SRC emacs-lisp
@@ -979,11 +1005,12 @@ Swiper instead of evil-search-forward with =/=
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-x")      'helm-M-x)
     (define-key map (kbd "C-s")      'swiper)
+    (define-key map (kbd "C-x 2")    'my-vsplit-last-buffer)
+    (define-key map (kbd "C-x 3")    'my-hsplit-last-buffer)
+    (define-key map (kbd "C-x 7")    'my-open-last-buffer)
     (define-key map (kbd "C-x C-f")  'helm-find-files)
     (define-key map (kbd "C-x C-b")  'helm-buffers-list)
     (define-key map (kbd "C-x b")    'helm-mini)
-    (define-key map (kbd "C-c b")    'helm-mini)
-    (define-key map (kbd "C-c c")    'helm-mini)
     (define-key map (kbd "C-c e")    'elfeed)
     (define-key map (kbd "C-c f")    'helm-projectile-find-file)
     (define-key map (kbd "C-c i")    'indent-region)
