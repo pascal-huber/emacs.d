@@ -65,6 +65,7 @@
   - [[#font][Font]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
+  - [[#fringe][Fringe]]
 
 * Installation
 
@@ -1494,4 +1495,12 @@ Show the buffer-name, project-name and major-mode in the frame title.
            (unless (string= "-" project-name)
              (format " | %s" project-name))))
         " | %m"))
+#+END_SRC
+
+** Fringe
+
+Tiny fringe on the right side of the frame. The left side needs a fringe for =FlyCheck=.
+
+#+BEGIN_SRC emacs-lisp
+(fringe-mode '(8 . 2))
 #+END_SRC
