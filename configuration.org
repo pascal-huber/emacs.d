@@ -141,23 +141,16 @@ $ mkdir $WORKON_HOME
 (defvar my-packages '(
                       ac-math
                       ag
-                      airline-themes
                       auctex
                       auto-complete
                       auto-package-update
                       beacon
                       browse-kill-ring
-                      cider
-                      clj-refactor
                       comment-tags
                       company
                       company-tern
                       company-web
                       counsel
-                      counsel-projectile
-                      dash
-                      default-text-scale
-                      dictcc
                       dictionary
                       diminish
                       dumb-jump
@@ -169,12 +162,12 @@ $ mkdir $WORKON_HOME
                       evil-ediff
                       evil-leader
                       evil-magit
+                      evil-mu4e
                       evil-nerd-commenter
                       evil-org
                       evil-surround
                       fill-column-indicator
-                      free-keys
-                      fsharp-mode
+                      flycheck
                       grizzl
                       evil-god-state
                       haml-mode
@@ -202,13 +195,11 @@ $ mkdir $WORKON_HOME
                       tern
                       tern-auto-complete
                       toc-org
-                      unbound
                       use-package
                       virtualenvwrapper
                       web-beautify
                       web-mode
-                      yaml-mode
-                      xref-js2))
+                      yaml-mode))
 
 (dolist (p my-packages)
   (unless (package-installed-p p)
