@@ -1204,13 +1204,13 @@ Swiper instead of evil-search-forward with =/=
 * User Interface
 ** Spaceline
 
-#+BEGIN_SRC emacs-lisp
-(require 'powerline)
+ #+BEGIN_SRC emacs-lisp
+ (require 'powerline)
 
-(use-package spaceline :ensure t
-  :config
-  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
-#+END_SRC
+ (use-package spaceline :ensure t
+   :config
+   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+ #+END_SRC
 
 *** Segments and Faces
 **** Main Faces
@@ -1219,33 +1219,47 @@ Swiper instead of evil-search-forward with =/=
 (defun spaceline-light()
   (interactive)
   (set-face-attribute 'mode-line nil
-                      :foreground "black"
-                      :background "gray66")
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#fdfde7")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#fdfde7")
   (set-face-attribute 'powerline-active1 nil
-                      :foreground "black"
-                      :background "gray77")
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#ffd7af")
   (set-face-attribute 'powerline-active2 nil
-                      :foreground "black"
-                      :background "gray88")
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#e6e6e0")
   (powerline-reset))
 
 (defun spaceline-dark()
   (interactive)
   (set-face-attribute 'mode-line nil
-                      :foreground "black"
-                      :background "gray53")
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
   (set-face-attribute 'powerline-active1 nil
-                      :foreground "black"
-                      :background "gray66")
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030")
   (set-face-attribute 'powerline-active2 nil
-                      :foreground "black"
-                      :background "gray40")
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#424242")
   (powerline-reset))
 
 (defface red-face
   '((t :inherit 'mode-line
-       :foreground "white"
-       :background "red4"))
+       :foreground "#dadada"
+       :background "#ef2929"))
   "Ugly Alert Theme"
   :group 'spaceline)
 #+END_SRC
@@ -1256,21 +1270,21 @@ Swiper instead of evil-search-forward with =/=
 
 (defface my-flycheck-warning-face
   '((t (:foreground "black"
-        :background "orange"
+        :background "#ff5d17"
         :inherit 'mode-line)))
   "Flycheck warning face"
   :group 'spaceline)
 
 (defface my-flycheck-error-face
   '((t (:foreground "black"
-        :background "red"
+        :background "#ef2929"
         :inherit 'mode-line)))
   "Flycheck warning face"
   :group 'spaceline)
 
 (defface my-flycheck-info-face
   '((t (:foreground "black"
-        :background "green"
+        :background "#a1db00"
         :inherit 'mode-line)))
   "Flycheck warning face"
   :group 'spaceline)
@@ -1280,21 +1294,21 @@ Swiper instead of evil-search-forward with =/=
       (let ((c (cdr (assq 'warning (flycheck-count-errors
                                     flycheck-current-errors)))))
         (powerline-raw
-         (if c (format "\uf071 %s" c))))))
+         (if c (format "%s" c))))))
 
 (spaceline-define-segment my-flycheck-error-segment
   (if (flycheck-has-current-errors-p)
       (let ((c (cdr (assq 'error (flycheck-count-errors
                                     flycheck-current-errors)))))
         (powerline-raw
-         (if c (format "\uf12a %s" c))))))
+         (if c (format "%s" c))))))
 
 (spaceline-define-segment my-flycheck-info-segment
   (if (flycheck-has-current-errors-p)
       (let ((c (cdr (assq 'info (flycheck-count-errors
                                     flycheck-current-errors)))))
         (powerline-raw
-         (if c (format "\uf05a %s" c))))))
+         (if c (format "%s" c))))))
 #+END_SRC
 
 **** Evil
@@ -1395,7 +1409,7 @@ Do not show the following minor modes
 (use-package spaceline-config :ensure spaceline
   :config
   (spaceline-helm-mode 1)
-  (spaceline-spacemacs-theme)
+  (spaceline-emacs-theme)
   (spaceline-install
     'main
     '((evil-state :when active :face highlight-face)
