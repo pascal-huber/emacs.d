@@ -168,6 +168,7 @@ $ mkdir $WORKON_HOME
                       evil-surround
                       fill-column-indicator
                       flycheck
+                      flx-ido
                       grizzl
                       evil-god-state
                       haml-mode
@@ -515,9 +516,12 @@ Switch =ispell= language.
 Ido completion (in favour of ido which gave me headaches)
 
 #+BEGIN_SRC emacs-lisp
-(require 'ido)
+(require 'flx-ido)
 (ido-mode 1)
 (ido-everywhere 1)
+(flx-ido-mode 1)
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
 #+END_SRC
 
 ** Dired
