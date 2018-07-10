@@ -1210,13 +1210,13 @@ Swiper instead of evil-search-forward with =/=
 * User Interface
 ** Spaceline
 
- #+BEGIN_SRC emacs-lisp
- (require 'powerline)
+#+BEGIN_SRC emacs-lisp
+(require 'powerline)
 
- (use-package spaceline :ensure t
-   :config
-   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
- #+END_SRC
+(use-package spaceline :ensure t
+  :config
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+#+END_SRC
 
 *** Segments and Faces
 **** Main Faces
@@ -1390,6 +1390,17 @@ Indicate if current file has "special" permissions.
                (if (file-writable-p (buffer-file-name)) "w" "-")))))
 #+END_SRC
 
+**** Mu4e Context
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment mu4e-context-segment
+  (let ((ctx (mu4e-context-current)))
+    (if (and ctx
+             (string-prefix-p "mu4e" (symbol-name major-mode)))
+        (powerline-raw
+         (mu4e-context-name ctx)))))
+#+END_SRC
+
 *** Diminish Minor Modes
 
 Do not show the following minor modes
@@ -1422,6 +1433,7 @@ Do not show the following minor modes
       (virtualenvwrapper-segment)
       (buffer-special-file-permissions :face red-face)
       ((remote-host buffer-id))
+      (mu4e-context-segment)
       (buffer-modified)
       (process :when active))
     '((minor-modes)
