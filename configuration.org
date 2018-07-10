@@ -176,6 +176,7 @@ $ mkdir $WORKON_HOME
                       helm-ag
                       helm-projectile
                       ido
+                      ido-vertical-mode
                       inf-ruby
                       js2-mode
                       js2-refactor
@@ -523,6 +524,7 @@ Ido completion (in favour of ido which gave me headaches)
 (flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
 (setq ido-use-faces nil)
+(ido-vertical-mode)
 #+END_SRC
 
 ** Dired
