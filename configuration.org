@@ -71,7 +71,7 @@
 
 #+BEGIN_SRC shell
 $ cd ~/git
-$ git clone http://github.com/pascalhuber/emacs
+$ git clone http://github.com/sirpscl/.emacs.d emacs
 $ ln -s ~/git/emacs ~/.emacs.d
 #+END_SRC
 
@@ -101,7 +101,7 @@ $ pacaur -S nerd-fonts-complete
 ** Flyspell
 
 #+BEGIN_SRC shell
-$ pacaur -S aspell aspell-e aspell-de
+$ pacaur -S aspell aspell-en aspell-de
 #+END_SRC
 
 ** Markdown
