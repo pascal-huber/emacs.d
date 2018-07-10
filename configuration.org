@@ -31,7 +31,7 @@
   - [[#spell-checking][Spell Checking]]
   - [[#projectile][Projectile]]
   - [[#helm][Helm]]
-  - [[#ido][Ido]]
+  - [[#ido-completion][Ido Completion]]
   - [[#dired][Dired]]
   - [[#feeds][Feeds]]
   - [[#mu4e-1][Mu4e]]
@@ -513,7 +513,7 @@ Switch =ispell= language.
 (helm-projectile-on)
 #+END_SRC
 
-** Ido
+** Ido Completion
 
 #+BEGIN_SRC emacs-lisp
 (require 'flx-ido)
@@ -521,8 +521,14 @@ Switch =ispell= language.
 (ido-everywhere 1)
 (flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
-(setq ido-use-faces nil)
-(ido-vertical-mode)
+#+END_SRC
+
+Enable =ido-vertical-mode=
+
+#+BEGIN_SRC emacs-lisp
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(setq ido-vertical-show-count t)
 #+END_SRC
 
 ** Dired
