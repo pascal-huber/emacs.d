@@ -775,12 +775,19 @@ Start/Stop urxvt clients in project folder.
 Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem to work with i3. Thus, =-title= is used to place the terminals on the correct workspace.
 
 #+BEGIN_SRC emacs-lisp
-(defun project-terminal-command-list (directory workspace-number)
-  "Command list to start a terminal in DIRECTORY on WORKSPACE-NUMBER."
+(defun project-terminal-command-list-urxvt (directory workspace-number)
+  "Command list to start an urxvt client in DIRECTORY on WORKSPACE-NUMBER."
   (list "/usr/bin/urxvtc"
         "-cd" directory
         "-title" (concat "project-terminal-"
                          (number-to-string (mod workspace-number 10)))))
+
+(defun project-terminal-command-list-termite (directory workspace-number)
+  "Command list to start termite in DIRECTORY on WORKSPACE-NUMBER."
+  (list "/bin/termite"
+        "-d" directory
+        (concat "--class=project-terminal-"
+                (number-to-string (mod workspace-number 10)))))
 
 (setq project-terminal-amount-prompt
       "How many terminals does my master wish to spawn? :")
@@ -805,7 +812,7 @@ Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem t
            (make-process
             :name (concat "project-terminal-" dir)
             :buffer project-terminal-buffer
-            :command (project-terminal-command-list dir workspace-number)))
+            :command (project-terminal-command-list-termite dir workspace-number)))
       (message "You're not in a project"))))
 
 (defun spawn-some-project-terminals (&optional amount workspace-number)
