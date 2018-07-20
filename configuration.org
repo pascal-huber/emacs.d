@@ -657,11 +657,13 @@ Open mu4e anyway.
 
 #+BEGIN_SRC emacs-lisp
 (defun my-mu4e ()
+  "Open mu4e even if its opened in another window or buffer."
   (interactive)
-  (let ((b (get-buffer "*mu4e-headers*")))
-    (if b
-        (switch-to-buffer b)
-      (mu4e))))
+  (unless (string-prefix-p "mu4e" (symbol-name major-mode))
+    (let ((b (get-buffer "*mu4e-headers*")))
+      (if b
+          (switch-to-buffer b)
+        (mu4e)))))
 #+END_SRC
 
 Dont reply to myself.
