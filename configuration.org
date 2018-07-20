@@ -40,7 +40,7 @@
   - [[#project-terminals][Project Terminals]]
   - [[#toc-org][Toc Org]]
 - [[#programming-setup][Programming Setup]]
-  - [[#matching-brackets][Matching Brackets]]
+  - [[#brackets][Brackets]]
   - [[#line-numbers][Line numbers]]
   - [[#indentation][Indentation]]
   - [[#autocomplete][Autocomplete]]
@@ -852,13 +852,26 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
 #+end_src
 
 * Programming Setup
-** Matching Brackets
+** Brackets
+
+Make brackets colorful
+ 
+ #+BEGIN_SRC emacs-lisp
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+ #+END_SRC
+
+Highlight matching brackets.
 
 #+BEGIN_SRC emacs-lisp
 (setq show-paren-style 'mixed)
-(require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'show-paren-mode)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+Typing any left bracket automatically insert the right matching bracket.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'electric-pair-mode)
 #+END_SRC
 
 ** Line numbers
