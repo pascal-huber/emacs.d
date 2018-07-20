@@ -31,7 +31,7 @@
   - [[#god-state][God State]]
   - [[#spell-checking][Spell Checking]]
   - [[#projectile][Projectile]]
-  - [[#helm][Helm]]
+  - [[#counsel][Counsel]]
   - [[#ido-completion][Ido Completion]]
   - [[#dired][Dired]]
   - [[#feeds][Feeds]]
@@ -56,7 +56,6 @@
   - [[#markdown-mode][Markdown Mode]]
 - [[#keybindings][Keybindings]]
   - [[#mu4e-2][Mu4e]]
-  - [[#elfeed][Elfeed]]
   - [[#evil-1][Evil]]
   - [[#global][Global]]
 - [[#user-interface][User Interface]]
@@ -153,6 +152,7 @@ $ mkdir $WORKON_HOME
                       company-tern
                       company-web
                       counsel
+                      counsel-projectile
                       dictionary
                       diminish
                       dumb-jump
@@ -171,11 +171,10 @@ $ mkdir $WORKON_HOME
                       fill-column-indicator
                       flycheck
                       flx-ido
+                      general
                       grizzl
                       evil-god-state
                       haml-mode
-                      helm-ag
-                      helm-projectile
                       ido
                       ido-vertical-mode
                       inf-ruby
@@ -512,11 +511,11 @@ Switch =ispell= language.
 (setq projectile-enable-caching t)
 #+END_SRC
 
-** Helm
+** Counsel
 
 #+BEGIN_SRC emacs-lisp
-(helm-projectile-on)
-#+END_SRC
+(counsel-projectile-mode)
+ #+END_SRC
 
 ** Ido Completion
 
@@ -855,7 +854,7 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
 ** Brackets
 
 Make brackets colorful
- 
+
  #+BEGIN_SRC emacs-lisp
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -1111,45 +1110,19 @@ Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 #+END_SRC
 
 * Keybindings
+
+=general.el= provides a more convenient method for binding keys in
+emacs (for both evil and non-evil users)
+
+#+BEGIN_SRC emacs-lisp
+(require 'general)
+ #+END_SRC
+
 ** Mu4e
 
 #+BEGIN_SRC emacs-lisp
-(define-key mu4e-main-mode-map (kbd "U") 'mu4e-update-index)
-(add-hook 'mu4e-view-mode-hook
-          (lambda()
-            (local-set-key (kbd "<tab>") 'shr-next-link)
-            (local-set-key (kbd "i") 'mu4e-view-toggle-html)
-            (local-set-key (kbd "h") 'evil-backward-char)
-            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-#+END_SRC
-
-** Elfeed
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'elfeed-search-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "c") 'elfeed-reset-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "r") 'elfeed-toggle-filter-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "F") 'elfeed-search-live-filter)
-            (define-key evil-normal-state-local-map
-              (kbd "!") 'elfeed-search-untag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "u") 'elfeed-search-tag-all-unread)
-            (define-key evil-normal-state-local-map
-              (kbd "O") 'elfeed-search-browse-url)
-            (define-key evil-normal-state-local-map
-              (kbd "U") 'elfeed-update)
-            (define-key evil-normal-state-local-map
-              (kbd "RET") 'elfeed-goodies/split-search-show-entry)))
-(add-hook 'elfeed-show-mode-hook
-          (lambda ()
-            (define-key evil-normal-state-local-map
-              (kbd "n") 'elfeed-goodies/split-show-next)
-            (define-key evil-normal-state-local-map
-              (kbd "p") 'elfeed-goodies/split-show-prev)))
+(general-def mu4e-main-mode-map
+  "U" 'mu4e-update-index)
 #+END_SRC
 
 ** Evil
@@ -1171,68 +1144,63 @@ Escape with =C-g=
 (set-quit-char "C-g")
 #+END_SRC
 
-Move cursor up and down on visual lines with =j= and =k=
+
+Evil motion-states are the evil states where we don't edit text.
 
 #+BEGIN_SRC emacs-lisp
-(define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-(define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-#+END_SRC
-
-Redo with =U=
-
-#+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'normal "U" 'undo-tree-redo)
-#+END_SRC
-
-God state with =,=
-
-#+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'motion "," 'evil-execute-in-god-state)
-(evil-global-set-key 'motion [escape] 'evil-god-state-bail)
-#+END_SRC
-
-Swiper instead of evil-search-forward with =/=
-
-#+BEGIN_SRC emacs-lisp
-(evil-global-set-key 'normal "/" 'swiper)
+(general-def 'motion
+  [escape] 'evil-god-state-bail
+  ","      'evil-execute-in-god-state
+  "j"      'evil-next-visual-line
+  "k"      'evil-previous-visual-line)
 #+END_SRC
 
 ** Global
 
-#+BEGIN_SRC emacs-lisp
-(defvar my-global-keymap
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-x")      'helm-M-x)
-    (define-key map (kbd "C-s")      'swiper)
-    (define-key map (kbd "C-x 2")    'my-vsplit-last-buffer)
-    (define-key map (kbd "C-x 3")    'my-hsplit-last-buffer)
-    (define-key map (kbd "C-x 7")    'my-open-last-buffer)
-    (define-key map (kbd "C-x C-f")  'helm-find-files)
-    (define-key map (kbd "C-x C-b")  'helm-buffers-list)
-    (define-key map (kbd "C-x b")    'helm-mini)
-    (define-key map (kbd "C-c e")    'elfeed)
-    (define-key map (kbd "C-c f")    'helm-projectile-find-file)
-    (define-key map (kbd "C-c i")    'indent-region)
-    (define-key map (kbd "C-c j")    'helm-projectile-switch-to-buffer)
-    (define-key map (kbd "C-c k")    'helm-ag)
-    (define-key map (kbd "C-c r")    'my-mu4e)
-    (define-key map (kbd "C-c s")    'spawn-some-project-terminals)
-    (define-key map (kbd "C-c m")    'magit-status)
-    (define-key map (kbd "C-c p b")  'helm-projectile-switch-to-buffer)
-    (define-key map (kbd "C-c p p")  'helm-projectile-switch-project)
-    (define-key map (kbd "<f1> f")   'counsel-describe-function)
-    (define-key map (kbd "<f1> v")   'counsel-describe-variable)
-    (define-key map (kbd "<f2> u")   'counsel-unicode-char)
-    (define-key map (kbd "<f5>")     'next-theme)
-    map)
-  "my-global-keys-mode keymap.")
+Create an empty keymap and minor-mode for my global keybindings
 
+#+BEGIN_SRC emacs-lisp
+(defvar my-global-keymap (make-sparse-keymap))
 (define-minor-mode my-global-keys-mode
   :init-value t
   :keymap my-global-keymap)
-
-(my-global-keys-mode 1)
+(my-global-keys-mode t)
 #+END_SRC
+
+Overwriting default bindings (and defining new ones).
+
+ #+BEGIN_SRC emacs-lisp
+(general-def my-global-keymap
+  "<f1> f" 'counsel-describe-function
+  "<f1> v" 'counsel-describe-variable
+  "<f2> u" 'counsel-unicode-char
+  "M-x"    'counsel-M-x)
+
+(general-def my-global-keymap
+  :prefix "C-x"
+  "2"   'my-vsplit-last-buffer
+  "3"   'my-hsplit-last-buffer
+  "7"   'my-open-last-buffer
+  "b"   'ivy-switch-buffer ;'helm-mini
+  "C-b" 'ivy-switch-buffer ;'helm-buffers-list
+  "C-f" 'counsel-find-file) ;'helm-find-files)
+ #+END_SRC
+
+User-defined bindings (=C-c= followed by a letter and =<F5>= through
+=<F9>= without modifiers).
+
+#+BEGIN_SRC emacs-lisp
+(general-def my-global-keymap
+  :prefix "C-c"
+  "e" 'elfeed
+  "i" 'indent-region
+  "k" 'ag
+  "r" 'my-mu4e
+  "s" 'spawn-some-project-terminals)
+
+(general-def my-global-keymap
+  "<f5>" 'next-theme)
+ #+END_SRC
 
 * User Interface
 ** Spaceline
@@ -1452,7 +1420,6 @@ Do not show the following minor modes
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config :ensure spaceline
   :config
-  (spaceline-helm-mode 1)
   (spaceline-emacs-theme)
   (spaceline-install
     'main
