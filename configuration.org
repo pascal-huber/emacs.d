@@ -384,20 +384,10 @@ Never kill *\ast{}scratch\ast{}* or *\ast{}Messages\ast{}*
 
 ** Garbage Collection
 
-Don't collect garbage while a minibuffer is opened.
+Collecte garbage after 1MB.
 
 #+BEGIN_SRC emacs-lisp
-(setq my-gc-cons-threshold 20000000)
-
-(defun disable-gc ()
-  (setq gc-cons-threshold most-positive-fixnum))
-
-(defun enable-gc ()
-  (setq gc-cons-threshold my-gc-cons-threshold))
-
-(add-hook 'minibuffer-setup-hook #'disable-gc)
-(add-hook 'minibuffer-exit-hook #'enable-gc)
-
+(setq my-gc-cons-threshold (* 1 1000 1000 ))
 (setq gc-cons-threshold my-gc-cons-threshold)
 #+END_SRC
 
