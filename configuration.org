@@ -27,6 +27,7 @@
   - [[#browser][Browser]]
   - [[#evil][Evil]]
   - [[#evil-surround][Evil surround]]
+  - [[#non-evil-modes][Non-Evil Modes]]
   - [[#god-state][God State]]
   - [[#spell-checking][Spell Checking]]
   - [[#projectile][Projectile]]
@@ -448,6 +449,16 @@ Evil commands
   :ensure t
   :config
   (global-evil-surround-mode 1))
+#+END_SRC
+
+** Non-Evil Modes
+
+Use Emacs-State in some major-modes.
+
+#+BEGIN_SRC emacs-lisp
+(mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
+      '(elfeed-show-mode
+        elfeed-search-mode))
 #+END_SRC
 
 ** God State
