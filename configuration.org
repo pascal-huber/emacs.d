@@ -412,12 +412,12 @@ Save file with sudo.
 
 ** Browser
 
-Use =chromium --incognito= as browser.
+Use Firefox to browse urls.
 
 #+BEGIN_SRC emacs-lisp
-(setq browse-url-generic-program "/usr/bin/chromium"
-      browse-url-generic-args '("--incognito")
-      browse-url-browser-function 'browse-url-generic)
+(setq browse-url-browser-function 'browse-url-firefox
+      browse-url-new-window-flag  t
+      browse-url-firefox-new-window-is-tab nil)
 #+END_SRC
 
 ** Evil
