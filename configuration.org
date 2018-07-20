@@ -353,9 +353,11 @@ Automatic line breaks (not newlines) in text-modes. Use =M-q=
 
 ** Session
 
+Restore some stuff (command histories, kill-ring, ...) from last session.
+
 #+BEGIN_SRC emacs-lisp
 (require 'session)
-    (add-hook 'after-init-hook 'session-initialize)
+(add-hook 'after-init-hook 'session-initialize)
 #+END_SRC
 
 ** Kill Buffers
