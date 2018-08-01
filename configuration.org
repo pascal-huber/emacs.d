@@ -215,7 +215,7 @@ $ mkdir $WORKON_HOME
 
 ** Update
 
-Update packages at startup if there is an updated pending.
+Update packages at startup.
 
 #+BEGIN_SRC emacs-lisp
 (auto-package-update-maybe)
