@@ -242,63 +242,19 @@ Enable them all.
 
 ** Backup
 
-Always backup up by copying to =~/.emacs.d/backups/=.
+No backups, commit frequently!
 
 #+BEGIN_SRC emacs-lisp
-(setq backup-by-copying t)
-(setq backup-directory-alist
-          `(("." . ,(concat user-emacs-directory "backups/"))))
-#+END_SRC
-
-Also backup versioned files because we don't commit on every save.
-
-#+BEGIN_SRC emacs-lisp
-(setq vc-make-backup-files t)
-#+END_SRC
-
-Keep the 10 newest versions and the oldest one and use version numbers.
-
-#+BEGIN_SRC emacs-lisp
-(setq delete-old-versions t
-      kept-new-versions 10
-      kept-old-versions 1
-      version-control t)
-#+END_SRC
-
-By default, Emacs only backs up on the first save. Lets change this and force a backup on each save.
-
-#+BEGIN_SRC emacs-lisp
-(defun my-force-backup-of-buffer ()
-  (setq buffer-backed-up nil))
-(add-hook 'before-save-hook  'my-force-backup-of-buffer)
-#+END_SRC
-
-Delete backup files older than 4 days on startup.
-
-#+BEGIN_SRC emacs-lisp
-(setq my-backup-time (* 60 60 24 4))
-
-(defun my-delete-old-backup-files ()
-  "Deletes old backup files."
-  (interactive)
-  (let ((current (float-time (current-time))))
-    (dolist (file (directory-files "~/.emacs.d/backups/" t))
-      (when (and (backup-file-name-p file)
-                 (> (- current (float-time (nth 5 (file-attributes file))))
-                    my-backup-time))
-        (message "Deleting %s" file)
-        (delete-file file)))))
-
-(my-delete-old-backup-files)
+(setq make-backup-files nil)
 #+END_SRC
 
 ** Auto-Save
 
-Put auto-save files in =~/.emacs.d/auto-saves/=
+Store auto-saves in =/tmp=
 
 #+BEGIN_SRC emacs-lisp
 (setq auto-save-file-name-transforms
-      `((".*" "~/.emacs.d/auto-saves/" t)))
+      `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
 ** Scroll
