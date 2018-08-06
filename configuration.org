@@ -40,6 +40,7 @@
   - [[#project-terminals][Project Terminals]]
   - [[#toc-org][Toc Org]]
 - [[#programming-setup][Programming Setup]]
+  - [[#magit][Magit]]
   - [[#brackets][Brackets]]
   - [[#line-numbers][Line numbers]]
   - [[#indentation][Indentation]]
@@ -163,7 +164,6 @@ $ mkdir $WORKON_HOME
                       evil
                       evil-ediff
                       evil-leader
-                      evil-magit
                       evil-mu4e
                       evil-nerd-commenter
                       evil-org
@@ -181,6 +181,8 @@ $ mkdir $WORKON_HOME
                       js2-mode
                       js2-refactor
                       lua-mode
+                      magit
+                      magit-todos
                       markdown-mode
                       moe-theme
                       mu4e-alert
@@ -855,6 +857,20 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
 #+end_src
 
 * Programming Setup
+** Magit
+
+Show =TODO= in magit-buffer
+
+ #+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'magit-todos-mode)
+ #+END_SRC
+
+Start the commit buffer in evil normal mode  
+
+ #+BEGIN_SRC emacs-lisp
+(add-hook 'with-editor-mode-hook 'evil-normal-state)
+ #+END_SRC
+
 ** Brackets
 
 Make brackets colorful
