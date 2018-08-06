@@ -854,7 +854,7 @@ Typing any left bracket automatically insert the right matching bracket.
 Show line numbers in programming modes
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook '(lambda () (linum-mode)))
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 #+END_SRC
 
 ** Indentation
