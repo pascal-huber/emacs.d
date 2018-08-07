@@ -857,6 +857,12 @@ Show line numbers in programming modes
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 #+END_SRC
 
+Count the number of lines to use for line number width.
+
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-width-start t)
+#+END_SRC
+
 ** Indentation
 
 #+BEGIN_SRC emacs-lisp
