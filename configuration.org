@@ -8,6 +8,7 @@
   - [[#markdown][Markdown]]
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
+  - [[#ruby][Ruby]]
 - [[#dependencies][Dependencies]]
   - [[#installation-1][Installation]]
   - [[#update][Update]]
@@ -39,23 +40,22 @@
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#project-terminals][Project Terminals]]
   - [[#toc-org][Toc Org]]
+  - [[#tooltips][Tooltips]]
 - [[#programming-setup][Programming Setup]]
   - [[#magit][Magit]]
+  - [[#flycheck][Flycheck]]
   - [[#brackets][Brackets]]
   - [[#line-numbers][Line numbers]]
   - [[#indentation][Indentation]]
-  - [[#autocomplete][Autocomplete]]
   - [[#company-mode][Company Mode]]
-  - [[#70-columns-indicator][70 columns indicator.]]
   - [[#rainbow-mode][Rainbow Mode]]
   - [[#web-mode][Web mode]]
-  - [[#web-beautify][Web-beautify]]
   - [[#latex][Latex]]
-  - [[#ruby][Ruby]]
-  - [[#rspec-mode][Rspec-mode]]
+  - [[#ruby-1][Ruby]]
   - [[#python][Python]]
   - [[#markdown-mode][Markdown Mode]]
 - [[#keybindings][Keybindings]]
+  - [[#company][Company]]
   - [[#mu4e-2][Mu4e]]
   - [[#evil-1][Evil]]
   - [[#global][Global]]
@@ -118,7 +118,7 @@ $ pacaur -S pandoc
 Install =npm= dependencies
 
 #+BEGIN_SRC shell
-$ npm install -g eslint babel-eslint eslint-plugin-react tern js-beautify
+$ npm install -g eslint babel-eslint eslint-plugin-react tern
 #+END_SRC
 
 ** Python Development
@@ -129,6 +129,14 @@ Setup Python Development Envirnoment.
 $ sudo pacman -S python-pip python-virtualenv python2-virtualenv
 $ pip install --user jedi flake8 autopep8 yapf
 $ mkdir $WORKON_HOME
+#+END_SRC
+
+** Ruby
+
+Setup for =Robe=
+
+#+BEGIN_SRC shell
+$ gem install pry pry-doc method_source
 #+END_SRC
 
 * Dependencies
@@ -144,16 +152,24 @@ $ mkdir $WORKON_HOME
                       ac-math
                       ag
                       auctex
-                      auto-complete
                       auto-package-update
                       beacon
                       browse-kill-ring
                       comment-tags
                       company
+                      company-ansible
+                      company-auctex
+                      company-bibtex
+                      company-auctex
+                      company-inf-ruby
+                      company-nginx
+                      company-quickhelp
+                      company-shell
                       company-tern
                       company-web
                       counsel
                       counsel-projectile
+                      dictcc
                       dictionary
                       diminish
                       dumb-jump
@@ -161,6 +177,7 @@ $ mkdir $WORKON_HOME
                       elfeed-org
                       elfeed-goodies
                       elpy
+                      enh-ruby-mode
                       evil
                       evil-ediff
                       evil-leader
@@ -168,8 +185,8 @@ $ mkdir $WORKON_HOME
                       evil-nerd-commenter
                       evil-org
                       evil-surround
-                      fill-column-indicator
                       flycheck
+                      flycheck-pos-tip
                       flx-ido
                       general
                       grizzl
@@ -178,6 +195,7 @@ $ mkdir $WORKON_HOME
                       ido
                       ido-vertical-mode
                       inf-ruby
+                      jquery-doc
                       js2-mode
                       js2-refactor
                       lua-mode
@@ -194,15 +212,14 @@ $ mkdir $WORKON_HOME
                       projectile
                       rainbow-delimiters
                       rainbow-mode
+                      robe
                       smex
                       spaceline
                       swiper
                       tern
-                      tern-auto-complete
                       toc-org
                       use-package
                       virtualenvwrapper
-                      web-beautify
                       web-mode
                       yaml-mode))
 
@@ -415,7 +432,8 @@ Use Emacs-State in some major-modes.
 #+BEGIN_SRC emacs-lisp
 (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
       '(elfeed-show-mode
-        elfeed-search-mode))
+        elfeed-search-mode
+        flycheck-error-list-mode))
 #+END_SRC
 
 ** God State
@@ -627,6 +645,13 @@ Open mu4e anyway.
         (mu4e)))))
 #+END_SRC
 
+Don't mark for delete, only move to Trash
+
+#+BEGIN_SRC emacs-lisp
+(defun mu4e-headers-mark-for-delete (&rest args)
+  (message "move to Trash, don't delete"))
+#+END_SRC
+
 Dont reply to myself.
 
 #+BEGIN_SRC emacs-lisp
@@ -812,6 +837,21 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
   (warn "toc-org not found"))
 #+end_src
 
+** Tooltips
+
+Don't use ugly GTK tooltips.
+
+#+BEGIN_SRC emacs-lisp
+(setq x-gtk-use-system-tooltips nil)
+#+END_SRC
+
+Use relative coordinates. If an error is on the right side of the
+frame, the tooltip will move more to the left and stay inside the frame.
+
+#+BEGIN_SRC emacs-lisp
+(setq pos-tip-use-relative-coordinates t)
+#+END_SRC
+
 * Programming Setup
 ** Magit
 
@@ -821,11 +861,50 @@ Show =TODO= in magit-buffer
 (add-hook 'prog-mode-hook #'magit-todos-mode)
  #+END_SRC
 
-Start the commit buffer in evil normal mode  
+Start the commit buffer in evil normal mode
 
  #+BEGIN_SRC emacs-lisp
 (add-hook 'with-editor-mode-hook 'evil-normal-state)
  #+END_SRC
+
+** Flycheck
+
+Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
+
+#+BEGIN_SRC emacs-lisp
+(require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+ #+END_SRC
+
+Show Tip in popup when the cursor is on the error.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'flycheck
+  (flycheck-pos-tip-mode))
+#+END_SRC
+
+Setting a max width so that the tooltip does not leave the frame.
+
+#+BEGIN_SRC emacs-lisp
+(setq flycheck-pos-tip-max-width 50)
+#+END_SRC
+
+Hide the tooltip after 20 seconds.
+
+#+BEGIN_SRC emacs-lisp
+(setq flycheck-pos-tip-timeout 20)
+#+END_SRC
+
+Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within
+the error list the following key bindings are available:
+ - =n= Jump to the next error
+ - =p= Jump to the previous error
+ - =e= Explain the error
+ - =f= Filter the error list by level
+ - =F= Remove this filter
+ - =S= Sort the error list bye the column at point
+ - =g= Check the source buffer and update the error list
+ - =q= Quit the error list and hide its window
 
 ** Brackets
 
@@ -846,7 +925,8 @@ Highlight matching brackets.
 Typing any left bracket automatically insert the right matching bracket.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook #'electric-pair-mode)
+(require 'smartparens-config)
+(add-hook 'prog-mode-hook #'smartparens-mode)
 #+END_SRC
 
 ** Line numbers
@@ -877,25 +957,17 @@ Count the number of lines to use for line number width.
                   sh-indentation 2)))
 #+END_SRC
 
-** Autocomplete
-
-#+BEGIN_SRC emacs-lisp
-(require 'auto-complete-config)
-(ac-config-default)
-#+END_SRC
-
 ** Company Mode
 
+Completion will start automatically after you type a few letters. Use
+=C-n= and =C-p= to select, =<return>= to complete or =<tab>= to
+complete the common part. Search through the completions with =C-s=,
+=C-r= and =C-o=. Press =M-(digit)= to quickly complete with one of the
+first 10 candidates.
+
 #+BEGIN_SRC emacs-lisp
+(require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
-#+END_SRC
-
-** 70 columns indicator.
-
-#+BEGIN_SRC emacs-lisp
-(require 'fill-column-indicator)
-(setq fci-rule-width 1)
-(setq fci-rule-color "red")
 #+END_SRC
 
 ** Rainbow Mode
@@ -908,6 +980,7 @@ names, e.g. #0000ff is displayed in white with a blue background
 #+END_SRC
 
 ** Web mode
+*** Setup
 
 #+BEGIN_SRC emacs-lisp
 (require 'web-mode)
@@ -915,90 +988,92 @@ names, e.g. #0000ff is displayed in white with a blue background
 (add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
-
-(defun my-web-mode-indent-hook ()
-  "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-script-padding 2)
-  (setq web-mode-style-padding 2)
-  (setq web-mode-script-padding 2)
-  (setq web-mode-block-padding 0)
-  (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-enable-current-column-highlight t))
-
-(add-hook 'web-mode-hook 'my-web-mode-indent-hook)
+(add-to-list 'auto-mode-alist '("\\.json?\\'" . web-mode))
 #+END_SRC
 
-Auto complete
+Some web-mode settings.
 
 #+BEGIN_SRC emacs-lisp
-(require 'company)                                   ; load company mode
-(require 'company-web-html)                          ; load company mode html backend
-(require 'company-web-jade)                          ; load company mode jade backend
-(require 'company-web-slim)                          ; load company mode slim backend
-(add-hook 'web-mode-hook 'company-mode)
-(define-key web-mode-map (kbd "M-SPC") 'company-complete)
+(setq web-mode-markup-indent-offset 2
+      web-mode-css-indent-offset 2
+      web-mode-code-indent-offset 2
+      web-mode-script-padding 2
+      web-mode-style-padding 2
+      web-mode-script-padding 2
+      web-mode-block-padding 0
+      web-mode-enable-current-element-highlight t
+      web-mode-enable-current-column-highlight t)
+#+END_SRC
 
-;; JavaScript with Tern
-(defun my-web-mode-tern-hook ()
-  "Hook for `web-mode'."
-    (set (make-local-variable 'company-backends)
-         '(company-tern company-web-html company-yasnippet company-files)))
-(add-hook 'web-mode-hook 'my-web-mode-tern-hook)
+*** Company-Tern
 
-;; Enable JavaScript completion between <script>...</script> etc.
+Use =company-tern=. Put a file =.tern-project= in the root of the
+project. Additionally, a file =~/.tern-config= can
+
+A Ruby on Rails =.tern-project= may look like this:
+
+#+BEGIN_SRC javascript
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEagerly": [
+    "app/assets/javascripts/**/*.js",
+    "lib/assets/javascript/**/*.js",
+    "vendor/assets/javascript/**/*.js"
+  ],
+  "plugins": {
+    "es_modules": {},
+    "node": {}
+  }
+}
+#+END_SRC
+
+And my =~/.tern-config=
+
+#+BEGIN_SRC javascript
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "plugins": {
+    "es_modules": {},
+    "node": {}
+  }
+}
+#+END_SRC
+
+Add =company-tern= to =company=.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'company-backends 'company-tern)
+#+END_SRC
+
+Enable JavaScript completion inside =<script>...</script>=.
+
+#+BEGIN_SRC emacs-lisp
 (advice-add 'company-tern :before
             #'(lambda (&rest _)
                 (if (equal major-mode 'web-mode)
                     (let ((web-mode-cur-language
-                          (web-mode-language-at-pos)))
+                           (web-mode-language-at-pos)))
                       (if (or (string= web-mode-cur-language "javascript")
                               (string= web-mode-cur-language "jsx"))
                           (unless tern-mode (tern-mode))
                         (if tern-mode (tern-mode -1)))))))
-
 #+END_SRC
 
-linting
+*** Eslint
+
+Use =eslint= instead of =jshint=.
 
 #+BEGIN_SRC emacs-lisp
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(setq-default flycheck-disabled-checkers
-              (append flycheck-disabled-checkers
-                      '(json-jsonlist)))
 (setq-default flycheck-disabled-checkers
               (append flycheck-disabled-checkers
                       '(javascript-jshint)))
 (flycheck-add-mode 'javascript-eslint 'web-mode)
-#+END_SRC
-
-** Web-beautify
-
-Keybinding to beautify manually.
-
-#+BEGIN_SRC emacs-lisp
-(require 'web-beautify)
-(eval-after-load 'js2-mode
-  '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
-(eval-after-load 'js
-  '(define-key js-mode-map (kbd "C-c b") 'web-beautify-js))
-(eval-after-load 'json-mode
-  '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
-(eval-after-load 'sgml-mode
-  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
-
-(eval-after-load 'web-mode
-  '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
-(eval-after-load 'web-mode
-  '(define-key web-mode-map (kbd "C-c n") 'web-beautify-js))
-(eval-after-load 'web-mode
-  '(define-key web-mode-map (kbd "C-c m") 'web-beautify-css))
-
-(eval-after-load 'css-mode
-  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 #+END_SRC
 
 ** Latex
@@ -1019,19 +1094,68 @@ In Evince use =Control + Left Click= for backward search.
 #+END_SRC
 
 ** Ruby
+*** Enhanced Ruby Mode
+Use =enh-ruby-mode= for all common ruby-files.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist
+             '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
+#+END_SRC
 
 No magic comments
 
-#+BEGIN_SRC config
+#+BEGIN_SRC emacs-lisp
 (setq ruby-insert-encoding-magic-comment nil)
 #+END_SRC
 
-** Rspec-mode
+*** Robe
+
+Add the following gems to the =Gemfile= and install them.
+
+#+BEGIN_SRC ruby
+group :development do
+  gem 'pry'
+  gem 'pry-doc'
+  gem 'method_source'
+end
+#+END_SRC
+
+Generally, you'll want to start with =M-x inf-ruby-console-auto=. If
+there's no Ruby console running, most interactive commands provided by
+Robe will offer to launch it automatically.
+
+The exceptions are code completion and eldoc, which only work if the
+server is already running. To launch it, type =M-x robe-start=.
+
+As you change the code in your project, you'll want to update the
+running process. To load the current file, type =C-c C-l=
+(=ruby-load-file=), see inf-ruby for more commands. When you're
+working on a Rails project, you can type =C-c C-k= instead to reload
+the whole environment at once.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'enh-ruby-mode-hook 'robe-mode)
+#+END_SRC
+
+Some useful Commands/Keybindings
+ - =C-c C-d= Lookup documentation
+ - =M-.= / =M-,= Jump to defintion and back
+
+Use company mode for code completion.
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load 'company
+  '(push 'company-robe company-backends))
+#+END_SRC
+
+*** Rspec-mode
 
 Put the following in the =Gemfile=.
 
-#+BEGIN_SRC config
-gem 'spring-commands-rspec'
+#+BEGIN_SRC ruby
+group :development do
+  gem 'spring-commands-rspec'
+end
 #+END_SRC
 
 Usage:
@@ -1044,14 +1168,13 @@ Usage:
 Load it.
 
 #+BEGIN_SRC emacs-lisp
-(require 'ansi-color)
 (add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
 (require 'rspec-mode)
-(eval-after-load 'rspec-mode
- '(rspec-install-snippets))
+(require 'ansi-color)
+(eval-after-load 'rspec-mode '(rspec-install-snippets))
 #+END_SRC
 
-When you've hit the breakpoint, hit C-x C-q to enable inf-ruby.
+When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'inf-ruby-switch-setup)
@@ -1100,6 +1223,18 @@ emacs (for both evil and non-evil users)
 (require 'general)
  #+END_SRC
 
+** Company
+
+#+BEGIN_SRC emacs-lisp
+(general-def company-active-map
+  "C-n"   'company-select-next
+  "C-p"   'company-select-previous)
+
+(general-def company-serach-map
+  "C-n" 'company-select-next
+  "C-p" 'company-select-previous)
+#+END_SRC
+
 ** Mu4e
 
 #+BEGIN_SRC emacs-lisp
@@ -1137,6 +1272,15 @@ Evil motion-states are the evil states where we don't edit text.
   "k"      'evil-previous-visual-line)
 #+END_SRC
 
+Free =M-.= and =M-,= since they are popular kebinings for "jump to
+definition" and "back".
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'normal
+  "M-." nil
+  "M-," nil)
+#+END_SRC
+
 ** Global
 
 Create an empty keymap and minor-mode for my global keybindings
@@ -1156,6 +1300,7 @@ Overwriting default bindings (and defining new ones).
   "<f1> f" 'counsel-describe-function
   "<f1> v" 'counsel-describe-variable
   "<f2> u" 'counsel-unicode-char
+  "M-SPC"  'company-complete
   "M-x"    'counsel-M-x)
 
 (general-def my-global-keymap
