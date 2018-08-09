@@ -2,14 +2,19 @@
 
 This is my personal configuration.
 
-* Inspiration
+* Some Inspiration
  - [[https://github.com/munen/emacs.d][Alain's configuration]]
  - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
- - [[https://github.com/bradwright/emacs.d][Bradwright's configuration]]
- - [[https://github.com/caisah/emacs.dz][emacs.dz: A collection of Emacs configurations]]
+ - [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
+ - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
+ - [[https://github.com/hrs/dotfiles/blob/master/emacs/.emacs.d/configuration.org][Harry R. Schwartz's configuration]]
+ - [[http://ivanmalison.github.io/dotfiles/][Ivan Malison's configuration]]
+ - [[http://pages.sachachua.com/.emacs.d/Sacha.html#org7b1ada1][Sacha Chua's configuration]]
+ - [[https://github.com/wasamasa/dotemacs/blob/master/init.org][Vasilij Schneidermann's configuration]]
+ - [[https://github.com/seagle0128/.emacs.d][Vincent Zhang's configuration]]
 
 * Content :TOC:
-- [[#inspiration][Inspiration]]
+- [[#some-inspiration][Some Inspiration]]
 - [[#os-setup][OS Setup]]
   - [[#mu4e][Mu4e]]
   - [[#spaceline][Spaceline]]
@@ -47,7 +52,7 @@ This is my personal configuration.
   - [[#god-state][God State]]
   - [[#projectile][Projectile]]
   - [[#counsel][Counsel]]
-  - [[#ido-completion][Ido Completion]]
+  - [[#ido][Ido]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
 - [[#feeds][Feeds]]
 - [[#mail][Mail]]
@@ -437,7 +442,7 @@ Open in new frame
 
 ** Project Terminals
 
-Start/Stop urxvt clients in project folder.
+Spawn terminal-emulators in project folder.
 
 Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem to work with i3. Thus, =-title= is used to place the terminals on the correct workspace.
 
@@ -671,7 +676,7 @@ Make =evil-god-state= work also in visual-mode.
 (counsel-projectile-mode)
  #+END_SRC
 
-** Ido Completion
+** Ido
 
 #+BEGIN_SRC emacs-lisp
 (ph/require-package 'ido)
@@ -1414,7 +1419,7 @@ Faces to highlight segments which need special attention.
 (defface ph/info-face
   '((t :inherit 'mode-line
        :foreground "black"
-       :background )"#a1db00")
+       :background "#a1db00"))
   "Info Face"
   :group 'spaceline)
 #+END_SRC
@@ -1452,28 +1457,20 @@ TODO: refactor this
 
 Ajdust the colors for different evil-states.
 
-=evil-god-state=
-
 #+BEGIN_SRC emacs-lisp
 (defface ph/spaceline-evil-god
   '((t (:background "tomato"
         :inherit 'spaceline-evil-normal)))
   "Spaceline Evil God State"
   :group 'spaceline)
-
 (add-to-list 'spaceline-evil-state-faces
              '(god . ph/spaceline-evil-god))
-#+END_SRC
 
-=evil-operator-state=
-
-#+BEGIN_SRC emacs-lisp
 (defface ph/spaceline-evil-operator
   '((t (:background "cornflower blue"
         :inherit 'spaceline-evil-normal)))
   "Spaceline Evil Operator State"
   :group 'spaceline)
-
 (add-to-list 'spaceline-evil-state-faces
              '(operator . ph/spaceline-evil-operator))
 #+END_SRC
@@ -1483,8 +1480,8 @@ Setting the face according to =evil-state=.
 #+BEGIN_SRC emacs-lisp
 (defun ph/spaceline-highlight-face-evil-state ()
   "Set the highlight face depending on the evil state.
-Set `spaceline-highlight-face-func' to
-`spaceline-highlight-face-evil-state' to use this."
+   Set `spaceline-highlight-face-func' to
+   `spaceline-highlight-face-evil-state' to use this."
   (if (bound-and-true-p evil-local-mode)
       (let* ((face (assq evil-state spaceline-evil-state-faces)))
         (if face (cdr face) (spaceline-highlight-face-default)))
@@ -1497,7 +1494,7 @@ Set `spaceline-highlight-face-func' to
 (spaceline-define-segment ph/virtualenvwrapper-segment venv-current-name)
 #+END_SRC
 
-**** Git status (using [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]])
+**** Git status
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/git-branch-name ()
