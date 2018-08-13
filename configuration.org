@@ -6,8 +6,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#some-inspiration][Some Inspiration]]
 - [[#os-setup][OS Setup]]
   - [[#mu4e][Mu4e]]
-  - [[#spaceline][Spaceline]]
-  - [[#flyspell][Flyspell]]
   - [[#markdown][Markdown]]
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
@@ -66,7 +64,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tooltips][Tooltips]]
   - [[#faces][Faces]]
   - [[#theme-rotation][Theme Rotation]]
-  - [[#spaceline-1][Spaceline]]
+  - [[#spaceline][Spaceline]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
@@ -104,22 +102,6 @@ Make sure mu has indexed everything
 
 #+BEGIN_SRC shell
 $ mu index --maildir=~/.mail
-#+END_SRC
-
-** Spaceline
-
-- [[https://github.com/ryanoasis/nerd-fonts][nerd-fonts]]
-
-Install Nerd-Fonts
-
-#+BEGIN_SRC shell
-$ pacaur -S nerd-fonts-complete
-#+END_SRC
-
-** Flyspell
-
-#+BEGIN_SRC shell
-$ pacaur -S aspell aspell-en aspell-de
 #+END_SRC
 
 ** Markdown
