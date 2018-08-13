@@ -1,17 +1,6 @@
 #+TITLE: Emacs Configuration
 
-This is my personal configuration.
-
-* Some Inspiration
- - [[https://github.com/munen/emacs.d][Alain's configuration]]
- - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
- - [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
- - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
- - [[https://github.com/hrs/dotfiles/blob/master/emacs/.emacs.d/configuration.org][Harry R. Schwartz's configuration]]
- - [[http://ivanmalison.github.io/dotfiles/][Ivan Malison's configuration]]
- - [[http://pages.sachachua.com/.emacs.d/Sacha.html#org7b1ada1][Sacha Chua's configuration]]
- - [[https://github.com/wasamasa/dotemacs/blob/master/init.org][Vasilij Schneidermann's configuration]]
- - [[https://github.com/seagle0128/.emacs.d][Vincent Zhang's configuration]]
+This is my Emacs configuration. There are many like it, but this one is mine.
 
 * Content :TOC:
 - [[#some-inspiration][Some Inspiration]]
@@ -28,6 +17,7 @@ This is my personal configuration.
   - [[#basic-packages][Basic Packages]]
   - [[#auto-update-packages][Auto Update Packages]]
 - [[#general-setup][General Setup]]
+  - [[#exec-paths][Exec paths]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#symlinks][Symlinks]]
   - [[#final-newline][Final Newline]]
@@ -38,31 +28,31 @@ This is my personal configuration.
   - [[#auto-revert][Auto revert]]
   - [[#garbage-collection][Garbage Collection]]
   - [[#browser][Browser]]
-  - [[#tooltips][Tooltips]]
-  - [[#automatic-line-breaks][Automatic Line Breaks]]
+  - [[#line-filling][Line Filling]]
   - [[#whitespace-cleanup][Whitespace Cleanup]]
   - [[#buffers-and-frames][Buffers and Frames]]
   - [[#kill-buffers][Kill Buffers]]
   - [[#sudo-save][Sudo Save]]
-  - [[#dired][Dired]]
-  - [[#project-terminals][Project Terminals]]
-  - [[#display-line-numbers][Display Line Numbers]]
   - [[#session][Session]]
+  - [[#browse-kill-ring][Browse-Kill-Ring]]
+  - [[#occur][Occur]]
+  - [[#dired][Dired]]
   - [[#evil][Evil]]
   - [[#god-state][God State]]
   - [[#projectile][Projectile]]
+  - [[#project-terminals][Project Terminals]]
   - [[#counsel][Counsel]]
   - [[#ido][Ido]]
-  - [[#browse-kill-ring][Browse-Kill-Ring]]
 - [[#feeds][Feeds]]
 - [[#mail][Mail]]
   - [[#mu4e-setup][Mu4e Setup]]
   - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#programming-setup][Programming Setup]]
   - [[#brackets][Brackets]]
-  - [[#company-mode][Company Mode]]
+  - [[#company][Company]]
   - [[#flycheck][Flycheck]]
   - [[#indentation][Indentation]]
+  - [[#display-line-numbers][Display Line Numbers]]
   - [[#magit][Magit]]
   - [[#markdown-1][Markdown]]
   - [[#python][Python]]
@@ -73,13 +63,27 @@ This is my personal configuration.
   - [[#web-mode][Web mode]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
-  - [[#spaceline-1][Spaceline]]
+  - [[#tooltips][Tooltips]]
+  - [[#faces][Faces]]
   - [[#theme-rotation][Theme Rotation]]
+  - [[#spaceline-1][Spaceline]]
   - [[#beacon][Beacon]]
-  - [[#font][Font]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
   - [[#fringe][Fringe]]
+
+* Some Inspiration
+
+- [[https://github.com/munen/emacs.d][Alain's configuration]]
+- [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
+- [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
+- [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
+- [[https://github.com/hrs/dotfiles/blob/master/emacs/.emacs.d/configuration.org][Harry R. Schwartz's configuration]]
+- [[http://ivanmalison.github.io/dotfiles/][Ivan Malison's configuration]]
+- [[http://pages.sachachua.com/.emacs.d/Sacha.html#org7b1ada1][Sacha Chua's configuration]]
+- [[https://github.com/purcell/emacs.d/][Steve Purcell's configuration]]
+- [[https://github.com/wasamasa/dotemacs/blob/master/init.org][Vasilij Schneidermann's configuration]]
+- [[https://github.com/seagle0128/.emacs.d][Vincent Zhang's configuration]]
 
 * OS Setup
 
@@ -93,8 +97,8 @@ $ ln -s ~/git/emacs.d ~/.emacs.d
 
 Install and configure the following.
 
- - [[https://github.com/djcb/mu][mu]]
- - [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
+- [[https://github.com/djcb/mu][mu]]
+- [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
 
 Make sure mu has indexed everything
 
@@ -104,7 +108,7 @@ $ mu index --maildir=~/.mail
 
 ** Spaceline
 
- - [[https://github.com/ryanoasis/nerd-fonts][nerd-fonts]]
+- [[https://github.com/ryanoasis/nerd-fonts][nerd-fonts]]
 
 Install Nerd-Fonts
 
@@ -120,7 +124,7 @@ $ pacaur -S aspell aspell-en aspell-de
 
 ** Markdown
 
- - [[https://github.com/jgm/pandoc][pandoc]]
+- [[https://github.com/jgm/pandoc][pandoc]]
 
 #+BEGIN_SRC shell
 $ pacaur -S pandoc
@@ -164,10 +168,10 @@ Use the =gnu=, =melpa= and =marmelade= archives.
                          ("melpa" . "https://melpa.org/packages/")))
 #+END_SRC
 
-A function to install and require packages in a clean way.
+A function to install and load packages on demand.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/require-package (package &optional norequire)
+(defun ph/install-package (package &optional norequire)
   "Installs PACKAGE and requires it unless NOREQUIRE is set to non-nil."
   (unless (package-installed-p package)
     (progn
@@ -176,7 +180,7 @@ A function to install and require packages in a clean way.
   (unless norequire (require package)))
 #+END_SRC
 
-Also load packages which are not in an archive.
+Also load packages which are not in an archive but in this repository.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/vendor/")
@@ -184,37 +188,39 @@ Also load packages which are not in an archive.
 
 ** Basic Packages
 
-=general.el= provides a more convenient method for binding keys in
-emacs (for both evil and non-evil users).
+=general.el= provides a more convenient method for binding keys in emacs (for
+both evil and non-evil users).
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'general)
+(ph/install-package 'general)
  #+END_SRC
 
-The =use-package= macro allows you to isolate package configuration in
-your =.emacs= file in a way that is both performance-oriented and, well,
-tidy.
+The =use-package= macro allows you to isolate package configuration in your
+=.emacs= file in a way that is both performance-oriented and, well, tidy.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'use-package)
+(ph/install-package 'use-package)
 #+END_SRC
 
 Install packages which don't need any further configuration.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'ag)
-(ph/require-package 'comment-tags)
-(ph/require-package 'dictcc)
-(ph/require-package 'haml-mode)
-(ph/require-package 'js2-mode)
-(ph/require-package 'js2-refactor)
-(ph/require-package 'lua-mode)
-(ph/require-package 'openwith)
-(ph/require-package 'org-ref)
-(ph/require-package 'php-mode)
-(ph/require-package 'smex)
-(ph/require-package 'tern)
-(ph/require-package 'yaml-mode)
+(ph/install-package 'ag)
+(ph/install-package 'comment-tags)
+(ph/install-package 'dictcc)
+(ph/install-package 'gitattributes-mode)
+(ph/install-package 'gitconfig-mode)
+(ph/install-package 'gitignore-mode)
+(ph/install-package 'haml-mode)
+(ph/install-package 'js2-mode)
+(ph/install-package 'js2-refactor)
+(ph/install-package 'lua-mode)
+(ph/install-package 'openwith)
+(ph/install-package 'org-ref)
+(ph/install-package 'php-mode)
+(ph/install-package 'smex)
+(ph/install-package 'tern)
+(ph/install-package 'yaml-mode)
 #+END_SRC
 
 ** Auto Update Packages
@@ -222,15 +228,27 @@ Install packages which don't need any further configuration.
 Update packages at startup.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'auto-package-update)
+(ph/install-package 'auto-package-update)
 (auto-package-update-maybe)
 #+END_SRC
 
 * General Setup
 
-This section contains customizations of Emacs' defaults as well as
-additional features used in different
-major-modes. Programming-specific settings settings will be set later.
+This section contains customizations of Emacs' defaults as well as additional
+features used in different major-modes. Programming-specific settings settings
+will be set later.
+
+** Exec paths
+
+=exec-path-from-shell= is a GNU Emacs library to ensure environment variables
+inside Emacs look the same as in the user's shell.
+
+#+BEGIN_SRC emacs-lisp
+;(ph/install-package 'exec-path-from-shell)
+;(when (memq window-system '(mac ns x))
+;  (exec-path-from-shell-initialize))
+;(ph/install-package 'nvm)
+#+END_SRC
 
 ** Disabled Commands
 
@@ -291,8 +309,8 @@ When scrolling, keep the cursor at the same position.
 
 ** Auto revert
 
-When something changes a file, automatically refresh the buffer
-containing that file so they can't get out of sync.
+When something changes a file, automatically refresh the buffer containing that
+file so they can't get out of sync.
 
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
@@ -300,11 +318,11 @@ containing that file so they can't get out of sync.
 
 ** Garbage Collection
 
-Collecte garbage after 20MB. Some packages which cache a lot
-(e.g. =flx-ido=) will profit.
+Collect garbage after 20MB. Some packages which cache a lot (e.g. =flx-ido=)
+will profit.
 
 #+BEGIN_SRC emacs-lisp
-(setq gc-cons-threshold (* 20 1000 1000 ))
+(setq gc-cons-threshold (* 20 1000 1000))
 #+END_SRC
 
 ** Browser
@@ -317,21 +335,21 @@ Use Firefox to browse urls.
       browse-url-firefox-new-window-is-tab nil)
 #+END_SRC
 
-** Tooltips
+** Line Filling
 
-Don't use ugly GTK tooltips.
+Use a line width of 80 columns.
 
 #+BEGIN_SRC emacs-lisp
-(setq x-gtk-use-system-tooltips nil)
+(setq-default fill-column 80)
 #+END_SRC
 
-** Automatic Line Breaks
+To reorganize a paragraph to fit the 80 columns, use =M-q= (=fill-paragraph=)
+and/or enable =auto-fill-mode=.
 
-Automatic line breaks (not newlines) in text-modes. Use =M-q=
-(=fill-paragraph=) to reorganize after changing the paragraph.
+Don't do double-spaces between sentences.
 
 #+BEGIN_SRC emacs-lisp
-; (add-hook 'text-mode-hook 'auto-fill-mode)
+(setq-default sentence-end-double-space nil)
 #+END_SRC
 
 ** Whitespace Cleanup
@@ -344,8 +362,8 @@ Delete trailing whitespaces when saving.
 
 ** Buffers and Frames
 
-Split functions wich open the previous buffer in the new window instead
-of showing the current buffer twice.
+Split functions wich open the previous buffer in the new window instead of
+showing the current buffer twice. [[http://www.alandmoore.com/blog/2013/05/01/better-window-splitting-in-emacs/][stolen from here]]
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/vsplit-last-buffer ()
@@ -361,7 +379,7 @@ of showing the current buffer twice.
   (switch-to-next-buffer))
 #+END_SRC
 
-Open previous buffer in new frame.
+A function to open the previous buffer in a new frame.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/open-last-buffer ()
@@ -371,34 +389,30 @@ Open previous buffer in new frame.
 
 ** Kill Buffers
 
-TODO: rewrite this so that kill-other-buffers doesn't delete scratch
-and Messages and project-terminals directly.
+A function to kill all buffers except the current one and other important buffers.
 
 #+BEGIN_SRC emacs-lisp
-(defun kill-other-buffers ()
-  "Kill all other buffers."
+(setq ph/buffer-dont-kill-regexp
+      (concat "\\("
+              "project-terminals"
+              "\\|\\*Messages\\*"
+              "\\)"))
+
+(defun ph/kill-other-buffers ()
+  "Kill all other buffers unless the buffer-name matches
+  `ph/buffer-kill-regexp`."
   (interactive)
-  (mapc 'kill-buffer
+  (mapc #'(lambda (buffer)
+            (unless (string-match ph/buffer-dont-kill-regexp (buffer-name buffer))
+              (kill-buffer buffer)))
         (delq (current-buffer) (buffer-list))))
-#+END_SRC
-
-Never kill *\ast{}scratch\ast{}* or *\ast{}Messages\ast{}*
-
-#+BEGIN_SRC emacs-lisp
-(setq my-buffer-kill-regexp
-      "\\(\\*scratch\\*\\|\\*Messages\\*\\)")
-
-(add-hook 'kill-buffer-query-functions
-          (lambda ()
-            (not (string-match-p my-buffer-kill-regexp
-                                 (buffer-name)))))
-#+END_SRC
+              #+END_SRC
 
 ** Sudo Save
 
 Save file with sudo.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (defun ph/sudo-file-name (filename)
   "prepends '/sudo:root@localhost:' if not already present"
   (if (not (string-prefix-p "/sudo:root@localhost:" filename))
@@ -409,8 +423,52 @@ Save file with sudo.
   "save file with sudo"
   (interactive)
   (if (not buffer-file-name)
-      (write-file (sudo-file-name (ido-read-file-name "File:")))
-    (write-file (sudo-file-name buffer-file-name))))
+      (write-file (ph/sudo-file-name (ido-read-file-name "File:")))
+    (write-file (ph/sudo-file-name buffer-file-name))))
+   #+END_SRC
+
+** Session
+
+Restore some stuff (command histories, kill-ring, ...) from last session.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'session)
+(add-hook 'after-init-hook 'session-initialize)
+#+END_SRC
+
+** Browse-Kill-Ring
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'browse-kill-ring)
+
+(setq browse-kill-ring-highlight-inserted-item t
+      browse-kill-ring-highlight-current-entry nil
+      browse-kill-ring-show-preview t)
+
+(general-def browse-kill-ring-mode-map
+  "k" 'browse-kill-ring-previous
+  "j" 'browse-kill-ring-forward)
+#+END_SRC
+
+** Occur
+
+[[http://emacswiki.org/emacs/OccurMode][occur-mode]] is a search minor-mode that shows a buffer with all matching results
+in a popup buffer. Use the occur-dwim (do what I mean) function from [[https://oremacs.com/2015/01/26/occur-dwim/][(or emacs
+irrelevant)]]
+
+#+BEGIN_SRC emacs-lisp
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+            (buffer-substring-no-properties
+             (region-beginning)
+             (region-end))
+          (let ((sym (thing-at-point 'symbol)))
+            (when (stringp sym)
+              (regexp-quote sym))))
+        regexp-history)
+  (call-interactively 'occur))
 #+END_SRC
 
 ** Dired
@@ -419,7 +477,8 @@ Usage:
  - =a= to open a file or directory in the current buffer
  - =RET= to open a file or directory in a new buffer
  - =o= to open a file or directory in a vertical split buffer
- - =C-o= to open a file or directory in a vertical split buffer but keep the focus in the current buffer.
+ - =C-o= to open a file or directory in a vertical split buffer but keep the
+   focus in the current buffer.
  - =C-c C-o= to open a file or directory in a new frame.
 
 Reuse buffer
@@ -440,11 +499,160 @@ Open in new frame
   '(define-key dired-mode-map (kbd "C-c C-o") 'ph/dired-find-file-other-frame))
 #+END_SRC
 
+** Evil
+*** Setup
+
+I am evil.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'evil)
+(ph/install-package 'evil-org)
+(ph/install-package 'evil-ediff)
+
+(evil-mode 1)
+#+END_SRC
+
+Evil commands
+
+#+BEGIN_SRC emacs-lisp
+(evil-ex-define-cmd "ww" 'ph/sudo-save)
+#+END_SRC
+
+When exiting insert-state, don't move the cursor
+
+#+BEGIN_SRC emacs-lisp
+(setq evil-move-cursor-back nil)
+#+END_SRC
+
+Go to next/previous line ith =h= and =l=.
+
+#+BEGIN_SRC emacs-lisp
+(setq evil-cross-lines t)
+#+END_SRC
+
+Set initial evil-state by major mode.
+
+#+BEGIN_SRC emacs-lisp
+(dolist (mode-map '((ag-mode . emacs)
+                    (elfeed-show-mode . emacs)
+                    (elfeed-search-mode . emacs)
+                    (eshell-mode . emacs)
+                    (flycheck-error-list-mode . emacs)
+                    (git-commit-mode . insert)
+                    (git-rebase-mode . emacs)
+                    (help-mode . emacs)
+                    (inf-ruby-mode . emacs)
+                    (rspec-compilation-mode . emacs)
+                    (shell-mode . emacs)
+                    (term-mode . emacs)))
+  (evil-set-initial-state `,(car mode-map) `,(cdr mode-map)))
+#+END_SRC
+
+*** Keybindings
+
+Use =C-g= as general purpose escape key sequence. [[https://www.emacswiki.org/emacs/Evil#toc16][stolen from here]]
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/esc (prompt)
+  "Functionality for escaping generally"
+  (cond
+   ((or (evil-insert-state-p)
+        (evil-normal-state-p)
+        (evil-replace-state-p)
+        (evil-visual-state-p))
+    [escape])
+   (t (kbd "C-g"))))
+
+(general-def key-translation-map
+  "C-g" 'ph/esc)
+
+(general-def evil-operator-state-map
+  "C-g" 'keyboard-quit)
+#+END_SRC
+
+Evil motion-states are the evil states where we don't edit text.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'motion
+  [escape] 'evil-god-state-bail
+  ","      'evil-execute-in-god-state
+  "j"      'evil-next-visual-line
+  "k"      'evil-previous-visual-line)
+#+END_SRC
+
+Free =M-.= and =M-,= since they are popular kebinings for "jump to definition"
+and "back".
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'normal
+  "M-." nil
+  "M-," nil)
+#+END_SRC
+
+*** Evil surround
+
+- Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current
+  word)
+- Change surrounding ~​'​~ to ~*~ with ~cs'*~
+- Remove surrounding ~*~ with ~ds*~
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'evil-surround)
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+#+END_SRC
+
+** God State
+
+=god-mode= is a global minor mode for entering Emacs commands without modifier
+keys. It's similar to Vim's separation of commands and insertion mode.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'evil-god-state)
+#+END_SRC
+
+Make =evil-god-state= work also in visual-mode.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/evil-visual-activate-hook (&optional command)
+  "Enable Visual state if the region is activated."
+  (unless (evil-visual-state-p)
+    (evil-delay nil
+        '(unless (or (evil-visual-state-p)
+                     (evil-insert-state-p)
+                     (evil-emacs-state-p)
+                     (evil-god-state-p))
+           (when (and (region-active-p)
+                      (not deactivate-mark))
+             (evil-visual-state)))
+      'post-command-hook nil t
+      "evil-activate-visual-state")))
+(ph/evil-visual-activate-hook)
+#+END_SRC
+
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'projectile)
+(ph/install-package 'grizzl)
+(setq projectile-completion-system 'grizzl)
+(setq projectile-enable-caching t)
+(use-package projectile
+  :init
+  (setq projectile-keymap-prefix (kbd "C-c p"))
+  :config
+  (projectile-mode +1))
+#+END_SRC
+
 ** Project Terminals
 
 Spawn terminal-emulators in project folder.
 
-Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem to work with i3. Thus, =-title= is used to place the terminals on the correct workspace.
+Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem
+to work with i3. Thus, =-title= is used to place the terminals on the correct
+workspace.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/project-terminal-command-list-urxvt (directory workspace-number)
@@ -502,185 +710,19 @@ Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem t
     (setq amount (- amount 1))))
 #+END_SRC
 
-** Display Line Numbers
-
-Show line numbers in programming modes
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+END_SRC
-
-Count the number of lines to use for line number width.
-
-#+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-width-start t)
-#+END_SRC
-
-** Session
-
-Restore some stuff (command histories, kill-ring, ...) from last session.
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'session)
-(add-hook 'after-init-hook 'session-initialize)
-#+END_SRC
-
-** Evil
-*** Setup
-
-I am evil.
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'evil)
-(ph/require-package 'evil-org)
-(ph/require-package 'evil-ediff)
-
-(evil-mode 1)
-#+END_SRC
-
-Evil commands
-
-#+BEGIN_SRC emacs-lisp
-(evil-ex-define-cmd "ww" 'ph/sudo-save)
-#+END_SRC
-
-When exiting insert-state, don't move the cursor
-
-#+BEGIN_SRC emacs-lisp
-(setq evil-move-cursor-back nil)
-#+END_SRC
-
-Go to next/previous line ith =h= and =l=.
-
-#+BEGIN_SRC emacs-lisp
-(setq evil-cross-lines t)
-#+END_SRC
-
-Set initial evil-state by major mode.
-
-#+BEGIN_SRC emacs-lisp
-(dolist (mode-map '((ag-mode . emacs)
-                    (elfeed-show-mode . emacs)
-                    (elfeed-search-mode . emacs)
-                    (eshell-mode . emacs)
-                    (flycheck-error-list-mode . emacs)
-                    (git-commit-mode . insert)
-                    (git-rebase-mode . emacs)
-                    (help-mode . emacs)
-                    (shell-mode . emacs)
-                    (term-mode . emacs)))
-  (evil-set-initial-state `,(car mode-map) `,(cdr mode-map)))
-#+END_SRC
-
-*** Keybindings
-
-Escape with =C-g=
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/esc (prompt)
-  "Functionality for escaping generally"
-  (cond
-   ((or (evil-insert-state-p)
-        (evil-normal-state-p)
-        (evil-replace-state-p)
-        (evil-visual-state-p))
-    [escape])
-   (t (kbd "C-g"))))
-(define-key key-translation-map (kbd "C-g") 'ph/esc)
-(define-key evil-operator-state-map (kbd "C-g") 'keyboard-quit)
-(set-quit-char "C-g")
-#+END_SRC
-
-
-Evil motion-states are the evil states where we don't edit text.
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'motion
-  [escape] 'evil-god-state-bail
-  ","      'evil-execute-in-god-state
-  "j"      'evil-next-visual-line
-  "k"      'evil-previous-visual-line)
-#+END_SRC
-
-Free =M-.= and =M-,= since they are popular kebinings for "jump to
-definition" and "back".
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'normal
-  "M-." nil
-  "M-," nil)
-#+END_SRC
-
-*** Evil surround
-
-- Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current word)
-- Change surrounding ~​'​~ to ~*~ with ~cs'*~
-- Remove surrounding ~*~ with ~ds*~
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'evil-surround)
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
-#+END_SRC
-
-** God State
-
-=god-mode= is a global minor mode for entering Emacs commands without
-modifier keys. It's similar to Vim's separation of commands and
-insertion mode.
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'evil-god-state)
-#+END_SRC
-
-Make =evil-god-state= work also in visual-mode.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/evil-visual-activate-hook (&optional command)
-  "Enable Visual state if the region is activated."
-  (unless (evil-visual-state-p)
-    (evil-delay nil
-        '(unless (or (evil-visual-state-p)
-                     (evil-insert-state-p)
-                     (evil-emacs-state-p)
-                     (evil-god-state-p))
-           (when (and (region-active-p)
-                      (not deactivate-mark))
-             (evil-visual-state)))
-      'post-command-hook nil t
-      "evil-activate-visual-state")))
-(ph/evil-visual-activate-hook)
-#+END_SRC
-
-** Projectile
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'projectile)
-(ph/require-package 'grizzl)
-(setq projectile-completion-system 'grizzl)
-(setq projectile-enable-caching t)
-(use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  :config
-  (projectile-mode +1))
-#+END_SRC
-
 ** Counsel
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'counsel)
-(ph/require-package 'counsel-projectile)
+(ph/install-package 'counsel)
+(ph/install-package 'counsel-projectile)
 (counsel-projectile-mode)
  #+END_SRC
 
 ** Ido
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'ido)
-(ph/require-package 'flx-ido)
+(ph/install-package 'ido)
+(ph/install-package 'flx-ido)
 (ido-mode 1)
 (ido-everywhere 1)
 (flx-ido-mode 1)
@@ -690,21 +732,10 @@ Make =evil-god-state= work also in visual-mode.
 Enable =ido-vertical-mode=
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'ido-vertical-mode)
+(ph/install-package 'ido-vertical-mode)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 (setq ido-vertical-show-count t)
-#+END_SRC
-
-** Browse-Kill-Ring
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'browse-kill-ring)
-(setq browse-kill-ring-highlight-inserted-item t
-      browse-kill-ring-highlight-current-entry nil
-      browse-kill-ring-show-preview t)
-(define-key browse-kill-ring-mode-map (kbd "j") 'browse-kill-ring-forward)
-(define-key browse-kill-ring-mode-map (kbd "k") 'browse-kill-ring-previous)
 #+END_SRC
 
 * Feeds
@@ -712,9 +743,9 @@ Enable =ido-vertical-mode=
 Set up elfeed.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'elfeed)
-(ph/require-package 'elfeed-goodies)
-(ph/require-package 'elfeed-org)
+(ph/install-package 'elfeed)
+(ph/install-package 'elfeed-goodies)
+(ph/install-package 'elfeed-org)
 (elfeed-goodies/setup)
 (elfeed-org)
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
@@ -728,10 +759,10 @@ Load it.
 #+BEGIN_SRC emacs-lisp
 (require 'mu4e)
 (require 'mu4e-contrib)
-(ph/require-package 'mu4e-alert)
-(ph/require-package 'evil-mu4e)
-(ph/require-package 'mu4e-maildirs-extension)
-(ph/require-package 'smtpmail)
+(ph/install-package 'mu4e-alert)
+(ph/install-package 'evil-mu4e)
+(ph/install-package 'mu4e-maildirs-extension)
+(ph/install-package 'smtpmail)
 #+END_SRC
 
 Open mu4e anyway.
@@ -742,14 +773,13 @@ Open mu4e anyway.
   (interactive)
   (unless (string-prefix-p "mu4e" (symbol-name major-mode))
     (let ((buffer (get-buffer "*mu4e-headers*")))
-      (if buffer (switch-to-buffer b) (mu4e)))))
+      (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
 Don't mark for delete, only move to Trash
 
 #+BEGIN_SRC emacs-lisp
-(defun mu4e-headers-mark-for-delete (&rest args)
-  (message "move to Trash, don't delete"))
+(defun mu4e-headers-mark-for-delete () nil)
 #+END_SRC
 
 Dont reply to myself.
@@ -758,8 +788,8 @@ Dont reply to myself.
 (setq mu4e-compose-dont-reply-to-self t)
 #+END_SRC
 
-My contexts contain private information and are therefore defined in a
-file outside of this repo.
+My contexts contain private information and are therefore defined in a file
+outside of this repo.
 
 #+BEGIN_SRC emacs-lisp
 (load-file "~/git/config/emacs/private.el")
@@ -825,7 +855,7 @@ Some self explanatory settings.
 
 ** Forgotten Attachment
 
-Check for forgotten attachments
+Check for forgotten attachments.
 
 #+BEGIN_SRC emacs-lisp
 (defvar ph/message-attachment-regexp
@@ -838,15 +868,16 @@ Check for forgotten attachments
           "[sS]chicke\\|"
           "haenge\\|"
           "hänge\\)"))
+
 (defun ph/message-check-attachment nil
   "Check if there is an attachment in the message if I claim it."
   (save-excursion
     (message-goto-body)
-    (when (search-forward-regexp my-message-attachment-regexp nil t nil)
+    (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
       (message-goto-body)
       (unless (message-y-or-n-p
                "Did you attach all documents?" nil nil)
-        (error "No message sent, add them attachments!")))))
+        (error "No message sent, add the attachments!")))))
 
 (add-hook 'message-send-hook 'ph/message-check-attachment)
 #+END_SRC
@@ -857,7 +888,7 @@ Check for forgotten attachments
 Make brackets colorful
 
  #+BEGIN_SRC emacs-lisp
-(ph/require-package 'rainbow-delimiters)
+(ph/install-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
  #+END_SRC
 
@@ -871,29 +902,27 @@ Highlight matching brackets.
 Typing any left bracket automatically insert the right matching bracket.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'smartparens)
+(ph/install-package 'smartparens)
 (add-hook 'prog-mode-hook 'smartparens-mode)
 #+END_SRC
 
-** Company Mode
+** Company
 
-Completion will start automatically after you type a few letters. Use
-=C-n= and =C-p= to select, =<return>= to complete or =<tab>= to
-complete the common part. Search through the completions with =C-s=,
-=C-r= and =C-o=. Press =M-(digit)= to quickly complete with one of the
-first 10 candidates.
+Company is a text completion framework for Emacs. The name stands for "complete
+anything". It uses pluggable back-ends and front-ends to retrieve and display
+completion candidates.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'company)
-(ph/require-package 'company-ansible)
-(ph/require-package 'company-bibtex)
-(ph/require-package 'company-auctex)
-(ph/require-package 'company-inf-ruby)
-(ph/require-package 'company-nginx)
-(ph/require-package 'company-quickhelp)
-(ph/require-package 'company-shell)
-(ph/require-package 'company-tern)
-(ph/require-package 'company-web)
+(ph/install-package 'company)
+(ph/install-package 'company-ansible)
+(ph/install-package 'company-bibtex)
+(ph/install-package 'company-auctex)
+(ph/install-package 'company-inf-ruby)
+(ph/install-package 'company-nginx)
+(ph/install-package 'company-quickhelp)
+(ph/install-package 'company-shell)
+(ph/install-package 'company-tern)
+(ph/install-package 'company-web)
 
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
@@ -916,7 +945,9 @@ Don't require a minimum word length to show autocompletion.
 (setq company-minimum-prefix-length 0)
 #+END_SRC
 
-Switch with =C-n= and =C-p=.
+Use =C-n= and =C-p= to select, =<return>= to complete or =<tab>= to complete the common part.
+Search through the completions with =C-s=, =C-r= and =C-o=. Press =M-(digit)= to
+quickly complete with one of the first 10 candidates.
 
 #+BEGIN_SRC emacs-lisp
 (general-def company-active-map
@@ -930,24 +961,28 @@ Switch with =C-n= and =C-p=.
 
 ** Flycheck
 
+Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flycheck)
+ #+END_SRC
+
 Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'flycheck)
 (add-hook 'after-init-hook 'global-flycheck-mode)
  #+END_SRC
 
 Show Tip in popup when the cursor is on the error.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'flycheck-pos-tip)
+(ph/install-package 'flycheck-pos-tip)
 (with-eval-after-load 'flycheck
   (flycheck-pos-tip-mode))
 #+END_SRC
 
-Use relative coordinates for the tip. If an error is on the right side
-of the frame, the tooltip will move more to the left and stay inside
-the frame.
+Use relative coordinates for the tip. If an error is on the right side of the
+frame, the tooltip will move more to the left and stay inside the frame.
 
 #+BEGIN_SRC emacs-lisp
 (setq pos-tip-use-relative-coordinates t)
@@ -965,8 +1000,8 @@ Hide the tooltip after 20 seconds.
 (setq flycheck-pos-tip-timeout 20)
 #+END_SRC
 
-Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within
-the error list the following key bindings are available:
+Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within the error
+list the following key bindings are available:
  - =n= Jump to the next error
  - =p= Jump to the previous error
  - =e= Explain the error
@@ -988,24 +1023,51 @@ the error list the following key bindings are available:
 (setq sh-indentation 2)
 #+END_SRC
 
+** Display Line Numbers
+
+Show line numbers in programming modes
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+END_SRC
+
+Count the number of lines to use for line number width.
+
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-width-start t)
+#+END_SRC
+
 ** Magit
 
 Show =TODO= in magit-buffer
 
  #+BEGIN_SRC emacs-lisp
-(ph/require-package 'magit)
-(ph/require-package 'magit-todos)
+(ph/install-package 'magit)
+(ph/install-package 'magit-todos)
 (add-hook 'prog-mode-hook 'magit-todos-mode)
  #+END_SRC
 
 ** Markdown
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'markdown-mode)
+(ph/install-package 'markdown-mode)
 (setq markdown-command "pandoc")
 #+END_SRC
 
 ** Python
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'elpy)
+(elpy-enable)
+#+END_SRC
+
+Use Virtual Envirnonments.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'virtualenvwrapper)
+(venv-initialize-eshell)
+#+END_SRC
+
 
 Virtual-Environment handling  shell:
    - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
@@ -1025,26 +1087,13 @@ pip in Virtual-Envirnoment
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'elpy)
-(elpy-enable)
-#+END_SRC
-
-Use Virtual Envirnonments.
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'virtualenvwrapper)
-(venv-initialize-eshell)
-#+END_SRC
-
 ** Rainbow
 
-This minor mode sets background color to strings that match color
-names, e.g. #0000ff is displayed in white with a blue background
+This minor mode sets background color to strings that match color names, e.g.
+#0000ff is displayed in white with a blue background
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'rainbow-mode)
+(ph/install-package 'rainbow-mode)
 (add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
 
@@ -1052,7 +1101,7 @@ names, e.g. #0000ff is displayed in white with a blue background
 *** Inf-ruby
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'inf-ruby)
+(ph/install-package 'inf-ruby)
 #+END_SRC
 
 *** Enhanced Ruby Mode
@@ -1060,21 +1109,21 @@ names, e.g. #0000ff is displayed in white with a blue background
 Use =enh-ruby-mode= for all common ruby-files.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'enh-ruby-mode)
+(ph/install-package 'enh-ruby-mode)
 (add-to-list 'auto-mode-alist
              '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
 #+END_SRC
 
-No magic comments
+# No magic comments
 
 #+BEGIN_SRC emacs-lisp
-(setq ruby-insert-encoding-magic-comment nil)
+;(setq ruby-insert-encoding-magic-comment nil)
 #+END_SRC
 
 *** Robe
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'robe)
+(ph/install-package 'robe)
 #+END_SRC
 
 Add the following gems to the =Gemfile= and install them.
@@ -1087,18 +1136,17 @@ group :development do
 end
 #+END_SRC
 
-Generally, you'll want to start with =M-x inf-ruby-console-auto=. If
-there's no Ruby console running, most interactive commands provided by
-Robe will offer to launch it automatically.
+Generally, you'll want to start with =M-x inf-ruby-console-auto=. If there's no
+Ruby console running, most interactive commands provided by Robe will offer to
+launch it automatically.
 
-The exceptions are code completion and eldoc, which only work if the
-server is already running. To launch it, type =M-x robe-start=.
+The exceptions are code completion and eldoc, which only work if the server is
+already running. To launch it, type =M-x robe-start=.
 
-As you change the code in your project, you'll want to update the
-running process. To load the current file, type =C-c C-l=
-(=ruby-load-file=), see inf-ruby for more commands. When you're
-working on a Rails project, you can type =C-c C-k= instead to reload
-the whole environment at once.
+As you change the code in your project, you'll want to update the running
+process. To load the current file, type =C-c C-l= (=ruby-load-file=), see
+inf-ruby for more commands. When you're working on a Rails project, you can type
+=C-c C-k= instead to reload the whole environment at once.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'enh-ruby-mode-hook 'robe-mode)
@@ -1149,16 +1197,15 @@ When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
 
 ** TeX
 
-AUCTeX is an extensible package for writing and formatting TeX files
-in GNU Emacs.
+AUCTeX is an extensible package for writing and formatting TeX files in GNU
+Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'auctex t)
+(ph/install-package 'auctex t)
 #+END_SRC
 
-Parse on load and save. This increases performance, especially for
-large multifile projects. The information is stored in an "auto"
-subdirectory.
+Parse on load and save. This increases performance, especially for large
+multifile projects. The information is stored in an "auto" subdirectory.
 
 #+BEGIN_SRC emacs-lisp
 (setq TeX-parse-self t)
@@ -1182,14 +1229,18 @@ In Evince use =Control + Left Click= for backward search.
 
 ** Toc Org
 
-Every time you’ll be saving an org file, the first headline with a =:TOC:= tag will be updated with the current table of contents.
+Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
+will be updated with the current table of contents.
 
- - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2 (the default)
- - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style hrefs in the table of contents (this style is default). The other supported href style is ‘org’, which is the default org style.
+ - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
+   (the default)
+ - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
+   hrefs in the table of contents (this style is default). The other supported
+   href style is ‘org’, which is the default org style.
 
 
 #+begin_src emacs-lisp
-(ph/require-package 'toc-org)
+(ph/install-package 'toc-org)
 (add-hook 'org-mode-hook 'toc-org-enable)
 #+end_src
 
@@ -1197,7 +1248,7 @@ Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
 *** Setup
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'web-mode)
+(ph/install-package 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
@@ -1221,8 +1272,8 @@ Some web-mode settings.
 
 *** Company-Tern
 
-Use =company-tern=. Put a file =.tern-project= in the root of the
-project. Additionally, a file =~/.tern-config= can
+Use =company-tern=. Put a file =.tern-project= in the root of the project.
+Additionally, a file =~/.tern-config= can
 
 A Ruby on Rails =.tern-project= may look like this:
 
@@ -1262,8 +1313,8 @@ And my =~/.tern-config=
 Add =company-tern= to =company=.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'company-tern)
-(ph/require-package 'jquery-doc)
+(ph/install-package 'company-tern)
+(ph/install-package 'jquery-doc)
 (add-to-list 'company-backends 'company-tern)
 #+END_SRC
 
@@ -1296,24 +1347,23 @@ Use =eslint= instead of =jshint=.
 Create an empty keymap and minor-mode for my global keybindings
 
 #+BEGIN_SRC emacs-lisp
-(defvar my-global-keymap (make-sparse-keymap))
-(define-minor-mode my-global-keys-mode
+(defvar ph/global-keymap (make-sparse-keymap))
+(define-minor-mode ph/global-keys-mode
   :init-value t
-  :keymap my-global-keymap)
-(my-global-keys-mode t)
+  :keymap ph/global-keymap)
+(ph/global-keys-mode t)
 #+END_SRC
 
 Overwriting default bindings (and defining new ones).
 
  #+BEGIN_SRC emacs-lisp
-(general-def my-global-keymap
+(general-def ph/global-keymap
   "<f1> f" 'counsel-describe-function
   "<f1> v" 'counsel-describe-variable
   "<f2> u" 'counsel-unicode-char
-  "M-SPC"  'company-complete
-  "M-x"    'counsel-M-x)
+  "M-SPC"  'company-complete)
 
-(general-def my-global-keymap
+(general-def ph/global-keymap
   :prefix "C-x"
   "2"   'ph/vsplit-last-buffer
   "3"   'ph/hsplit-last-buffer
@@ -1322,84 +1372,62 @@ Overwriting default bindings (and defining new ones).
   "b"   'ivy-switch-buffer
   "C-b" 'ivy-switch-buffer
   "C-f" 'counsel-find-file)
- #+END_SRC
+#+END_SRC
 
-User-defined bindings (=C-c= followed by a letter and =<F5>= through
-=<F9>= without modifiers).
+User-defined bindings (=C-c= followed by a letter and =<F5>= through =<F9>=
+without modifiers).
 
 #+BEGIN_SRC emacs-lisp
-(general-def my-global-keymap
+(general-def ph/global-keymap
   :prefix "C-c"
   "e" 'elfeed
   "i" 'indent-region
   "k" 'ag
+  "o" 'occur-dwim
   "r" 'ph/mu4e
   "s" 'ph/spawn-some-project-terminals)
 
-(general-def my-global-keymap
+(general-def ph/global-keymap
   "<f5>" 'ph/next-theme)
- #+END_SRC
+#+END_SRC
 
 * User Interface
-** Spaceline
+** Tooltips
+
+Don't use ugly GTK tooltips.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'powerline)
-(ph/require-package 'spaceline)
-
-(use-package spaceline :ensure t
-  :config
-  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+(setq x-gtk-use-system-tooltips nil)
 #+END_SRC
 
-*** Segments and Faces
-**** Main Faces
+** Faces
+*** Default
 
-Functions to change the mode-line faces.
+Scale font locally with =C-x C-+= and =C-x C--=.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/spaceline-light()
-  (interactive)
-  (set-face-attribute 'mode-line nil
-                      :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#fdfde7")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#fdfde7")
-  (set-face-attribute 'powerline-active1 nil
-                      :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#ffd7af")
-  (set-face-attribute 'powerline-active2 nil
-                      :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#e6e6e0")
-  (powerline-reset))
-
-(defun ph/spaceline-dark()
-  (interactive)
-  (set-face-attribute 'mode-line nil
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'powerline-active1 nil
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#303030")
-  (set-face-attribute 'powerline-active2 nil
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#424242")
-  (powerline-reset))
+(set-face-attribute 'default nil
+                    :family "DejaVu Sans Mono"
+                    :height 110
+                    :weight 'normal
+                    :width 'normal)
 #+END_SRC
 
-Faces to highlight segments which need special attention.
+*** Mode Line
+
+A slightly smaller font for the mode-line.
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'mode-line nil
+                    :inherit 'default
+                    :height 100)
+(set-face-attribute 'mode-line-inactive nil
+                    :inherit 'mode-line)
+#+END_SRC
+
+*** Attention-Faces
+
+Faces to highlight things/spaceline-segments which need special attention.
 
 #+BEGIN_SRC emacs-lisp
 (defface ph/alert-face
@@ -1416,6 +1444,13 @@ Faces to highlight segments which need special attention.
   "Warn Face"
   :group 'spaceline)
 
+(defface ph/another-warn-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#fce94f"))
+  "Warn Face"
+  :group 'spaceline)
+
 (defface ph/info-face
   '((t :inherit 'mode-line
        :foreground "black"
@@ -1424,11 +1459,98 @@ Faces to highlight segments which need special attention.
   :group 'spaceline)
 #+END_SRC
 
+*** Changing Faces
+
+Functions to change the mode-line faces.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/spaceline-light()
+  (interactive)
+  (set-face-attribute 'mode-line nil
+                      :height 100
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#fdfde7")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#fdfde7")
+  (set-face-attribute 'powerline-active1 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#f3f3f3")
+  (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#e6e6e0")
+                      :background "#e6e6e6")
+  (powerline-reset))
+
+(defun ph/spaceline-dark()
+  (interactive)
+  (set-face-attribute 'mode-line nil
+                      :height 100
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'powerline-active1 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030")
+  (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#383838")
+  (powerline-reset))
+#+END_SRC
+
+** Theme Rotation
+
+Call =M-x ph/next-theme= to load the next theme.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'moe-theme)
+(require 'dash)
+
+(setq ph/theme-list (list (list '(load-theme moe-dark t)
+                                '(ph/spaceline-dark))
+                          (list '(load-theme moe-light t)
+                                '(ph/spaceline-light))))
+
+(defun ph/next-theme ()
+  "Loads next theme in the theme-list and rotates the list"
+  (interactive)
+  (cl-loop for f in (nth 0 ph/theme-list) do (apply f))
+  (setq ph/theme-list (-rotate 1 ph/theme-list)))
+
+(add-hook 'after-init-hook 'ph/next-theme)
+#+END_SRC
+
+** Spaceline
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'powerline)
+(ph/install-package 'spaceline)
+(use-package spaceline :ensure t
+  :config
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+#+END_SRC
+
+*** Segments
 **** Flycheck
 
 Flycheck segments for =info=, =warning= and =error=.
 
-TODO: refactor this
+TODO: refactor this, too much redundancy...
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment ph/flycheck-warning-segment
@@ -1486,6 +1608,8 @@ Setting the face according to =evil-state=.
       (let* ((face (assq evil-state spaceline-evil-state-faces)))
         (if face (cdr face) (spaceline-highlight-face-default)))
     (spaceline-highlight-face-default)))
+
+(setq-default spaceline-highlight-face-func 'ph/spaceline-highlight-face-evil-state)
 #+END_SRC
 
 **** Python Virtual Environment
@@ -1507,36 +1631,69 @@ Setting the face according to =evil-state=.
      (s-trim (concat (ph/git-branch-name))))))
 #+END_SRC
 
-**** File permissions
+**** Tramp
 
-Indicate if current file has "special" permissions.
+Tramp offers the following file name syntax to refer to files on other machines.
+
+#+BEGIN_SRC config
+/method:host:filename
+/method:user@host:filename
+/method:user@host#port:filename
+#+END_SRC
+
+The following segemnts display the current buffer's =method= and =user@host=.
 
 #+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/buffer-special-file-permissions
+(spaceline-define-segment ph/remote-method
+  (when (and default-directory
+             (file-remote-p default-directory 'method))
+    (file-remote-p default-directory 'method)))
+
+(spaceline-define-segment ph/remote-user-and-host
+  (when (and default-directory
+             (or
+              (file-remote-p default-directory 'user)
+              (file-remote-p default-directory 'host)))
+    (concat
+     (file-remote-p default-directory 'user) "@"
+     (file-remote-p default-directory 'host))))
+#+END_SRC
+
+**** File Permission
+
+I want to see if the current file has "special" permissions. Special meaning
+that the permissions change if the file is deleted and rewritten.
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment ph/special-file-permissions
   (if (and (buffer-file-name)
            (not (file-ownership-preserved-p (buffer-file-name))))
       (powerline-raw
        (concat (if (file-readable-p (buffer-file-name)) "r" "-")
-               (if (file-writable-p (buffer-file-name)) "w" "-")))))
+               (if (file-writable-p (buffer-file-name)) "w" "-")
+               (if (file-executable-p (buffer-file-name)) "x" "-")))))
 #+END_SRC
 
 **** Mu4e Context
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment ph/mu4e-context-segment
-  (let ((ctx (mu4e-context-current)))
-    (if (and ctx
+  (let ((context (mu4e-context-current)))
+    (if (and context
              (string-prefix-p "mu4e" (symbol-name major-mode)))
         (powerline-raw
-         (mu4e-context-name ctx)))))
+         (mu4e-context-name context)))))
 #+END_SRC
 
-*** Diminish Minor Modes
+*** Diminish
 
-Do not show the following minor modes
+When we diminish a mode, we are saying we want it to continue doing its work for
+us, but we no longer want to be reminded of it. -- Will Mengarini
+
+Diminish implements hiding or abbreviation of the mode line displays (lighters) of minor-modes.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'diminish)
+(ph/install-package 'diminish)
 
 (eval-after-load "god-mode"
   '(diminish 'god-local-mode))
@@ -1552,7 +1709,10 @@ Do not show the following minor modes
   '(diminish 'undo-tree-mode))
 #+END_SRC
 
-*** Putting it all together
+*** Setup
+
+Setting up the mode-line and order of segements. Compile the modeline with =M-x
+spaceline-compile=.
 
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config :ensure spaceline
@@ -1561,9 +1721,11 @@ Do not show the following minor modes
   (spaceline-install
     'main
     '((evil-state :when active :face highlight-face)
+      (buffer-id)
+      (ph/special-file-permissions :face ph/alert-face)
+      (ph/remote-method :face ph/warn-face)
+      (ph/remote-user-and-host :face ph/another-warn-face)
       (ph/virtualenvwrapper-segment)
-      (ph/buffer-special-file-permissions :face ph/alert-face)
-      ((remote-host buffer-id))
       (ph/mu4e-context-segment)
       (buffer-modified)
       (process :when active))
@@ -1575,72 +1737,42 @@ Do not show the following minor modes
       (buffer-position)
       (ph/flycheck-info-segment :face ph/info-face)
       (ph/flycheck-warning-segment :face ph/warn-face)
-      (ph/flycheck-error-segment :face ph/error-face)
+      (ph/flycheck-error-segment :face ph/alert-face)
       (major-mode))))
 #+END_SRC
 
-Set mode-line always active (don't hide any information when focus is
-on a different window).
+*** Config
+
+Set mode-line always active (don't hide any information when focus is on a
+different window).
 
 #+BEGIN_SRC emacs-lisp
 (defun powerline-selected-window-active () t)
 #+END_SRC
 
-Some additional settings.
+Adjust =powerline-text-scale-factor= for graphical clients.
+
+TODO: Find out if there's a solution with frame-local settings to allow the
+parallel use of graphical and terminal clients.
 
 #+BEGIN_SRC emacs-lisp
-(setq-default
- powerline-height 20
- spaceline-highlight-face-func 'ph/spaceline-highlight-face-evil-state
- spaceline-separator-dir-left '(right . right)
- spaceline-separator-dir-right '(left . left)
- powerline-text-scale-factor 0.9)
-#+END_SRC
-
-Compile the modeline with =M-x spaceline-compile=.
-
-** Theme Rotation
-
-Call =M-x ph/next-theme= to load the next theme.
-
-#+BEGIN_SRC emacs-lisp
-(ph/require-package 'moe-theme)
-(require 'dash)
-
-(setq ph/theme-list (list (list '(load-theme moe-dark t)
-                                '(ph/spaceline-dark))
-                          (list '(load-theme moe-light t)
-                                '(ph/spaceline-light))))
-
-(defun ph/next-theme ()
-  "Loads next theme in the theme-list and rotates the list"
-  (interactive)
-  (cl-loop for f in (nth 0 ph/theme-list) do (apply f))
-  (setq ph/theme-list (-rotate 1 ph/theme-list)))
-
-(add-hook 'after-init-hook 'ph/next-theme)
+(defun ph/set-powerline-text-scale-factor (frame)
+  "Set/unset powerline scaling for graphical/terminal FRAME."
+  (if (display-graphic-p frame)
+      (setq powerline-text-scale-factor 0.9)
+    (setq powerline-text-scale-factor nil)))
+(add-hook 'after-make-frame-functions 'ph/set-powerline-text-scale-factor)
 #+END_SRC
 
 ** Beacon
 
-Whenever the window scrolls a light will shine on top of your cursor so you know where it is.
+Whenever the window scrolls a light will shine on top of your cursor so you know
+where it is.
 
 #+BEGIN_SRC emacs-lisp
-(ph/require-package 'beacon)
+(ph/install-package 'beacon)
 (beacon-mode 1)
 (setq beacon-color "orange")
-#+END_SRC
-
-** Font
-
-Scale font locally with =C-x C-+= and =C-x C--=.
-
-#+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil
-                    :family "DejaVu Sans Mono"
-                    :height 110
-                    :weight 'normal
-                    :width 'normal)
 #+END_SRC
 
 ** Fancy stuff
@@ -1656,10 +1788,11 @@ Disable fancy GUI stuff
 
 ** Frame Title
 
-Show the buffer-name, project-name and major-mode in the frame title.
+Show the buffer-name, projectile-project-name and major-mode in the frame title.
+Use the same title for unfocussed/stacked frames.
 
 #+BEGIN_SRC emacs-lisp
-(setq frame-title-format
+(setq ph/frame-title-format
       '(""
         "%b"
         (:eval
@@ -1667,11 +1800,14 @@ Show the buffer-name, project-name and major-mode in the frame title.
            (unless (string= "-" project-name)
              (format " | %s" project-name))))
         " | %m"))
+(setq frame-title-format ph/frame-title-format)
+(setq icon-title-format ph/frame-title-format)
 #+END_SRC
 
 ** Fringe
 
-Tiny fringe on the right side of the frame. The left side needs a fringe for =FlyCheck=.
+Tiny fringe on the right side of the frame. The left side needs a fringe for
+=FlyCheck=.
 
 #+BEGIN_SRC emacs-lisp
 (fringe-mode '(8 . 2))
