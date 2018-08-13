@@ -15,7 +15,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#basic-packages][Basic Packages]]
   - [[#auto-update-packages][Auto Update Packages]]
 - [[#general-setup][General Setup]]
-  - [[#exec-paths][Exec paths]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#symlinks][Symlinks]]
   - [[#final-newline][Final Newline]]
@@ -217,20 +216,8 @@ Update packages at startup.
 * General Setup
 
 This section contains customizations of Emacs' defaults as well as additional
-features used in different major-modes. Programming-specific settings settings
-will be set later.
-
-** Exec paths
-
-=exec-path-from-shell= is a GNU Emacs library to ensure environment variables
-inside Emacs look the same as in the user's shell.
-
-#+BEGIN_SRC emacs-lisp
-;(ph/install-package 'exec-path-from-shell)
-;(when (memq window-system '(mac ns x))
-;  (exec-path-from-shell-initialize))
-;(ph/install-package 'nvm)
-#+END_SRC
+features used in different major-modes. Programming-specific settings will be
+set later.
 
 ** Disabled Commands
 
