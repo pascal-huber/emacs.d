@@ -47,9 +47,9 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#programming-setup][Programming Setup]]
   - [[#brackets][Brackets]]
   - [[#company][Company]]
+  - [[#display-line-numbers][Display Line Numbers]]
   - [[#flycheck][Flycheck]]
   - [[#indentation][Indentation]]
-  - [[#display-line-numbers][Display Line Numbers]]
   - [[#magit][Magit]]
   - [[#markdown-1][Markdown]]
   - [[#python][Python]]
@@ -928,6 +928,20 @@ quickly complete with one of the first 10 candidates.
   "C-p" 'company-select-previous)
 #+END_SRC
 
+** Display Line Numbers
+
+Show line numbers in programming modes
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+END_SRC
+
+Count the number of lines to use for line number width.
+
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-width-start t)
+#+END_SRC
+
 ** Flycheck
 
 Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
@@ -990,20 +1004,6 @@ list the following key bindings are available:
 (setq css-indent-offset 2)
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
-#+END_SRC
-
-** Display Line Numbers
-
-Show line numbers in programming modes
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+END_SRC
-
-Count the number of lines to use for line number width.
-
-#+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-width-start t)
 #+END_SRC
 
 ** Magit
