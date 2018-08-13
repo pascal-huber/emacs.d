@@ -92,7 +92,7 @@ $ ln -s ~/git/emacs.d ~/.emacs.d
 
 ** Mu4e
 
-Install and configure the following.
+Install and configure =mu= and =offlineimap=.
 
 - [[https://github.com/djcb/mu][mu]]
 - [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
@@ -175,13 +175,6 @@ both evil and non-evil users).
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'general)
  #+END_SRC
-
-The =use-package= macro allows you to isolate package configuration in your
-=.emacs= file in a way that is both performance-oriented and, well, tidy.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'use-package)
-#+END_SRC
 
 Install packages which don't need any further configuration.
 
@@ -567,10 +560,7 @@ and "back".
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil-surround)
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
+(global-evil-surround-mode 1)
 #+END_SRC
 
 ** God State
@@ -608,11 +598,8 @@ Make =evil-god-state= work also in visual-mode.
 (ph/install-package 'grizzl)
 (setq projectile-completion-system 'grizzl)
 (setq projectile-enable-caching t)
-(use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  :config
-  (projectile-mode +1))
+(setq projectile-keymap-prefix (kbd "C-c p"))
+(projectile-mode +1)
 #+END_SRC
 
 ** Project Terminals
@@ -1417,7 +1404,7 @@ Faces to highlight things/spaceline-segments which need special attention.
   '((t :inherit 'mode-line
        :foreground "black"
        :background "#fce94f"))
-  "Warn Face"
+  "Another Warn Face"
   :group 'spaceline)
 
 (defface ph/info-face
@@ -1509,9 +1496,7 @@ Call =M-x ph/next-theme= to load the next theme.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'powerline)
 (ph/install-package 'spaceline)
-(use-package spaceline :ensure t
-  :config
-  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+(setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
 #+END_SRC
 
 *** Segments
@@ -1684,30 +1669,29 @@ Setting up the mode-line and order of segements. Compile the modeline with =M-x
 spaceline-compile=.
 
 #+BEGIN_SRC emacs-lisp
-(use-package spaceline-config :ensure spaceline
-  :config
-  (spaceline-emacs-theme)
-  (spaceline-install
-    'main
-    '((evil-state :when active :face highlight-face)
-      (buffer-id)
-      (ph/special-file-permissions :face ph/alert-face)
-      (ph/remote-method :face ph/warn-face)
-      (ph/remote-user-and-host :face ph/another-warn-face)
-      (ph/virtualenvwrapper-segment)
-      (ph/mu4e-context-segment)
-      (buffer-modified)
-      (process :when active))
-    '((minor-modes)
-      (anzu)
-      (projectile-root)
-      (ph/version-control :when active)
-      (line-column)
-      (buffer-position)
-      (ph/flycheck-info-segment :face ph/info-face)
-      (ph/flycheck-warning-segment :face ph/warn-face)
-      (ph/flycheck-error-segment :face ph/alert-face)
-      (major-mode))))
+(require 'spaceline-config)
+(spaceline-emacs-theme)
+(spaceline-install
+  'main
+  '((evil-state :when active :face highlight-face)
+    (buffer-id)
+    (ph/special-file-permissions :face ph/alert-face)
+    (ph/remote-method :face ph/warn-face)
+    (ph/remote-user-and-host :face ph/another-warn-face)
+    (ph/virtualenvwrapper-segment)
+    (ph/mu4e-context-segment)
+    (buffer-modified)
+    (process :when active))
+  '((minor-modes)
+    (anzu)
+    (projectile-root)
+    (ph/version-control :when active)
+    (line-column)
+    (buffer-position)
+    (ph/flycheck-info-segment :face ph/info-face)
+    (ph/flycheck-warning-segment :face ph/warn-face)
+    (ph/flycheck-error-segment :face ph/alert-face)
+    (major-mode)))
 #+END_SRC
 
 *** Config
