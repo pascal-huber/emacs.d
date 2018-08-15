@@ -2,19 +2,20 @@
 
 This is my Emacs configuration. There are many like it, but this one is mine.
 
-* Content :TOC:
+* Content :TOC_3_gh:
 - [[#some-inspiration][Some Inspiration]]
-- [[#os-setup][OS Setup]]
+- [[#installation][Installation]]
+  - [[#setup][Setup]]
   - [[#mu4e][Mu4e]]
   - [[#markdown][Markdown]]
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
 - [[#package-management][Package Management]]
-  - [[#installation][Installation]]
-  - [[#basic-packages][Basic Packages]]
+  - [[#installation-1][Installation]]
+  - [[#packages-for-configuration][Packages for Configuration]]
   - [[#auto-update-packages][Auto Update Packages]]
-- [[#general-setup][General Setup]]
+- [[#tweaking-defaults][Tweaking Defaults]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#symlinks][Symlinks]]
   - [[#final-newline][Final Newline]]
@@ -35,35 +36,61 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#occur][Occur]]
   - [[#dired][Dired]]
   - [[#evil][Evil]]
-  - [[#god-state][God State]]
+    - [[#setup-1][Setup]]
+    - [[#evil-surround][Evil surround]]
+    - [[#god-state][God State]]
+    - [[#keybindings][Keybindings]]
+  - [[#ag][Ag]]
   - [[#projectile][Projectile]]
   - [[#project-terminals][Project Terminals]]
-  - [[#counsel][Counsel]]
   - [[#ido][Ido]]
-- [[#feeds][Feeds]]
-- [[#mail][Mail]]
-  - [[#mu4e-setup][Mu4e Setup]]
-  - [[#forgotten-attachment][Forgotten Attachment]]
+  - [[#counsel][Counsel]]
+  - [[#dictionary][Dictionary]]
 - [[#programming-setup][Programming Setup]]
+  - [[#autocomplete][Autocomplete]]
+    - [[#settings][Settings]]
+    - [[#backends][Backends]]
   - [[#brackets][Brackets]]
-  - [[#company][Company]]
   - [[#display-line-numbers][Display Line Numbers]]
   - [[#flycheck][Flycheck]]
+  - [[#git][Git]]
+  - [[#haml][Haml]]
   - [[#indentation][Indentation]]
-  - [[#magit][Magit]]
+  - [[#javascript][JavaScript]]
+    - [[#tern][Tern]]
+    - [[#eslint][Eslint]]
+  - [[#lua][Lua]]
   - [[#markdown-1][Markdown]]
+  - [[#org][Org]]
+  - [[#php][PHP]]
   - [[#python][Python]]
   - [[#rainbow][Rainbow]]
   - [[#ruby-1][Ruby]]
+    - [[#inf-ruby][Inf-ruby]]
+    - [[#ruby-mode][Ruby Mode]]
+    - [[#robe][Robe]]
+    - [[#rspec-mode][Rspec-mode]]
   - [[#tex][TeX]]
-  - [[#toc-org][Toc Org]]
   - [[#web-mode][Web mode]]
+  - [[#yaml][Yaml]]
+- [[#news-feeds][News Feeds]]
+- [[#mail][Mail]]
+  - [[#mu4e-setup][Mu4e Setup]]
+  - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#tooltips][Tooltips]]
   - [[#faces][Faces]]
+    - [[#default][Default]]
+    - [[#mode-line][Mode Line]]
+    - [[#attention-faces][Attention-Faces]]
+    - [[#changing-faces][Changing Faces]]
   - [[#theme-rotation][Theme Rotation]]
   - [[#spaceline][Spaceline]]
+    - [[#segments][Segments]]
+    - [[#diminish][Diminish]]
+    - [[#setup-2][Setup]]
+    - [[#config][Config]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
@@ -82,12 +109,17 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[https://github.com/wasamasa/dotemacs/blob/master/init.org][Vasilij Schneidermann's configuration]]
 - [[https://github.com/seagle0128/.emacs.d][Vincent Zhang's configuration]]
 
-* OS Setup
+* Installation
+** Setup
+
+Clone, create symlink and update submodules.
 
 #+BEGIN_SRC shell
 $ cd ~/git
-$ git clone http://github.com/sirpscl/.emacs.d
+$ git clone http://github.com/sirpscl/emacs.d
 $ ln -s ~/git/emacs.d ~/.emacs.d
+$ cd ~/git/emacs.d
+$ git submodule update --init
 #+END_SRC
 
 ** Mu4e
@@ -105,6 +137,8 @@ $ mu index --maildir=~/.mail
 
 ** Markdown
 
+Pandoc is a swiss-army knife for converting documents.
+
 - [[https://github.com/jgm/pandoc][pandoc]]
 
 #+BEGIN_SRC shell
@@ -113,7 +147,7 @@ $ pacaur -S pandoc
 
 ** Web Development
 
-Install =npm= dependencies
+Install =npm= dependencies for linting and auto-completion.
 
 #+BEGIN_SRC shell
 $ npm install -g eslint babel-eslint eslint-plugin-react tern
@@ -121,7 +155,7 @@ $ npm install -g eslint babel-eslint eslint-plugin-react tern
 
 ** Python Development
 
-Setup Python Development Envirnoment.
+Install Python dependencies and packages to manage virtual environments.
 
 #+BEGIN_SRC shell
 $ sudo pacman -S python-pip python-virtualenv python2-virtualenv
@@ -131,7 +165,7 @@ $ mkdir $WORKON_HOME
 
 ** Ruby
 
-Setup for =Robe=
+Install dependencies for =robe=.
 
 #+BEGIN_SRC shell
 $ gem install pry pry-doc method_source
@@ -167,7 +201,7 @@ Also load packages which are not in an archive but in this repository.
 (add-to-list 'load-path "~/.emacs.d/vendor/")
 #+END_SRC
 
-** Basic Packages
+** Packages for Configuration
 
 =general.el= provides a more convenient method for binding keys in emacs (for
 both evil and non-evil users).
@@ -175,27 +209,6 @@ both evil and non-evil users).
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'general)
  #+END_SRC
-
-Install packages which don't need any further configuration.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ag)
-(ph/install-package 'comment-tags)
-(ph/install-package 'dictcc)
-(ph/install-package 'gitattributes-mode)
-(ph/install-package 'gitconfig-mode)
-(ph/install-package 'gitignore-mode)
-(ph/install-package 'haml-mode)
-(ph/install-package 'js2-mode)
-(ph/install-package 'js2-refactor)
-(ph/install-package 'lua-mode)
-(ph/install-package 'openwith)
-(ph/install-package 'org-ref)
-(ph/install-package 'php-mode)
-(ph/install-package 'smex)
-(ph/install-package 'tern)
-(ph/install-package 'yaml-mode)
-#+END_SRC
 
 ** Auto Update Packages
 
@@ -206,11 +219,10 @@ Update packages at startup.
 (auto-package-update-maybe)
 #+END_SRC
 
-* General Setup
+* Tweaking Defaults
 
-This section contains customizations of Emacs' defaults as well as additional
-features used in different major-modes. Programming-specific settings will be
-set later.
+This section contains customizations and extensions of Emacs' default
+functionality.
 
 ** Disabled Commands
 
@@ -510,47 +522,6 @@ Set initial evil-state by major mode.
   (evil-set-initial-state `,(car mode-map) `,(cdr mode-map)))
 #+END_SRC
 
-*** Keybindings
-
-Use =C-g= as general purpose escape key sequence. [[https://www.emacswiki.org/emacs/Evil#toc16][stolen from here]]
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/esc (prompt)
-  "Functionality for escaping generally"
-  (cond
-   ((or (evil-insert-state-p)
-        (evil-normal-state-p)
-        (evil-replace-state-p)
-        (evil-visual-state-p))
-    [escape])
-   (t (kbd "C-g"))))
-
-(general-def key-translation-map
-  "C-g" 'ph/esc)
-
-(general-def evil-operator-state-map
-  "C-g" 'keyboard-quit)
-#+END_SRC
-
-Evil motion-states are the evil states where we don't edit text.
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'motion
-  [escape] 'evil-god-state-bail
-  ","      'evil-execute-in-god-state
-  "j"      'evil-next-visual-line
-  "k"      'evil-previous-visual-line)
-#+END_SRC
-
-Free =M-.= and =M-,= since they are popular kebinings for "jump to definition"
-and "back".
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'normal
-  "M-." nil
-  "M-," nil)
-#+END_SRC
-
 *** Evil surround
 
 - Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current
@@ -563,7 +534,7 @@ and "back".
 (global-evil-surround-mode 1)
 #+END_SRC
 
-** God State
+*** God State
 
 =god-mode= is a global minor mode for entering Emacs commands without modifier
 keys. It's similar to Vim's separation of commands and insertion mode.
@@ -589,6 +560,58 @@ Make =evil-god-state= work also in visual-mode.
       'post-command-hook nil t
       "evil-activate-visual-state")))
 (ph/evil-visual-activate-hook)
+#+END_SRC
+
+*** Keybindings
+
+Use =C-g= as general purpose escape key sequence. I used to use [[https://www.emacswiki.org/emacs/Evil#toc16][this]] but now I
+use something like this [[https://emacs.stackexchange.com/questions/13763/how-can-i-make-c-g-run-both-evil-force-normal-state-and-keyboard-quit][this]]. I couln't get the first one running properly with
+=company-mode=.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/esc ()
+  "If in evil insert state, force normal state, else run `keyboard-quit'."
+  (interactive)
+  (when (and evil-mode
+             (or
+              (eq evil-state 'motion)
+              (eq evil-state 'visual)
+              (eq evil-state 'operator)
+              (eq evil-state 'insert)))
+    (evil-force-normal-state)))
+
+(general-def 'insert
+  "C-g" 'ph/esc)
+(general-def 'motion
+  "C-g" 'ph/esc)
+#+END_SRC
+
+Evil motion-states are the evil states where we don't edit text.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'god
+  [escape] 'evil-god-state-bail
+  "C-g"    'evil-god-state-bail)
+
+(general-def 'motion
+  ","      'evil-execute-in-god-state
+  "j"      'evil-next-visual-line
+  "K"      'evil-previous-visual-line)
+#+END_SRC
+
+Free =M-.= and =M-,= since they are popular kebinings for "jump to definition"
+and "back".
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'normal
+  "M-." nil
+  "M-," nil)
+#+END_SRC
+
+** Ag
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ag)
 #+END_SRC
 
 ** Projectile
@@ -666,22 +689,27 @@ workspace.
     (setq amount (- amount 1))))
 #+END_SRC
 
-** Counsel
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'counsel)
-(ph/install-package 'counsel-projectile)
-(counsel-projectile-mode)
- #+END_SRC
-
 ** Ido
+
+=ido= ("interactively do things") supercharges Emacs' completion system.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'ido)
-(ph/install-package 'flx-ido)
 (ido-mode 1)
 (ido-everywhere 1)
-(flx-ido-mode 1)
+#+END_SRC
+
+=flx-ido= offers fuzzy matching for =ido=. Disabled to test the built-in flex-matching.
+
+#+BEGIN_SRC emacs-lisp
+;(ph/install-package 'flx-ido)
+;(flx-ido-mode 1)
+;(setq ido-enable-flex-matching t)
+#+END_SRC
+
+Enable the built-in fuzzy-matching
+
+#+BEGIN_SRC emacs-lisp
 (setq ido-enable-flex-matching t)
 #+END_SRC
 
@@ -694,9 +722,534 @@ Enable =ido-vertical-mode=
 (setq ido-vertical-show-count t)
 #+END_SRC
 
-* Feeds
+** Counsel
 
-Set up elfeed.
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'counsel)
+(ph/install-package 'counsel-projectile)
+(counsel-projectile-mode)
+ #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+ #+END_SRC
+
+** Dictionary
+
+=dictcc= translates EN-GER.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'dictcc)
+#+END_SRC
+
+* Programming Setup
+** Autocomplete
+
+Company is a text completion framework for Emacs. The name stands for "complete
+anything". It uses pluggable back-ends and front-ends to retrieve and display
+completion candidates.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+#+END_SRC
+
+*** Settings
+
+Automatically show completion after 1 character.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-minimum-prefix-length 1)
+#+END_SRC
+
+Don't require a match to continue typing.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-require-match nil)
+#+END_SRC
+
+Switch between suggestions with =C-n= and =C-p=.
+
+#+BEGIN_SRC emacs-lisp
+  (general-def company-active-map
+    "C-n" 'company-select-next
+    "C-p" 'company-select-previous)
+
+  (general-def company-search-map
+    "C-n" 'company-select-next
+    "C-p" 'company-select-previous)
+#+END_SRC
+
+Disable evil-complete
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'insert
+  "C-n" nil
+  "C-p" nil)
+#+END_SRC
+
+*** Backends
+
+Install some backends.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-ansible)
+(ph/install-package 'company-bibtex)
+(ph/install-package 'company-auctex)
+(ph/install-package 'company-inf-ruby)
+(ph/install-package 'company-nginx)
+(ph/install-package 'company-shell)
+(ph/install-package 'company-tern)
+(ph/install-package 'company-web)
+
+#+END_SRC
+
+Enable JavaScript completion inside =<script>...</script>=.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'company-backends 'company-tern)
+(advice-add 'company-tern :before
+            '(lambda (&rest _)
+               (if (equal major-mode 'web-mode)
+                   (let ((web-mode-cur-language
+                          (web-mode-language-at-pos)))
+                     (if (or (string= web-mode-cur-language "javascript")
+                             (string= web-mode-cur-language "jsx"))
+                         (unless tern-mode (tern-mode))
+                       (if tern-mode (tern-mode -1)))))))
+#+END_SRC
+
+=jquery-doc= provides completion source for auto-complete and company-mode as
+well as a =jquery-doc= command to lookup documentation.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'jquery-doc)
+#+END_SRC
+
+** Brackets
+
+Make brackets colorful
+
+ #+BEGIN_SRC emacs-lisp
+(ph/install-package 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+ #+END_SRC
+
+Highlight matching brackets.
+
+#+BEGIN_SRC emacs-lisp
+(setq show-paren-style 'mixed)
+(add-hook 'prog-mode-hook 'show-paren-mode)
+#+END_SRC
+
+Typing any left bracket automatically insert the right matching bracket.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'smartparens)
+(add-hook 'prog-mode-hook 'smartparens-mode)
+#+END_SRC
+
+** Display Line Numbers
+
+Show line numbers in programming modes
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+END_SRC
+
+Count the number of lines to use for line number width.
+
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-width-start t)
+#+END_SRC
+
+** Flycheck
+
+Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flycheck)
+ #+END_SRC
+
+Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'global-flycheck-mode)
+ #+END_SRC
+
+Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within the error
+list the following key bindings are available:
+ - =n= Jump to the next error
+ - =p= Jump to the previous error
+ - =e= Explain the error
+ - =f= Filter the error list by level
+ - =F= Remove this filter
+ - =S= Sort the error list bye the column at point
+ - =g= Check the source buffer and update the error list
+ - =q= Quit the error list and hide its window
+
+** Git
+
+Magit is an interface to the version control system Git.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'magit)
+#+END_SRC
+
+Show =TODO= in magit-buffer
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'magit-todos)
+(magit-todos-mode t)
+#+END_SRC
+
+Some major-modes to configure git repositories.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'gitattributes-mode)
+(ph/install-package 'gitconfig-mode)
+(ph/install-package 'gitignore-mode)
+#+END_SRC
+
+** Haml
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'haml-mode)
+#+END_SRC
+
+** Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil
+              tab-width 2)
+(setq js-indent-level 2)
+(setq python-indent 2)
+(setq css-indent-offset 2)
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+#+END_SRC
+
+** JavaScript
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'js2-mode)
+(ph/install-package 'js2-refactor)
+#+END_SRC
+
+*** Tern
+
+This is Tern. Tern is a stand-alone, editor-independent JavaScript analyzer that
+can be used to improve the JavaScript integration of existing editors.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'tern)
+#+END_SRC
+
+Put a file =.tern-project= in the root of the project. Additionally, a file
+=~/.tern-config=.
+
+A Ruby on Rails =.tern-project= may look like this:
+
+#+BEGIN_SRC javascript
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEagerly": [
+    "app/assets/javascripts/**/*.js",
+    "lib/assets/javascript/**/*.js",
+    "vendor/assets/javascript/**/*.js"
+  ],
+  "plugins": {
+    "es_modules": {},
+    "node": {}
+  }
+}
+#+END_SRC
+
+And my =~/.tern-config=
+
+#+BEGIN_SRC javascript
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "plugins": {
+    "es_modules": {},
+    "node": {}
+  }
+}
+#+END_SRC
+
+*** Eslint
+
+Use =eslint= instead of =jshint=.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers
+                      '(javascript-jshint)))
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+#+END_SRC
+
+** Lua
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'lua-mode)
+#+END_SRC
+
+** Markdown
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'markdown-mode)
+(setq markdown-command "pandoc")
+#+END_SRC
+
+** Org
+
+Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
+will be updated with the current table of contents.
+
+ - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
+   (the default)
+ - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
+   hrefs in the table of contents (this style is default). The other supported
+   href style is ‘org’, which is the default org style.
+
+
+#+begin_src emacs-lisp
+(ph/install-package 'toc-org)
+(add-hook 'org-mode-hook 'toc-org-enable)
+#+end_src
+
+=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities for org-mode.
+
+#+begin_src emacs-lisp
+(ph/install-package 'org-ref)
+#+end_src
+
+** PHP
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'php-mode)
+#+END_SRC
+
+** Python
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'elpy)
+(elpy-enable)
+#+END_SRC
+
+Use Virtual Envirnonments.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'virtualenvwrapper)
+(venv-initialize-eshell)
+#+END_SRC
+
+
+Virtual-Environment handling  shell:
+   - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
+   - activate virtualenv: `workon theproject`
+   - exit the env: `deactivate`
+   - delete the env: `rmvirtualenv theproject`
+
+Virtual-Envirnoment handling with emacs:
+   - create a virtualenv: `M-x venv-mkvirtualenv-using`
+   - activate virtualenv: `M-x venv-workon`
+   - exit the env with: `M-x venv-deactivate`
+   - delete the env: `M-x venv-rmvirtualenv`
+
+pip in Virtual-Envirnoment
+   - save pip dependencies: `pip freeze > requirements.txt`
+   - install pip dependencies `pip install -r requirements.txt`
+
+Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
+
+** Rainbow
+
+This minor mode sets background color to strings that match color names, e.g.
+#0000ff is displayed in white with a blue background
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'rainbow-mode)
+(add-hook 'prog-mode-hook 'rainbow-mode)
+#+END_SRC
+
+** Ruby
+*** Inf-ruby
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'inf-ruby)
+#+END_SRC
+
+*** Ruby Mode
+
+Use =ruby-mode= for all common ruby-files.
+
+No magic comments
+
+#+BEGIN_SRC emacs-lisp
+(setq ruby-insert-encoding-magic-comment nil)
+#+END_SRC
+
+*** Robe
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'robe)
+#+END_SRC
+
+Add the following gems to the =Gemfile= and install them.
+
+#+BEGIN_SRC ruby
+group :development do
+  gem 'pry'
+  gem 'pry-doc'
+  gem 'method_source'
+end
+#+END_SRC
+
+Generally, you'll want to start with =M-x inf-ruby-console-auto=. If there's no
+Ruby console running, most interactive commands provided by Robe will offer to
+launch it automatically.
+
+The exceptions are code completion and eldoc, which only work if the server is
+already running. To launch it, type =M-x robe-start=.
+
+As you change the code in your project, you'll want to update the running
+process. To load the current file, type =C-c C-l= (=ruby-load-file=), see
+inf-ruby for more commands. When you're working on a Rails project, you can type
+=C-c C-k= instead to reload the whole environment at once.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'ruby-mode-hook 'robe-mode)
+#+END_SRC
+
+Some useful Commands/Keybindings
+ - =C-c C-d= Lookup documentation
+ - =M-.= / =M-,= Jump to defintion and back
+
+Use company mode for code completion.
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load 'company
+  '(push 'company-robe company-backends))
+#+END_SRC
+
+*** Rspec-mode
+
+Put the following in the =Gemfile=.
+
+#+BEGIN_SRC ruby
+group :development do
+  gem 'spring-commands-rspec'
+end
+#+END_SRC
+
+Usage:
+
+- =C-c , s= Verify the example or method defined at point
+- =C-c , m= Run all specs related to the current buffer
+- =C-c , a= Run spec for entire project
+- [[https://github.com/pezra/rspec-mode#usage][and more]]
+
+Load it.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
+(require 'rspec-mode)
+(require 'ansi-color)
+(eval-after-load 'rspec-mode '(rspec-install-snippets))
+#+END_SRC
+
+When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
+#+END_SRC
+
+** TeX
+
+AUCTeX is an extensible package for writing and formatting TeX files in GNU
+Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'auctex t)
+#+END_SRC
+
+Parse on load and save. This increases performance, especially for large
+multifile projects. The information is stored in an "auto" subdirectory.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-parse-self t)
+(setq TeX-auto-save t)
+#+END_SRC
+
+Query to find out which is the master file.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default TeX-master nil)
+#+END_SRC
+
+I use Evince to view my PDFs.
+
+#+BEGIN_SRC emacs-lisp
+(setq TeX-PDF-mode t)
+(setq TeX-view-program-selection '((output-pdf "Evince")))
+#+END_SRC
+
+Sync with evince. Use =Control + Left Click= for backward search.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+(setq TeX-source-correlate-start-server t)
+#+END_SRC
+
+** Web mode
+
+=web-mode= is an autonomous emacs major-mode for editing web templates. HTML
+documents can embed parts (CSS / JavaScript) and blocks (client / server side).
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'web-mode)
+#+END_SRC
+
+Use =web-mode= for the following file-types.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.json?\\'" . web-mode))
+#+END_SRC
+
+Some web-mode settings.
+
+#+BEGIN_SRC emacs-lisp
+(setq web-mode-markup-indent-offset 2
+      web-mode-css-indent-offset 2
+      web-mode-code-indent-offset 2
+      web-mode-script-padding 2
+      web-mode-style-padding 2
+      web-mode-script-padding 2
+      web-mode-block-padding 0
+      web-mode-enable-current-element-highlight t
+      web-mode-enable-current-column-highlight t)
+#+END_SRC
+
+** Yaml
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'yaml-mode)
+#+END_SRC
+
+* News Feeds
+
+Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'elfeed)
@@ -838,466 +1391,6 @@ Check for forgotten attachments.
 (add-hook 'message-send-hook 'ph/message-check-attachment)
 #+END_SRC
 
-* Programming Setup
-** Brackets
-
-Make brackets colorful
-
- #+BEGIN_SRC emacs-lisp
-(ph/install-package 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
- #+END_SRC
-
-Highlight matching brackets.
-
-#+BEGIN_SRC emacs-lisp
-(setq show-paren-style 'mixed)
-(add-hook 'prog-mode-hook 'show-paren-mode)
-#+END_SRC
-
-Typing any left bracket automatically insert the right matching bracket.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'smartparens)
-(add-hook 'prog-mode-hook 'smartparens-mode)
-#+END_SRC
-
-** Company
-
-Company is a text completion framework for Emacs. The name stands for "complete
-anything". It uses pluggable back-ends and front-ends to retrieve and display
-completion candidates.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'company)
-(ph/install-package 'company-ansible)
-(ph/install-package 'company-bibtex)
-(ph/install-package 'company-auctex)
-(ph/install-package 'company-inf-ruby)
-(ph/install-package 'company-nginx)
-(ph/install-package 'company-quickhelp)
-(ph/install-package 'company-shell)
-(ph/install-package 'company-tern)
-(ph/install-package 'company-web)
-
-(add-hook 'after-init-hook 'global-company-mode)
-#+END_SRC
-
-Only autocomplete when i ask for it
-
-#+BEGIN_SRC emacs-lisp
-(setq company-idle-delay nil)
-#+END_SRC
-
-Show candidates immediately.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-echo-delay 0)
-#+END_SRC
-
-Don't require a minimum word length to show autocompletion.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-minimum-prefix-length 0)
-#+END_SRC
-
-Use =C-n= and =C-p= to select, =<return>= to complete or =<tab>= to complete the common part.
-Search through the completions with =C-s=, =C-r= and =C-o=. Press =M-(digit)= to
-quickly complete with one of the first 10 candidates.
-
-#+BEGIN_SRC emacs-lisp
-(general-def company-active-map
-  "C-n"   'company-select-next
-  "C-p"   'company-select-previous)
-
-(general-def company-serach-map
-  "C-n" 'company-select-next
-  "C-p" 'company-select-previous)
-#+END_SRC
-
-** Display Line Numbers
-
-Show line numbers in programming modes
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+END_SRC
-
-Count the number of lines to use for line number width.
-
-#+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-width-start t)
-#+END_SRC
-
-** Flycheck
-
-Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'flycheck)
- #+END_SRC
-
-Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'global-flycheck-mode)
- #+END_SRC
-
-Show Tip in popup when the cursor is on the error.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'flycheck-pos-tip)
-(with-eval-after-load 'flycheck
-  (flycheck-pos-tip-mode))
-#+END_SRC
-
-Use relative coordinates for the tip. If an error is on the right side of the
-frame, the tooltip will move more to the left and stay inside the frame.
-
-#+BEGIN_SRC emacs-lisp
-(setq pos-tip-use-relative-coordinates t)
-#+END_SRC
-
-Setting a max width so that the tooltip does not leave the frame.
-
-#+BEGIN_SRC emacs-lisp
-(setq flycheck-pos-tip-max-width 50)
-#+END_SRC
-
-Hide the tooltip after 20 seconds.
-
-#+BEGIN_SRC emacs-lisp
-(setq flycheck-pos-tip-timeout 20)
-#+END_SRC
-
-Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within the error
-list the following key bindings are available:
- - =n= Jump to the next error
- - =p= Jump to the previous error
- - =e= Explain the error
- - =f= Filter the error list by level
- - =F= Remove this filter
- - =S= Sort the error list bye the column at point
- - =g= Check the source buffer and update the error list
- - =q= Quit the error list and hide its window
-
-** Indentation
-
-#+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil
-              tab-width 2)
-(setq js-indent-level 2)
-(setq python-indent 2)
-(setq css-indent-offset 2)
-(setq sh-basic-offset 2)
-(setq sh-indentation 2)
-#+END_SRC
-
-** Magit
-
-Show =TODO= in magit-buffer
-
- #+BEGIN_SRC emacs-lisp
-(ph/install-package 'magit)
-(ph/install-package 'magit-todos)
-(add-hook 'prog-mode-hook 'magit-todos-mode)
- #+END_SRC
-
-** Markdown
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'markdown-mode)
-(setq markdown-command "pandoc")
-#+END_SRC
-
-** Python
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'elpy)
-(elpy-enable)
-#+END_SRC
-
-Use Virtual Envirnonments.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'virtualenvwrapper)
-(venv-initialize-eshell)
-#+END_SRC
-
-
-Virtual-Environment handling  shell:
-   - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
-   - activate virtualenv: `workon theproject`
-   - exit the env: `deactivate`
-   - delete the env: `rmvirtualenv theproject`
-
-Virtual-Envirnoment handling with emacs:
-   - create a virtualenv: `M-x venv-mkvirtualenv-using`
-   - activate virtualenv: `M-x venv-workon`
-   - exit the env with: `M-x venv-deactivate`
-   - delete the env: `M-x venv-rmvirtualenv`
-
-pip in Virtual-Envirnoment
-   - save pip dependencies: `pip freeze > requirements.txt`
-   - install pip dependencies `pip install -r requirements.txt`
-
-Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
-
-** Rainbow
-
-This minor mode sets background color to strings that match color names, e.g.
-#0000ff is displayed in white with a blue background
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'rainbow-mode)
-(add-hook 'prog-mode-hook 'rainbow-mode)
-#+END_SRC
-
-** Ruby
-*** Inf-ruby
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'inf-ruby)
-#+END_SRC
-
-*** Enhanced Ruby Mode
-
-Use =enh-ruby-mode= for all common ruby-files.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'enh-ruby-mode)
-(add-to-list 'auto-mode-alist
-             '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
-#+END_SRC
-
-# No magic comments
-
-#+BEGIN_SRC emacs-lisp
-;(setq ruby-insert-encoding-magic-comment nil)
-#+END_SRC
-
-*** Robe
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'robe)
-#+END_SRC
-
-Add the following gems to the =Gemfile= and install them.
-
-#+BEGIN_SRC ruby
-group :development do
-  gem 'pry'
-  gem 'pry-doc'
-  gem 'method_source'
-end
-#+END_SRC
-
-Generally, you'll want to start with =M-x inf-ruby-console-auto=. If there's no
-Ruby console running, most interactive commands provided by Robe will offer to
-launch it automatically.
-
-The exceptions are code completion and eldoc, which only work if the server is
-already running. To launch it, type =M-x robe-start=.
-
-As you change the code in your project, you'll want to update the running
-process. To load the current file, type =C-c C-l= (=ruby-load-file=), see
-inf-ruby for more commands. When you're working on a Rails project, you can type
-=C-c C-k= instead to reload the whole environment at once.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'enh-ruby-mode-hook 'robe-mode)
-#+END_SRC
-
-Some useful Commands/Keybindings
- - =C-c C-d= Lookup documentation
- - =M-.= / =M-,= Jump to defintion and back
-
-Use company mode for code completion.
-
-#+BEGIN_SRC emacs-lisp
-(eval-after-load 'company
-  '(push 'company-robe company-backends))
-#+END_SRC
-
-*** Rspec-mode
-
-Put the following in the =Gemfile=.
-
-#+BEGIN_SRC ruby
-group :development do
-  gem 'spring-commands-rspec'
-end
-#+END_SRC
-
-Usage:
-
-- =C-c , s= Verify the example or method defined at point
-- =C-c , m= Run all specs related to the current buffer
-- =C-c , a= Run spec for entire project
-- [[https://github.com/pezra/rspec-mode#usage][and more]]
-
-Load it.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
-(require 'rspec-mode)
-(require 'ansi-color)
-(eval-after-load 'rspec-mode '(rspec-install-snippets))
-#+END_SRC
-
-When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'inf-ruby-switch-setup)
-#+END_SRC
-
-** TeX
-
-AUCTeX is an extensible package for writing and formatting TeX files in GNU
-Emacs.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'auctex t)
-#+END_SRC
-
-Parse on load and save. This increases performance, especially for large
-multifile projects. The information is stored in an "auto" subdirectory.
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-parse-self t)
-(setq TeX-auto-save t)
-#+END_SRC
-
-Query to find out which is the master file.
-
-#+BEGIN_SRC emacs-lisp
-(setq-default TeX-master nil)
-#+END_SRC
-
-In Evince use =Control + Left Click= for backward search.
-
-#+BEGIN_SRC emacs-lisp
-(setq TeX-PDF-mode t)
-(setq TeX-view-program-selection '((output-pdf "Evince")))
-(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-(setq TeX-source-correlate-start-server t)
-#+END_SRC
-
-** Toc Org
-
-Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
-will be updated with the current table of contents.
-
- - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
-   (the default)
- - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
-   hrefs in the table of contents (this style is default). The other supported
-   href style is ‘org’, which is the default org style.
-
-
-#+begin_src emacs-lisp
-(ph/install-package 'toc-org)
-(add-hook 'org-mode-hook 'toc-org-enable)
-#+end_src
-
-** Web mode
-*** Setup
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tag?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.json?\\'" . web-mode))
-#+END_SRC
-
-Some web-mode settings.
-
-#+BEGIN_SRC emacs-lisp
-(setq web-mode-markup-indent-offset 2
-      web-mode-css-indent-offset 2
-      web-mode-code-indent-offset 2
-      web-mode-script-padding 2
-      web-mode-style-padding 2
-      web-mode-script-padding 2
-      web-mode-block-padding 0
-      web-mode-enable-current-element-highlight t
-      web-mode-enable-current-column-highlight t)
-#+END_SRC
-
-*** Company-Tern
-
-Use =company-tern=. Put a file =.tern-project= in the root of the project.
-Additionally, a file =~/.tern-config= can
-
-A Ruby on Rails =.tern-project= may look like this:
-
-#+BEGIN_SRC javascript
-{
-  "libs": [
-    "browser",
-    "jquery"
-  ],
-  "loadEagerly": [
-    "app/assets/javascripts/**/*.js",
-    "lib/assets/javascript/**/*.js",
-    "vendor/assets/javascript/**/*.js"
-  ],
-  "plugins": {
-    "es_modules": {},
-    "node": {}
-  }
-}
-#+END_SRC
-
-And my =~/.tern-config=
-
-#+BEGIN_SRC javascript
-{
-  "libs": [
-    "browser",
-    "jquery"
-  ],
-  "plugins": {
-    "es_modules": {},
-    "node": {}
-  }
-}
-#+END_SRC
-
-Add =company-tern= to =company=.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'company-tern)
-(ph/install-package 'jquery-doc)
-(add-to-list 'company-backends 'company-tern)
-#+END_SRC
-
-Enable JavaScript completion inside =<script>...</script>=.
-
-#+BEGIN_SRC emacs-lisp
-(advice-add 'company-tern :before
-            '(lambda (&rest _)
-               (if (equal major-mode 'web-mode)
-                   (let ((web-mode-cur-language
-                          (web-mode-language-at-pos)))
-                     (if (or (string= web-mode-cur-language "javascript")
-                             (string= web-mode-cur-language "jsx"))
-                         (unless tern-mode (tern-mode))
-                       (if tern-mode (tern-mode -1)))))))
-#+END_SRC
-
-*** Eslint
-
-Use =eslint= instead of =jshint=.
-
-#+BEGIN_SRC emacs-lisp
-(setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers
-                      '(javascript-jshint)))
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-#+END_SRC
-
 * Global Keybindings
 
 Create an empty keymap and minor-mode for my global keybindings
@@ -1317,7 +1410,7 @@ Overwriting default bindings (and defining new ones).
   "<f1> f" 'counsel-describe-function
   "<f1> v" 'counsel-describe-variable
   "<f2> u" 'counsel-unicode-char
-  "M-SPC"  'company-complete)
+  "C-SPC"  'company-complete)
 
 (general-def ph/global-keymap
   :prefix "C-x"
@@ -1705,8 +1798,8 @@ different window).
 
 Adjust =powerline-text-scale-factor= for graphical clients.
 
-TODO: Find out if there's a solution with frame-local settings to allow the
-parallel use of graphical and terminal clients.
+# TODO: Find out if there's a solution with frame-local settings to allow the
+# parallel use of graphical and terminal clients.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/set-powerline-text-scale-factor (frame)
