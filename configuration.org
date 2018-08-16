@@ -786,29 +786,23 @@ Disable evil-complete
 Install some backends.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'company-ansible)
 (ph/install-package 'company-bibtex)
+(add-to-list 'company-backends 'company-bibtex)
+
 (ph/install-package 'company-auctex)
+(company-auctex-init)
+
 (ph/install-package 'company-inf-ruby)
-(ph/install-package 'company-nginx)
+(add-to-list 'company-backends 'company-inf-ruby)
+
 (ph/install-package 'company-shell)
+(add-to-list 'company-backends 'company-shell)
+
 (ph/install-package 'company-tern)
-(ph/install-package 'company-web)
-#+END_SRC
-
-Enable JavaScript completion in =web-mode= inside =<script>...</script>= tags.
-
-#+BEGIN_SRC emacs-lisp
 (add-to-list 'company-backends 'company-tern)
-(advice-add 'company-tern :before
-            '(lambda (&rest _)
-               (if (equal major-mode 'web-mode)
-                   (let ((web-mode-cur-language
-                          (web-mode-language-at-pos)))
-                     (if (or (string= web-mode-cur-language "javascript")
-                             (string= web-mode-cur-language "jsx"))
-                         (unless tern-mode (tern-mode))
-                       (if tern-mode (tern-mode -1)))))))
+
+(ph/install-package 'company-web t)
+(add-to-list 'company-backends 'company-web-html)
 #+END_SRC
 
 =jquery-doc= provides completion source for auto-complete and company-mode as
@@ -1230,6 +1224,20 @@ Some web-mode settings.
       web-mode-block-padding 0
       web-mode-enable-current-element-highlight t
       web-mode-enable-current-column-highlight t)
+#+END_SRC
+
+Enable =tern= when the current language is JavaScript.
+
+#+BEGIN_SRC emacs-lisp
+(advice-add 'company-tern :before
+            '(lambda (&rest _)
+               (if (equal major-mode 'web-mode)
+                   (let ((web-mode-cur-language
+                          (web-mode-language-at-pos)))
+                     (if (or (string= web-mode-cur-language "javascript")
+                             (string= web-mode-cur-language "jsx"))
+                         (unless tern-mode (tern-mode))
+                       (if tern-mode (tern-mode -1)))))))
 #+END_SRC
 
 ** Yaml
