@@ -602,7 +602,7 @@ Evil motion-states are the evil states where we don't edit text.
   "K"      'evil-previous-visual-line)
 #+END_SRC
 
-Free =M-.= and ~M-,~ since they are popular kebinings for "jump to definition"
+Free =M-.= and =M-,​= since they are popular kebinings for "jump to definition"
 and "back".
 
 #+BEGIN_SRC emacs-lisp
@@ -1121,7 +1121,7 @@ inf-ruby for more commands. When you're working on a Rails project, you can type
 
 Some useful Commands/Keybindings
  - =C-c C-d= Lookup documentation
- - =M-.= / =M-,= Jump to defintion and back
+ - =M-.= / =M-,​= Jump to defintion and back
 
 Use company mode for code completion.
 
@@ -1434,7 +1434,7 @@ Don't use ugly GTK tooltips.
 ** Faces
 *** Default
 
-Scale font locally with =C-x C-+= and =C-x C--=.
+Set the default face. The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
