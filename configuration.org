@@ -464,6 +464,12 @@ Reuse buffer
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
+Show all files, in long listing format and human readable units.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default dired-listing-switches "-alh")
+#+END_SRC
+
 Open in new frame
 
 #+BEGIN_SRC emacs-lisp
