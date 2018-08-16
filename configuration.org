@@ -34,13 +34,13 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#session][Session]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#occur][Occur]]
+  - [[#ag][Ag]]
   - [[#dired][Dired]]
   - [[#evil][Evil]]
-    - [[#setup-1][Setup]]
-    - [[#evil-surround][Evil surround]]
+    - [[#settings][Settings]]
+    - [[#surround][Surround]]
     - [[#god-state][God State]]
     - [[#keybindings][Keybindings]]
-  - [[#ag][Ag]]
   - [[#projectile][Projectile]]
   - [[#project-terminals][Project Terminals]]
   - [[#ido][Ido]]
@@ -48,7 +48,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#dictionary][Dictionary]]
 - [[#programming-setup][Programming Setup]]
   - [[#autocomplete][Autocomplete]]
-    - [[#settings][Settings]]
+    - [[#settings-1][Settings]]
     - [[#backends][Backends]]
   - [[#brackets][Brackets]]
   - [[#display-line-numbers][Display Line Numbers]]
@@ -89,7 +89,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#spaceline][Spaceline]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
-    - [[#setup-2][Setup]]
+    - [[#setup-1][Setup]]
     - [[#config][Config]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
@@ -445,6 +445,15 @@ irrelevant)]]
   (call-interactively 'occur))
 #+END_SRC
 
+** Ag
+
+=ag= allows you to search using ag from inside Emacs. You can filter by file
+type, edit results inline, or find files.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ag)
+#+END_SRC
+
 ** Dired
 
 Usage:
@@ -474,9 +483,9 @@ Open in new frame
 #+END_SRC
 
 ** Evil
-*** Setup
 
-I am evil.
+=evil= is an extensible vi layer for Emacs. It emulates the main features of Vim,
+and provides facilities for writing custom extensions.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil)
@@ -486,25 +495,21 @@ I am evil.
 (evil-mode 1)
 #+END_SRC
 
-Evil commands
+*** Settings
+
+Call =ph/sudo-save= with =:ww=.
 
 #+BEGIN_SRC emacs-lisp
 (evil-ex-define-cmd "ww" 'ph/sudo-save)
 #+END_SRC
 
-When exiting insert-state, don't move the cursor
+When exiting insert-state, don't move the cursor back.
 
 #+BEGIN_SRC emacs-lisp
 (setq evil-move-cursor-back nil)
 #+END_SRC
 
-Go to next/previous line ith =h= and =l=.
-
-#+BEGIN_SRC emacs-lisp
-(setq evil-cross-lines t)
-#+END_SRC
-
-Set initial evil-state by major mode.
+Set initial state by major mode.
 
 #+BEGIN_SRC emacs-lisp
 (dolist (mode-map '((ag-mode . emacs)
@@ -522,7 +527,7 @@ Set initial evil-state by major mode.
   (evil-set-initial-state `,(car mode-map) `,(cdr mode-map)))
 #+END_SRC
 
-*** Evil surround
+*** Surround
 
 - Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current
   word)
@@ -538,12 +543,13 @@ Set initial evil-state by major mode.
 
 =god-mode= is a global minor mode for entering Emacs commands without modifier
 keys. It's similar to Vim's separation of commands and insertion mode.
+=evil-god-state= is =god-mode= for =evil-mode=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil-god-state)
 #+END_SRC
 
-Make =evil-god-state= work also in visual-mode.
+Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/evil-god-state/issues/4#issuecomment-67760001][stolen from here]]
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/evil-visual-activate-hook (&optional command)
@@ -570,7 +576,8 @@ use something like this [[https://emacs.stackexchange.com/questions/13763/how-ca
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/esc ()
-  "If in evil insert state, force normal state, else run `keyboard-quit'."
+  "Force `evil-normal-state' if the current state is 'motion,
+   'visual, 'operator or 'insert. Finally, run `keyboard-quit'."
   (interactive)
   (when (and evil-mode
              (or
@@ -578,10 +585,12 @@ use something like this [[https://emacs.stackexchange.com/questions/13763/how-ca
               (eq evil-state 'visual)
               (eq evil-state 'operator)
               (eq evil-state 'insert)))
-    (evil-force-normal-state)))
+    (evil-force-normal-state))
+  (keyboard-quit))
 
 (general-def 'insert
   "C-g" 'ph/esc)
+
 (general-def 'motion
   "C-g" 'ph/esc)
 #+END_SRC
@@ -599,7 +608,7 @@ Evil motion-states are the evil states where we don't edit text.
   "K"      'evil-previous-visual-line)
 #+END_SRC
 
-Free =M-.= and =M-,= since they are popular kebinings for "jump to definition"
+Free =M-.= and ~M-,~ since they are popular kebinings for "jump to definition"
 and "back".
 
 #+BEGIN_SRC emacs-lisp
@@ -608,19 +617,14 @@ and "back".
   "M-," nil)
 #+END_SRC
 
-** Ag
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ag)
-#+END_SRC
-
 ** Projectile
+
+=projectile= is a project interaction library for Emacs. Its goal is to provide a
+nice set of features operating on a project level without introducing external
+dependencies (when feasible).
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'projectile)
-(ph/install-package 'grizzl)
-(setq projectile-completion-system 'grizzl)
-(setq projectile-enable-caching t)
 (setq projectile-keymap-prefix (kbd "C-c p"))
 (projectile-mode +1)
 #+END_SRC
@@ -785,8 +789,8 @@ Disable evil-complete
 
 #+BEGIN_SRC emacs-lisp
 (general-def 'insert
-  "C-n" nil
-  "C-p" nil)
+  "C-p" nil
+  "C-n" nil)
 #+END_SRC
 
 *** Backends
@@ -1330,15 +1334,6 @@ Show text, not html.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-html2text-command 'mu4e-shr2text)
-#+END_SRC
-
-No automatic line breaks.
-
-#+BEGIN_SRC emacs-lisp
-;(defun no-auto-fill ()
-;  "Turn off auto-fill-mode."
-;  (auto-fill-mode -1))
-;(add-hook 'mu4e-compose-mode-hook 'no-auto-fill)
 #+END_SRC
 
 View mail in browser (with "aV").
