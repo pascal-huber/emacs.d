@@ -3,7 +3,7 @@
 This is my Emacs configuration. There are many like it, but this one is mine.
 
 * Content :TOC_3_gh:
-- [[#some-inspiration][Some Inspiration]]
+- [[#inspiration][Inspiration]]
 - [[#installation][Installation]]
   - [[#setup][Setup]]
   - [[#mu4e][Mu4e]]
@@ -11,7 +11,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
-- [[#package-management][Package Management]]
+- [[#packages][Packages]]
   - [[#installation-1][Installation]]
   - [[#packages-for-configuration][Packages for Configuration]]
   - [[#auto-update-packages][Auto Update Packages]]
@@ -96,18 +96,12 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#frame-title][Frame Title]]
   - [[#fringe][Fringe]]
 
-* Some Inspiration
+* Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
 - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
 - [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
-- [[https://github.com/hrs/dotfiles/blob/master/emacs/.emacs.d/configuration.org][Harry R. Schwartz's configuration]]
-- [[http://ivanmalison.github.io/dotfiles/][Ivan Malison's configuration]]
-- [[http://pages.sachachua.com/.emacs.d/Sacha.html#org7b1ada1][Sacha Chua's configuration]]
-- [[https://github.com/purcell/emacs.d/][Steve Purcell's configuration]]
-- [[https://github.com/wasamasa/dotemacs/blob/master/init.org][Vasilij Schneidermann's configuration]]
-- [[https://github.com/seagle0128/.emacs.d][Vincent Zhang's configuration]]
 
 * Installation
 ** Setup
@@ -171,7 +165,7 @@ Install dependencies for =robe=.
 $ gem install pry pry-doc method_source
 #+END_SRC
 
-* Package Management
+* Packages
 ** Installation
 
 Use the =gnu=, =melpa= and =marmelade= archives.
@@ -703,14 +697,6 @@ workspace.
 (ido-everywhere 1)
 #+END_SRC
 
-=flx-ido= offers fuzzy matching for =ido=. Disabled to test the built-in flex-matching.
-
-#+BEGIN_SRC emacs-lisp
-;(ph/install-package 'flx-ido)
-;(flx-ido-mode 1)
-;(setq ido-enable-flex-matching t)
-#+END_SRC
-
 Enable the built-in fuzzy-matching
 
 #+BEGIN_SRC emacs-lisp
@@ -728,6 +714,8 @@ Enable =ido-vertical-mode=
 
 ** Counsel
 
+=counsel=, a collection of Ivy-enhanced versions of common Emacs commands.
+
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
 (ph/install-package 'counsel-projectile)
@@ -741,7 +729,7 @@ Enable =ido-vertical-mode=
 
 ** Dictionary
 
-=dictcc= translates EN-GER.
+=dictcc= translates English to German and vice versa.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'dictcc)
@@ -750,7 +738,7 @@ Enable =ido-vertical-mode=
 * Programming Setup
 ** Autocomplete
 
-Company is a text completion framework for Emacs. The name stands for "complete
+=company= is a text completion framework for Emacs. The name stands for "complete
 anything". It uses pluggable back-ends and front-ends to retrieve and display
 completion candidates.
 
@@ -806,10 +794,9 @@ Install some backends.
 (ph/install-package 'company-shell)
 (ph/install-package 'company-tern)
 (ph/install-package 'company-web)
-
 #+END_SRC
 
-Enable JavaScript completion inside =<script>...</script>=.
+Enable JavaScript completion in =web-mode= inside =<script>...</script>= tags.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'company-backends 'company-tern)
