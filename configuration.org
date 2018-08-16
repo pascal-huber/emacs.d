@@ -75,7 +75,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#yaml][Yaml]]
 - [[#news-feeds][News Feeds]]
 - [[#mail][Mail]]
-  - [[#mu4e-setup][Mu4e Setup]]
+  - [[#settings-2][Settings]]
   - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
@@ -1261,9 +1261,10 @@ Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 #+END_SRC
 
 * Mail
-** Mu4e Setup
 
-Load it.
+=mu4e= is an emacs-based e-mail client. It’s based on the mu e-mail
+indexer/searcher. It attempts to be a super-efficient tool to withstand the
+daily e-mail tsunami.
 
 #+BEGIN_SRC emacs-lisp
 (require 'mu4e)
@@ -1274,18 +1275,29 @@ Load it.
 (ph/install-package 'smtpmail)
 #+END_SRC
 
-Open mu4e anyway.
+Open mu4e in the current frame, even if it is already opened in another frame.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/mu4e ()
-  "Open mu4e even if its opened in another window or buffer."
+  "Open mu4e even if its already opened somewhere else."
   (interactive)
   (unless (string-prefix-p "mu4e" (symbol-name major-mode))
     (let ((buffer (get-buffer "*mu4e-headers*")))
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
-Don't mark for delete, only move to Trash
+** Settings
+
+My contexts contain private information and are therefore defined in a file
+outside of this repo.
+
+#+BEGIN_SRC emacs-lisp
+(load-file "~/git/config/emacs/private.el")
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'ask-if-none)
+#+END_SRC
+
+Don't mark for delete, only move to Trash.
 
 #+BEGIN_SRC emacs-lisp
 (defun mu4e-headers-mark-for-delete () nil)
@@ -1295,15 +1307,6 @@ Dont reply to myself.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-compose-dont-reply-to-self t)
-#+END_SRC
-
-My contexts contain private information and are therefore defined in a file
-outside of this repo.
-
-#+BEGIN_SRC emacs-lisp
-(load-file "~/git/config/emacs/private.el")
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
 Sending messages.
@@ -1332,30 +1335,23 @@ Show text, not html.
 (setq mu4e-html2text-command 'mu4e-shr2text)
 #+END_SRC
 
-View mail in browser (with "aV").
+View mail in browser (with =aV=).
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'mu4e-view-actions
              '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 #+END_SRC
 
-Skip duplicates
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-skip-duplicates t)
-#+END_SRC
-
 Some self explanatory settings.
 
 #+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-skip-duplicates t)
 (setq mu4e-maildir "~/.mail")
 (setq mu4e-get-mail-command "offlineimap -o")
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
 ** Forgotten Attachment
-
-Check for forgotten attachments.
 
 #+BEGIN_SRC emacs-lisp
 (defvar ph/message-attachment-regexp
@@ -1370,14 +1366,16 @@ Check for forgotten attachments.
           "hänge\\)"))
 
 (defun ph/message-check-attachment nil
-  "Check if there is an attachment in the message if I claim it."
+  "Check if the mail contains any words which indicate that
+  there should be an attachment. If it does, ask if I have
+  attached all attachments before sending the mail"
   (save-excursion
     (message-goto-body)
     (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
       (message-goto-body)
       (unless (message-y-or-n-p
                "Did you attach all documents?" nil nil)
-        (error "No message sent, add the attachments!")))))
+        (error "No message sent, add some attachments!")))))
 
 (add-hook 'message-send-hook 'ph/message-check-attachment)
 #+END_SRC
