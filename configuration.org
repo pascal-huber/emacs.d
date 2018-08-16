@@ -581,10 +581,10 @@ use something like this [[https://emacs.stackexchange.com/questions/13763/how-ca
   (interactive)
   (when (and evil-mode
              (or
-              (eq evil-state 'motion)
-              (eq evil-state 'visual)
-              (eq evil-state 'operator)
-              (eq evil-state 'insert)))
+              (evil-insert-state-p)
+              (evil-motion-state-p)
+              (evil-visual-state-p)
+              (evil-operator-state-p)))
     (evil-force-normal-state))
   (keyboard-quit))
 
