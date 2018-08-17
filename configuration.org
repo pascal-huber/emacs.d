@@ -579,6 +579,7 @@ use something like this [[https://emacs.stackexchange.com/questions/13763/how-ca
   "Force `evil-normal-state' if the current state is 'motion,
    'visual, 'operator or 'insert. Finally, run `keyboard-quit'."
   (interactive)
+  (company-abort)
   (when (and evil-mode
              (or
               (evil-insert-state-p)
@@ -771,10 +772,12 @@ Switch between suggestions with =C-n= and =C-p=.
 
 #+BEGIN_SRC emacs-lisp
 (general-def company-active-map
+  "C-g" 'ph/esc
   "C-n" 'company-select-next
   "C-p" 'company-select-previous)
 
 (general-def company-search-map
+  "C-g" 'ph/esc
   "C-n" 'company-select-next
   "C-p" 'company-select-previous)
 #+END_SRC
@@ -1231,6 +1234,17 @@ Some web-mode settings.
       web-mode-block-padding 0
       web-mode-enable-current-element-highlight t
       web-mode-enable-current-column-highlight t)
+#+END_SRC
+
+Use company backends for =tern=, =html= and =css=.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/web-mode-hook ()
+  "Hook for `web-mode'."
+  (set (make-local-variable 'company-backends)
+       '(company-tern company-web-html company-css company-files)))
+
+(add-hook 'web-mode-hook 'ph/web-mode-hook)
 #+END_SRC
 
 Enable =tern= when the current language is JavaScript.
