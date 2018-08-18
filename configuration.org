@@ -46,7 +46,8 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#ido][Ido]]
   - [[#counsel][Counsel]]
   - [[#dictionary][Dictionary]]
-- [[#programming-setup][Programming Setup]]
+  - [[#pdf][PDF]]
+- [[#programming-and-markup][Programming and Markup]]
   - [[#autocomplete][Autocomplete]]
     - [[#settings-1][Settings]]
     - [[#backends][Backends]]
@@ -521,6 +522,7 @@ Set initial state by major mode.
                     (git-rebase-mode . emacs)
                     (help-mode . emacs)
                     (inf-ruby-mode . emacs)
+                    (pdf-occur-buffer-mode . emacs)
                     (rspec-compilation-mode . emacs)
                     (shell-mode . emacs)
                     (term-mode . emacs)))
@@ -742,7 +744,40 @@ Enable =ido-vertical-mode=
 (ph/install-package 'dictcc)
 #+END_SRC
 
-* Programming Setup
+** PDF
+
+=pdf-tools= is, among other things, a replacement of DocView for PDF files. The
+key difference is that pages are not pre-rendered by e.g. ghostscript and stored
+in the file-system, but rather created on-demand and stored in memory.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'pdf-tools)
+(pdf-tools-install)
+#+END_SRC
+
+When highlighting, automatically add an annotation.
+
+#+BEGIN_SRC emacs-lisp
+(setq pdf-annot-activate-created-annotations t)
+#+END_SRC
+
+Zoom by 10%.
+
+#+BEGIN_SRC emacs-lisp
+(setq pdf-view-resize-factor 1.1)
+#+END_SRC
+
+Annotations:
+
+- =C-c C-a h= to highlight text
+- =C-c C-a o= to strike though text
+- =C-c C-a t= to add a note
+- =C-c C-a D= to delete one of the above
+- =C-c C-a l= to list all annotations. Use =SPACE= to jump to the annotation.
+
+[[https://github.com/politza/pdf-tools#some-keybindings][Some keybindings]]
+
+* Programming and Markup
 ** Autocomplete
 
 =company= is a text completion framework for Emacs. The name stands for "complete
