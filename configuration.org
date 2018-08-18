@@ -1465,9 +1465,10 @@ Set the default face. The font-size can be adjusted buffer-locally with =C-x C-+
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
-                    :family "DejaVu Sans Mono"
-                    :height 110
+                    ;:family "DejaVu Sans Mono"
+                    :family "Bitstream Vera Sans Mono"
                     :weight 'normal
+                    :height 110
                     :width 'normal)
 #+END_SRC
 
