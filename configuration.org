@@ -4,7 +4,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 
 * Content :TOC_3_gh:
 - [[#inspiration][Inspiration]]
-- [[#installation][Installation]]
+- [[#os-setup][OS Setup]]
   - [[#setup][Setup]]
   - [[#mu4e][Mu4e]]
   - [[#markdown][Markdown]]
@@ -12,7 +12,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
 - [[#packages][Packages]]
-  - [[#installation-1][Installation]]
+  - [[#installation][Installation]]
   - [[#packages-for-configuration][Packages for Configuration]]
   - [[#auto-update-packages][Auto Update Packages]]
 - [[#tweaking-defaults][Tweaking Defaults]]
@@ -104,7 +104,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
 
-* Installation
+* OS Setup
 ** Setup
 
 Clone, create symlink and update submodules.
@@ -572,32 +572,6 @@ Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/
 
 *** Keybindings
 
-Use =C-g= as general purpose escape key sequence. I used to use [[https://www.emacswiki.org/emacs/Evil#toc16][this]] but now I
-use something like this [[https://emacs.stackexchange.com/questions/13763/how-can-i-make-c-g-run-both-evil-force-normal-state-and-keyboard-quit][this]]. I couln't get the first one running properly with
-=company-mode=.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/esc ()
-  "Force `evil-normal-state' if the current state is 'motion,
-   'visual, 'operator or 'insert. Finally, run `keyboard-quit'."
-  (interactive)
-  (company-abort)
-  (when (and evil-mode
-             (or
-              (evil-insert-state-p)
-              (evil-motion-state-p)
-              (evil-visual-state-p)
-              (evil-operator-state-p)))
-    (evil-force-normal-state))
-  (keyboard-quit))
-
-(general-def 'insert
-  "C-g" 'ph/esc)
-
-(general-def 'motion
-  "C-g" 'ph/esc)
-#+END_SRC
-
 Evil motion-states are the evil states where we don't edit text.
 
 #+BEGIN_SRC emacs-lisp
@@ -618,6 +592,13 @@ and "back".
 (general-def 'normal
   "M-." nil
   "M-," nil)
+#+END_SRC
+
+Because the escape-key is too far away I se =C-i= to force normal state.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'insert
+  "C-i" 'evil-force-normal-state)
 #+END_SRC
 
 ** Projectile
@@ -807,12 +788,10 @@ Switch between suggestions with =C-n= and =C-p=.
 
 #+BEGIN_SRC emacs-lisp
 (general-def company-active-map
-  "C-g" 'ph/esc
   "C-n" 'company-select-next
   "C-p" 'company-select-previous)
 
 (general-def company-search-map
-  "C-g" 'ph/esc
   "C-n" 'company-select-next
   "C-p" 'company-select-previous)
 #+END_SRC
