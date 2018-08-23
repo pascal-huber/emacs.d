@@ -599,6 +599,10 @@ Because the escape-key is too far away I se =C-i= to force normal state.
 #+BEGIN_SRC emacs-lisp
 (general-def 'insert
   "C-i" 'evil-force-normal-state)
+(general-def 'operator
+  "C-i" 'evil-force-normal-state)
+(general-def 'visual
+  "C-i" 'evil-exit-visual-state)
 #+END_SRC
 
 ** Projectile
