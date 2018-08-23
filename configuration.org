@@ -1276,6 +1276,13 @@ Enable =tern= when the current language is JavaScript.
 (ph/install-package 'yaml-mode)
 #+END_SRC
 
+Use a line width of 100 in =yaml-mode=.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'yaml-mode-hook
+  (lambda () (set-fill-column 100)))
+#+END_SRC
+
 * News Feeds
 
 Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
