@@ -572,7 +572,7 @@ Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/
 
 *** Keybindings
 
-Evil motion-states are the evil states where we don't edit text.
+Exit and enter =god-mode=.
 
 #+BEGIN_SRC emacs-lisp
 (general-def 'god
@@ -580,7 +580,14 @@ Evil motion-states are the evil states where we don't edit text.
   "C-g"    'evil-god-state-bail)
 
 (general-def 'motion
-  ","      'evil-execute-in-god-state
+  ","      'evil-execute-in-god-state)
+#+END_SRC
+
+
+Evil motion-states are the evil states where we don't edit text.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'motion
   "j"      'evil-next-visual-line
   "K"      'evil-previous-visual-line)
 #+END_SRC
@@ -592,17 +599,6 @@ and "back".
 (general-def 'normal
   "M-." nil
   "M-," nil)
-#+END_SRC
-
-Because the escape-key is too far away I se =C-i= to force normal state.
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'insert
-  "C-i" 'evil-force-normal-state)
-(general-def 'operator
-  "C-i" 'evil-force-normal-state)
-(general-def 'visual
-  "C-i" 'evil-exit-visual-state)
 #+END_SRC
 
 ** Projectile
