@@ -37,7 +37,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#ag][Ag]]
   - [[#dired][Dired]]
   - [[#evil][Evil]]
-    - [[#settings][Settings]]
     - [[#surround][Surround]]
     - [[#god-state][God State]]
     - [[#keybindings][Keybindings]]
@@ -49,7 +48,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#pdf][PDF]]
 - [[#programming-and-markup][Programming and Markup]]
   - [[#autocomplete][Autocomplete]]
-    - [[#settings-1][Settings]]
+    - [[#settings][Settings]]
     - [[#backends][Backends]]
   - [[#brackets][Brackets]]
   - [[#display-line-numbers][Display Line Numbers]]
@@ -65,6 +64,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#org][Org]]
   - [[#php][PHP]]
   - [[#python][Python]]
+  - [[#r][R]]
   - [[#rainbow][Rainbow]]
   - [[#ruby-1][Ruby]]
     - [[#inf-ruby][Inf-ruby]]
@@ -76,7 +76,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#yaml][Yaml]]
 - [[#news-feeds][News Feeds]]
 - [[#mail][Mail]]
-  - [[#settings-2][Settings]]
+  - [[#settings-1][Settings]]
   - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
@@ -496,8 +496,6 @@ and provides facilities for writing custom extensions.
 (evil-mode 1)
 #+END_SRC
 
-*** Settings
-
 Call =ph/sudo-save= with =:ww=.
 
 #+BEGIN_SRC emacs-lisp
@@ -515,6 +513,7 @@ Set initial state by major mode.
                     (git-commit-mode . insert)
                     (git-rebase-mode . emacs)
                     (help-mode . emacs)
+                    (inferior-ess-mode . emacs)
                     (inf-ruby-mode . emacs)
                     (pdf-occur-buffer-mode . emacs)
                     (rspec-compilation-mode . emacs)
@@ -576,7 +575,6 @@ Exit and enter =god-mode=.
 (general-def 'motion
   ","      'evil-execute-in-god-state)
 #+END_SRC
-
 
 Evil motion-states are the evil states where we don't edit text.
 
@@ -1072,6 +1070,16 @@ pip in Virtual-Envirnoment
    - install pip dependencies `pip install -r requirements.txt`
 
 Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
+
+** R
+
+Emacs Speaks Statistics (=ess=) is designed to support editing of scripts and
+interaction with various statistical analysis programs such as R, S-Plus, SAS,
+Stata and OpenBUGS/JAGS.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ess)
+#+END_SRC
 
 ** Rainbow
 
