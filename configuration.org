@@ -504,12 +504,6 @@ Call =ph/sudo-save= with =:ww=.
 (evil-ex-define-cmd "ww" 'ph/sudo-save)
 #+END_SRC
 
-When exiting insert-state, don't move the cursor back.
-
-#+BEGIN_SRC emacs-lisp
-(setq evil-move-cursor-back nil)
-#+END_SRC
-
 Set initial state by major mode.
 
 #+BEGIN_SRC emacs-lisp
