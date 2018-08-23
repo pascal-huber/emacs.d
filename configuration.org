@@ -612,7 +612,6 @@ dependencies (when feasible).
 (projectile-mode +1)
 (general-def projectile-mode-map
   "C-c p" 'projectile-command-map)
-;(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+END_SRC
 
 ** Project Terminals
