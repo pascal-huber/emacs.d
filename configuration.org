@@ -1432,10 +1432,9 @@ Overwriting default bindings (and defining new ones).
 
  #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
-  "<f1> f" 'counsel-describe-function
-  "<f1> v" 'counsel-describe-variable
-  "<f2> u" 'counsel-unicode-char
-  "C-SPC"  'company-complete)
+  "C-h f" 'counsel-describe-function
+  "C-h v" 'counsel-describe-variable
+  "C-SPC" 'company-complete)
 
 (general-def ph/global-keymap
   :prefix "C-x"
