@@ -1764,10 +1764,8 @@ that the permissions change if the file is deleted and rewritten.
 
 *** Diminish
 
-When we diminish a mode, we are saying we want it to continue doing its work for
-us, but we no longer want to be reminded of it. -- Will Mengarini
-
-Diminish implements hiding or abbreviation of the mode line displays (lighters) of minor-modes.
+Diminish implements hiding or abbreviation of the mode line displays (lighters)
+of minor-modes.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'diminish)
