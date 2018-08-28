@@ -76,7 +76,8 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#yaml][Yaml]]
 - [[#news-feeds][News Feeds]]
 - [[#mail][Mail]]
-  - [[#settings-1][Settings]]
+  - [[#setup-1][Setup]]
+  - [[#contexts][Contexts]]
   - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
@@ -87,7 +88,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#faces][Faces]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
-    - [[#setup-1][Setup]]
+    - [[#setup-2][Setup]]
     - [[#config][Config]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
@@ -1305,10 +1306,11 @@ Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 indexer/searcher. It attempts to be a super-efficient tool to withstand the
 daily e-mail tsunami.
 
+** Setup
+
 #+BEGIN_SRC emacs-lisp
 (require 'mu4e)
 (require 'mu4e-contrib)
-(ph/install-package 'mu4e-alert)
 (ph/install-package 'evil-mu4e)
 (ph/install-package 'smtpmail)
 #+END_SRC
@@ -1324,7 +1326,6 @@ Open mu4e in the current frame, even if it is already opened in another frame.
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
-** Settings
 
 Show dates as =dd.mm.yy=, and times in =HH:MM=
 
@@ -1333,16 +1334,16 @@ Show dates as =dd.mm.yy=, and times in =HH:MM=
 (setq mu4e-headers-date-format "%d.%m.%y")
 #+END_SRC
 
-My contexts contain private information and are therefore defined in a file
-outside of this repo.
+Pick first Context as default.
 
 #+BEGIN_SRC emacs-lisp
-(load-file "~/git/config/emacs/private.el")
 (setq mu4e-context-policy 'pick-first)
 (setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
 Don't mark for delete, only move to Trash.
+
+# TODO: find a better option for this, should this be an offlineimap setting?
 
 #+BEGIN_SRC emacs-lisp
 (defun mu4e-headers-mark-for-delete () nil)
@@ -1364,14 +1365,6 @@ Dont reply to myself.
 (setq mu4e-compose-dont-reply-to-self t)
 #+END_SRC
 
-Sending messages.
-
-#+BEGIN_SRC emacs-lisp
-(setq message-send-mail-function 'smtpmail-send-it)
-(setq starttls-use-gnutls t)
-(setq smtpmail-debug-info t)
-#+END_SRC
-
 Show me the addresses, not only names.
 
 #+BEGIN_SRC emacs-lisp
@@ -1384,20 +1377,157 @@ Show text, not html.
 (setq mu4e-html2text-command 'mu4e-shr2text)
 #+END_SRC
 
-View mail in browser (with =aV=).
+View html-mail in browser with =aV=.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'mu4e-view-actions
              '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 #+END_SRC
 
-Some self explanatory settings.
+Use =smtpmail= with =tnutls= to sending mails.
+
+#+BEGIN_SRC emacs-lisp
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq starttls-use-gnutls t)
+(setq smtpmail-debug-info t)
+#+END_SRC
+
+Show only one of duplicate messages.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-headers-skip-duplicates t)
-(setq mu4e-maildir "~/.mail")
-(setq mu4e-get-mail-command "offlineimap -o")
+#+END_SRC
+
+Kill message-buffer when finished.
+
+#+BEGIN_SRC emacs-lisp
 (setq message-kill-buffer-on-exit t)
+#+END_SRC
+
+** Contexts
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-maildir "~/.mail")
+
+(setq mu4e-contexts
+    `( ,(make-mu4e-context
+          :name "Private"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal.huber@resolved.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pascal.huber@resolved.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/r/INBOX.Drafts")
+            ( mu4e-sent-folder                . "/r/INBOX.Sent")
+            ( mu4e-trash-folder               . "/r/INBOX.Trash")
+            ( mu4e-maildir-shortcuts
+                .( ("/r/INBOX"                . ?i)
+                   ("/r/INBOX.Sent"           . ?s)
+                   ("/r/INBOX.spambucket"     . ?x)
+                   ("/r/INBOX.keep"           . ?k)
+                   ("/r/INBOX.tempKeep"       . ?t)
+                   ("/r/INBOX.Trash"          . ?b)))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.resolved.ch")
+            ( smtpmail-smtp-server            . "mail.resolved.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pascal.huber@resolved.ch")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.resolved.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "QuickShift"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal@quickshift.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pascal@quickshift.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/q/INBOX.Drafts")
+            ( mu4e-sent-folder                . "/q/INBOX.Sent")
+            ( mu4e-trash-folder               . "/q/INBOX.Trash")
+            ( mu4e-maildir-shortcuts
+                .( ("/q/INBOX"                . ?i)
+                   ("/q/INBOX.Sent"           . ?s)
+                   ("/q/INBOX.spambucket"     . ?x)
+                   ("/q/INBOX.keep"           . ?k)
+                   ("/q/INBOX.tmp"            . ?t)
+                   ("/q/INBOX.Trash"          . ?b)))
+            ( mu4e-compose-signature          . (concat "QuickShift"
+                                                        " - Der vollautomatische Einsatzplaner\n"
+                                                        "quickshift.ch\n\n"
+                                                        "Pascal Huber\n"
+                                                        "pascal@quickshift.ch\n"
+                                                        "+41 79 263 92 98\n"))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.quickshift.ch")
+            ( smtpmail-smtp-server            . "mail.quickshift.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pascal@quickshift.ch")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.quickshift.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "ETH"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal@quickshift.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pahuber@student.ethz.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/e/Drafts")
+            ( mu4e-sent-folder                . "/e/Sent Items")
+            ( mu4e-trash-folder               . "/e/Deleted Items")
+            ( mu4e-maildir-shortcuts
+                .( ("/e/INBOX"                . ?i)
+                   ("/e/Sent Items"           . ?s)
+                   ("/e/Junk E-Mail"          . ?x)
+                   ("/e/INBOX.keep"           . ?k)
+                   ("/e/INBOX.tmp"            . ?t)
+                   ("/e/Deleted Items"        . ?b)))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.ethz.ch")
+            ( smtpmail-smtp-server            . "mail.ethz.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pahuber")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.ethz.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "Gmail"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "mr.huber.pascal@gmail.com")))
+          :vars '(
+            ( user-full-name     . "Pascal Huber")
+            ( user-mail-address	 . "mr.huber.pascal@gmail.com")
+            ( mu4e-get-mail-command . "offlineimap -o -a Gmail")
+            ( mu4e-maildir-shortcuts
+                .( ("/g/INBOX"                   . ?i)
+                   ("/g/[Gmail].Sent Mail"       . ?s)
+                   ("/g/Private.Family.Linda"    . ?l)
+                   ("/g/[Gmail].Spam"            . ?x)
+                   ("/g/charles-university"      . ?u)
+                   ("/g/[Gmail].Bin"             . ?b)))
+            ( mu4e-drafts-folder . "/g/[Gmail].Drafts")
+            ( mu4e-sent-folder   . "/g/[Gmail].Sent Mail")
+            ( mu4e-trash-folder  . "/g/[Gmail].Bin")
+            ( mu4e-sent-messages-behavior    . delete)
+            ( smtpmail-stream-type           . starttls)
+            ( smtpmail-default-smtp-server   . "smtp.gmail.com")
+            ( smtpmail-smtp-server           . "smtp.gmail.com")
+            ( smtpmail-smtp-service          . 587)
+            ( smtpmail-smtp-user             . "mr.huber.pascal@gmail.com")
+            ( smtpmail-starttls-credentials  . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 nil nil)))))))
 #+END_SRC
 
 ** Forgotten Attachment
