@@ -1301,7 +1301,7 @@ Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 
 * Mail
 
-=mu4e= is an emacs-based e-mail client. It’s based on the mu e-mail
+[[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
 indexer/searcher. It attempts to be a super-efficient tool to withstand the
 daily e-mail tsunami.
 
@@ -1310,7 +1310,6 @@ daily e-mail tsunami.
 (require 'mu4e-contrib)
 (ph/install-package 'mu4e-alert)
 (ph/install-package 'evil-mu4e)
-(ph/install-package 'mu4e-maildirs-extension)
 (ph/install-package 'smtpmail)
 #+END_SRC
 
@@ -1349,6 +1348,16 @@ Don't mark for delete, only move to Trash.
 (defun mu4e-headers-mark-for-delete () nil)
 #+END_SRC
 
+Enabling receiving clients that support this feature to reflow my paragraphs.
+Plain text emails with =Content-Type: text/plain; format=flowed= can be reflowed
+(i.e. line endings removed, paragraphs refilled) by receiving clients that
+support this standard. Clients that don’t support this, show them as is, which
+means this feature is truly non-invasive.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-compose-format-flowed t)
+#+END_SRC
+
 Dont reply to myself.
 
 #+BEGIN_SRC emacs-lisp
@@ -1361,12 +1370,6 @@ Sending messages.
 (setq message-send-mail-function 'smtpmail-send-it)
 (setq starttls-use-gnutls t)
 (setq smtpmail-debug-info t)
-#+END_SRC
-
-Activate Alert
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'mu4e-alert-enable-mode-line-display)
 #+END_SRC
 
 Show me the addresses, not only names.
