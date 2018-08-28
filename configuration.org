@@ -81,13 +81,11 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#tooltips][Tooltips]]
-  - [[#faces][Faces]]
-    - [[#default][Default]]
-    - [[#mode-line][Mode Line]]
-    - [[#attention-faces][Attention-Faces]]
-    - [[#changing-faces][Changing Faces]]
+  - [[#default-face][Default Face]]
   - [[#theme-rotation][Theme Rotation]]
+    - [[#changing-faces][Changing Faces]]
   - [[#spaceline][Spaceline]]
+    - [[#faces][Faces]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
     - [[#setup-1][Setup]]
@@ -1488,65 +1486,40 @@ Don't use ugly GTK tooltips.
 (setq x-gtk-use-system-tooltips nil)
 #+END_SRC
 
-** Faces
-*** Default
+** Default Face
 
 Set the default face. The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
-                    ;:family "DejaVu Sans Mono"
-                    :family "Bitstream Vera Sans Mono"
+                    :family "DejaVu Sans Mono"
                     :weight 'normal
                     :height 110
                     :width 'normal)
 #+END_SRC
 
-*** Mode Line
+** Theme Rotation
 
-A slightly smaller font for the mode-line.
-
-#+BEGIN_SRC emacs-lisp
-(set-face-attribute 'mode-line nil
-                    :inherit 'default
-                    :height 100)
-(set-face-attribute 'mode-line-inactive nil
-                    :inherit 'mode-line)
-#+END_SRC
-
-*** Attention-Faces
-
-Faces to highlight things/spaceline-segments which need special attention.
+Call =M-x ph/next-theme= to load the next theme.
 
 #+BEGIN_SRC emacs-lisp
-(defface ph/alert-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#ef2929"))
-  "Alert Face"
-  :group 'spaceline)
+(ph/install-package 'moe-theme)
+(ph/install-package 'dash)
 
-(defface ph/warn-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#ff5d17"))
-  "Warn Face"
-  :group 'spaceline)
+(setq ph/theme-list (list (list '(load-theme moe-dark t)
+                                '(ph/spaceline-dark))
+                          (list '(load-theme moe-light t)
+                                '(ph/spaceline-light))))
 
-(defface ph/another-warn-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#fce94f"))
-  "Another Warn Face"
-  :group 'spaceline)
+(defun ph/next-theme ()
+  "Loads next theme in the theme-list and rotates the list"
+  (interactive)
+  (cl-loop for f in (nth 0 ph/theme-list) do (apply f))
+  (setq ph/theme-list (-rotate 1 ph/theme-list)))
 
-(defface ph/info-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#a1db00"))
-  "Info Face"
-  :group 'spaceline)
+(add-hook 'after-init-hook 'ph/next-theme)
 #+END_SRC
+
 
 *** Changing Faces
 
@@ -1555,6 +1528,8 @@ Functions to change the mode-line faces.
 #+BEGIN_SRC emacs-lisp
 (defun ph/spaceline-light()
   (interactive)
+  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
+                      :background "#5fafd7")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#3a3a3a"
@@ -1579,6 +1554,8 @@ Functions to change the mode-line faces.
 
 (defun ph/spaceline-dark()
   (interactive)
+  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
+                      :background "#005faf")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#c6c6c6"
@@ -1602,34 +1579,91 @@ Functions to change the mode-line faces.
   (powerline-reset))
 #+END_SRC
 
-** Theme Rotation
-
-Call =M-x ph/next-theme= to load the next theme.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'moe-theme)
-(require 'dash)
-
-(setq ph/theme-list (list (list '(load-theme moe-dark t)
-                                '(ph/spaceline-dark))
-                          (list '(load-theme moe-light t)
-                                '(ph/spaceline-light))))
-
-(defun ph/next-theme ()
-  "Loads next theme in the theme-list and rotates the list"
-  (interactive)
-  (cl-loop for f in (nth 0 ph/theme-list) do (apply f))
-  (setq ph/theme-list (-rotate 1 ph/theme-list)))
-
-(add-hook 'after-init-hook 'ph/next-theme)
-#+END_SRC
-
 ** Spaceline
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'powerline)
 (ph/install-package 'spaceline)
 (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
+#+END_SRC
+
+*** Faces
+**** Spaceline
+
+A slightly smaller font for the mode-line.
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'mode-line nil
+                    :inherit 'default
+                    :height 100)
+(set-face-attribute 'mode-line-inactive nil
+                    :inherit 'mode-line)
+#+END_SRC
+
+**** Attention-Faces
+
+Faces to highlight things/spaceline-segments which need special attention.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-alert-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#ef2929"))
+  "Alert Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-warn-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#ff5d17"))
+  "Warn Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-another-warn-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#fce94f"))
+  "Another Warn Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-info-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#a1db00"))
+  "Info Face"
+  :group 'spaceline)
+#+END_SRC
+
+**** Special Segments
+
+Face for mu4e segemnt.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-mu4e-context-face
+  '((t :inherit 'mode-line
+       :weight bold))
+  "mu4e face asdf"
+  :group 'spaceline)
+#+END_SRC
+
+Ajdust the colors for different evil-states.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-evil-god-face
+  '((t (:background "tomato"
+        :inherit 'spaceline-evil-normal)))
+  "Spaceline Evil God State"
+  :group 'spaceline)
+(add-to-list 'spaceline-evil-state-faces
+             '(god . ph/spaceline-evil-god-face))
+
+(defface ph/spaceline-evil-operator-face
+  '((t (:background "cornflower blue"
+        :inherit 'spaceline-evil-normal)))
+  "Spaceline Evil Operator State"
+  :group 'spaceline)
+(add-to-list 'spaceline-evil-state-faces
+             '(operator . ph/spaceline-evil-operator-face))
 #+END_SRC
 
 *** Segments
@@ -1663,26 +1697,6 @@ TODO: refactor this, too much redundancy...
 #+END_SRC
 
 **** Evil
-
-Ajdust the colors for different evil-states.
-
-#+BEGIN_SRC emacs-lisp
-(defface ph/spaceline-evil-god
-  '((t (:background "tomato"
-        :inherit 'spaceline-evil-normal)))
-  "Spaceline Evil God State"
-  :group 'spaceline)
-(add-to-list 'spaceline-evil-state-faces
-             '(god . ph/spaceline-evil-god))
-
-(defface ph/spaceline-evil-operator
-  '((t (:background "cornflower blue"
-        :inherit 'spaceline-evil-normal)))
-  "Spaceline Evil Operator State"
-  :group 'spaceline)
-(add-to-list 'spaceline-evil-state-faces
-             '(operator . ph/spaceline-evil-operator))
-#+END_SRC
 
 Setting the face according to =evil-state=.
 
@@ -1806,11 +1820,11 @@ spaceline-compile=.
   'main
   '((evil-state :when active :face highlight-face)
     (buffer-id)
-    (ph/special-file-permissions :face ph/alert-face)
-    (ph/remote-method :face ph/warn-face)
-    (ph/remote-user-and-host :face ph/another-warn-face)
+    (ph/mu4e-context-segment :face ph/spaceline-mu4e-context-face)
+    (ph/special-file-permissions :face ph/spaceline-alert-face)
+    (ph/remote-method :face ph/spaceline-warn-face)
+    (ph/remote-user-and-host :face ph/spaceline-another-warn-face)
     (ph/virtualenvwrapper-segment)
-    (ph/mu4e-context-segment)
     (buffer-modified)
     (process :when active))
   '((minor-modes)
@@ -1819,9 +1833,9 @@ spaceline-compile=.
     (ph/version-control :when active)
     (line-column)
     (buffer-position)
-    (ph/flycheck-info-segment :face ph/info-face)
-    (ph/flycheck-warning-segment :face ph/warn-face)
-    (ph/flycheck-error-segment :face ph/alert-face)
+    (ph/flycheck-info-segment :face ph/spaceline-info-face)
+    (ph/flycheck-warning-segment :face ph/spaceline-warn-face)
+    (ph/flycheck-error-segment :face ph/spaceline-alert-face)
     (major-mode)))
 #+END_SRC
 
