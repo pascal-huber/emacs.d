@@ -1332,6 +1332,13 @@ Open mu4e in the current frame, even if it is already opened in another frame.
 
 ** Settings
 
+Show dates as =dd.mm.yy=, and times in =HH:MM=
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-time-format "%H:%M")
+(setq mu4e-headers-date-format "%d.%m.%y")
+#+END_SRC
+
 My contexts contain private information and are therefore defined in a file
 outside of this repo.
 
