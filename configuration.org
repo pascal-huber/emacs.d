@@ -83,7 +83,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tooltips][Tooltips]]
   - [[#default-face][Default Face]]
   - [[#theme-rotation][Theme Rotation]]
-    - [[#changing-faces][Changing Faces]]
   - [[#spaceline][Spaceline]]
     - [[#faces][Faces]]
     - [[#segments][Segments]]
@@ -117,12 +116,8 @@ $ git submodule update --init
 
 ** Mu4e
 
-Install and configure =mu= and =offlineimap=.
-
-- [[https://github.com/djcb/mu][mu]]
-- [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
-
-Make sure mu has indexed everything
+Install and configure [[https://github.com/djcb/mu][mu]] and [[https://github.com/OfflineIMAP/offlineimap][offlineimap]] and make sure mu has indexed
+everything.
 
 #+BEGIN_SRC shell
 $ mu index --maildir=~/.mail
@@ -130,9 +125,7 @@ $ mu index --maildir=~/.mail
 
 ** Markdown
 
-Pandoc is a swiss-army knife for converting documents.
-
-- [[https://github.com/jgm/pandoc][pandoc]]
+[[https://github.com/jgm/pandoc][Pandoc]] is a swiss-army knife for converting documents.
 
 #+BEGIN_SRC shell
 $ pacaur -S pandoc
@@ -158,7 +151,8 @@ $ mkdir $WORKON_HOME
 
 ** Ruby
 
-Install dependencies for =robe=.
+Install dependencies for =robe=. Note that if the project has a =Gemfile=, these
+dependencies have to be installed with it.
 
 #+BEGIN_SRC shell
 $ gem install pry pry-doc method_source
@@ -378,6 +372,9 @@ A function to kill all buffers except the current one and other important buffer
 ** Sudo Save
 
 Save file with sudo.
+
+# TODO: Make this compatible with all sudo-filenames like /su:root@localhost,
+# /sudo:: etc.
 
    #+BEGIN_SRC emacs-lisp
 (defun ph/sudo-file-name (filename)
@@ -1112,7 +1109,7 @@ No magic comments
 (ph/install-package 'robe)
 #+END_SRC
 
-Add the following gems to the =Gemfile= and install them.
+Add the following gems to the =Gemfile= (if existent) and install them.
 
 #+BEGIN_SRC ruby
 group :development do
@@ -1488,7 +1485,7 @@ Don't use ugly GTK tooltips.
 
 ** Default Face
 
-Set the default face. The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
+Set the default face.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
@@ -1497,6 +1494,8 @@ Set the default face. The font-size can be adjusted buffer-locally with =C-x C-+
                     :height 110
                     :width 'normal)
 #+END_SRC
+
+The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
 ** Theme Rotation
 
@@ -1520,8 +1519,15 @@ Call =M-x ph/next-theme= to load the next theme.
 (add-hook 'after-init-hook 'ph/next-theme)
 #+END_SRC
 
+** Spaceline
 
-*** Changing Faces
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'spaceline)
+(setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
+#+END_SRC
+
+*** Faces
+**** Changing Faces
 
 Functions to change the mode-line faces.
 
@@ -1579,16 +1585,7 @@ Functions to change the mode-line faces.
   (powerline-reset))
 #+END_SRC
 
-** Spaceline
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'powerline)
-(ph/install-package 'spaceline)
-(setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
-#+END_SRC
-
-*** Faces
-**** Spaceline
+**** Mode Line
 
 A slightly smaller font for the mode-line.
 
