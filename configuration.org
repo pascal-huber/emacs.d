@@ -577,7 +577,7 @@ Evil motion-states are the evil states where we don't edit text.
 #+BEGIN_SRC emacs-lisp
 (general-def 'motion
   "j"      'evil-next-visual-line
-  "K"      'evil-previous-visual-line)
+  "k"      'evil-previous-visual-line)
 #+END_SRC
 
 Free =M-.= and =M-,​= since they are popular kebinings for "jump to definition"
