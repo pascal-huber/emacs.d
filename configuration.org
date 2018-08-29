@@ -1510,16 +1510,14 @@ Kill message-buffer when finished.
             ( user-full-name     . "Pascal Huber")
             ( user-mail-address	 . "mr.huber.pascal@gmail.com")
             ( mu4e-get-mail-command . "offlineimap -o -a Gmail")
-            ( mu4e-maildir-shortcuts
-                .( ("/g/INBOX"                   . ?i)
-                   ("/g/[Gmail].Sent Mail"       . ?s)
-                   ("/g/Private.Family.Linda"    . ?l)
-                   ("/g/[Gmail].Spam"            . ?x)
-                   ("/g/charles-university"      . ?u)
-                   ("/g/[Gmail].Bin"             . ?b)))
             ( mu4e-drafts-folder . "/g/[Gmail].Drafts")
             ( mu4e-sent-folder   . "/g/[Gmail].Sent Mail")
             ( mu4e-trash-folder  . "/g/[Gmail].Bin")
+            ( mu4e-maildir-shortcuts
+                .( ("/g/INBOX"                   . ?i)
+                   ("/g/[Gmail].Sent Mail"       . ?s)
+                   ("/g/[Gmail].Spam"            . ?x)
+                   ("/g/[Gmail].Bin"             . ?b)))
             ( mu4e-sent-messages-behavior    . delete)
             ( smtpmail-stream-type           . starttls)
             ( smtpmail-default-smtp-server   . "smtp.gmail.com")
@@ -1531,6 +1529,10 @@ Kill message-buffer when finished.
 #+END_SRC
 
 ** Forgotten Attachment
+
+Before sending a message, check if it contains any words that indicate that
+there should be an attachement. If it does, ask if all attachments were added
+before sending the mail.
 
 #+BEGIN_SRC emacs-lisp
 (defvar ph/message-attachment-regexp
@@ -1545,9 +1547,7 @@ Kill message-buffer when finished.
           "hänge\\)"))
 
 (defun ph/message-check-attachment nil
-  "Check if the mail contains any words which indicate that
-  there should be an attachment. If it does, ask if I have
-  attached all attachments before sending the mail"
+  "Check for forgotten attachments"
   (save-excursion
     (message-goto-body)
     (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
@@ -1668,7 +1668,7 @@ Functions to change the mode-line faces.
 (defun ph/spaceline-light()
   (interactive)
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#5fafd7")
+                      :background "#afd7ff")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#3a3a3a"
@@ -1694,7 +1694,7 @@ Functions to change the mode-line faces.
 (defun ph/spaceline-dark()
   (interactive)
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#005faf")
+                      :background "#005f87")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#c6c6c6"
