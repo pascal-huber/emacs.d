@@ -1978,18 +1978,19 @@ different window).
 (defun powerline-selected-window-active () t)
 #+END_SRC
 
-Adjust =powerline-text-scale-factor= for graphical clients.
-
-# TODO: Find out if there's a solution with frame-local settings to allow the
-# parallel use of graphical and terminal clients.
+Before drawing the powerline, adjust =powerline-text-scale-factor=. The reason
+behind this ist that the font in my graphical frames is a tiny bit smaller than
+the default font in order to have more space for content. Setting the
+scale-factor each time before drawing the powerline allows the parallel use of
+graphical clients and terminal clients (which only have one font-size).
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/set-powerline-text-scale-factor (frame)
-  "Set/unset powerline scaling for graphical/terminal FRAME."
-  (if (display-graphic-p frame)
+(defun ph/set-powerline-text-scale-factor (face reserve)
+  (if (display-graphic-p (selected-frame))
       (setq powerline-text-scale-factor 0.9)
     (setq powerline-text-scale-factor nil)))
-(add-hook 'after-make-frame-functions 'ph/set-powerline-text-scale-factor)
+
+(advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
 #+END_SRC
 
 ** Beacon
