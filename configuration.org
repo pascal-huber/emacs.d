@@ -5,15 +5,16 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 * Content :TOC_3_gh:
 - [[#inspiration][Inspiration]]
 - [[#os-setup][OS Setup]]
-  - [[#setup][Setup]]
+  - [[#installation][Installation]]
   - [[#mu4e][Mu4e]]
   - [[#go][Go]]
   - [[#markdown][Markdown]]
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
+- [[#first-use][First Use]]
 - [[#packages][Packages]]
-  - [[#installation][Installation]]
+  - [[#installation-1][Installation]]
   - [[#packages-for-configuration][Packages for Configuration]]
   - [[#auto-update-packages][Auto Update Packages]]
 - [[#tweaking-defaults][Tweaking Defaults]]
@@ -47,9 +48,13 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#counsel][Counsel]]
   - [[#dictionary][Dictionary]]
   - [[#pdf][PDF]]
+  - [[#org-mode][Org Mode]]
+    - [[#settings][Settings]]
+    - [[#toc-org][TOC-Org]]
+    - [[#org-ref][Org-Ref]]
 - [[#programming-and-markup][Programming and Markup]]
   - [[#autocomplete][Autocomplete]]
-    - [[#settings][Settings]]
+    - [[#settings-1][Settings]]
     - [[#backends][Backends]]
   - [[#brackets][Brackets]]
   - [[#display-line-numbers][Display Line Numbers]]
@@ -63,9 +68,11 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#eslint][Eslint]]
   - [[#lua][Lua]]
   - [[#markdown-1][Markdown]]
-  - [[#org][Org]]
   - [[#php][PHP]]
   - [[#python][Python]]
+    - [[#elpy][Elpy]]
+    - [[#auto-completion][Auto Completion]]
+    - [[#virtual-envirnoments][Virtual Envirnoments]]
   - [[#r][R]]
   - [[#rainbow][Rainbow]]
   - [[#ruby-1][Ruby]]
@@ -78,7 +85,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#yaml][Yaml]]
 - [[#news-feeds][News Feeds]]
 - [[#mail][Mail]]
-  - [[#setup-1][Setup]]
+  - [[#setup][Setup]]
   - [[#contexts][Contexts]]
   - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
@@ -88,9 +95,10 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#theme-rotation][Theme Rotation]]
   - [[#spaceline][Spaceline]]
     - [[#faces][Faces]]
+    - [[#special-segments][Special Segments]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
-    - [[#setup-2][Setup]]
+    - [[#setup-1][Setup]]
     - [[#config][Config]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
@@ -105,7 +113,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
 
 * OS Setup
-** Setup
+** Installation
 
 Clone, create symlink and update submodules.
 
@@ -167,6 +175,11 @@ dependencies have to be installed with it.
 #+BEGIN_SRC shell
 $ gem install pry pry-doc method_source
 #+END_SRC
+
+* First Use
+
+After the first start, install the jedi-server for python with
+=(jedi:install-server)=.
 
 * Packages
 ** Installation
@@ -495,7 +508,6 @@ and provides facilities for writing custom extensions.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil)
-(ph/install-package 'evil-org)
 (ph/install-package 'evil-ediff)
 
 (evil-mode 1)
@@ -511,6 +523,7 @@ Set initial state by major mode.
 
 #+BEGIN_SRC emacs-lisp
 (dolist (mode-map '((ag-mode . emacs)
+                    (calendar-mode . emacs)
                     (elfeed-show-mode . emacs)
                     (elfeed-search-mode . emacs)
                     (eshell-mode . emacs)
@@ -596,6 +609,13 @@ and "back".
 (general-def 'normal
   "M-." nil
   "M-," nil)
+#+END_SRC
+
+Auto complete with =C-SPC=.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'insert
+  "C-SPC" 'company-complete)
 #+END_SRC
 
 ** Projectile
@@ -746,22 +766,125 @@ Zoom by 10%.
 (setq pdf-view-resize-factor 1.1)
 #+END_SRC
 
-Annotations:
+Kebindings:
+ - =C-c C-a h= to highlight text
+ - =C-c C-a o= to strike though text
+ - =C-c C-a t= to add a note
+ - =C-c C-a D= to delete one of the above
+ - =C-c C-a l= to list all annotations. Use =SPACE= to jump to the annotation.
+ - [[https://github.com/politza/pdf-tools#some-keybindings][and more]]
 
-- =C-c C-a h= to highlight text
-- =C-c C-a o= to strike though text
-- =C-c C-a t= to add a note
-- =C-c C-a D= to delete one of the above
-- =C-c C-a l= to list all annotations. Use =SPACE= to jump to the annotation.
+** Org Mode
 
-[[https://github.com/politza/pdf-tools#some-keybindings][Some keybindings]]
+Org mode is for keeping notes, maintaining TODO lists, planning projects, and
+authoring documents with a fast and effective plain-text system.
+
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+#+END_SRC
+
+*** Settings
+
+Use =TAB= for org-cycle. This is not the case by default in terminal clients
+with =evil-mode= enabled.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook
+  (lambda () (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+#+END_SRC
+
+Automatically fill lines
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook 'auto-fill-mode)
+#+END_SRC
+
+Don't ask every time when executing a code block.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+All files in =~/org/= are agenda-files.
+
+# TODO: find out why this is nil if evaluated during startup.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/set-org-agenda-files ()
+  (setq org-agenda-files '("~/org")))
+(add-hook 'after-init-hook 'ph/set-org-agenda-files)
+#+END_SRC
+
+[[https://orgmode.org/manual/Capture-templates.html][Capture templates]] make it easy to create items in different locations. Call
+=org-capture= to use one of the templates and save it with =C-c C-c=.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates '(("p" "Todo [private]" entry
+                               (file+headline "~/org/private.org" "Inbox")
+                               "* TODO %i%?")
+                              ("e" "Todo [eth]" entry
+                               (file+headline "~/org/eth.org" "Inbox")
+                               "* TODO %i%?")))
+#+END_SRC
+
+Refile to any heading in the same file or to a level 1 entry of an agenda-file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-refile-targets '((nil :maxlevel . 9)
+                           (org-agenda-files :maxlevel . 1)))
+#+END_SRC
+
+Item usage:
+ - =C-c C-s= to schedule an item
+ - =C-c C-d= to add a deadline
+
+Agenda usage:
+ - =f= and =b= to go forward back
+ - =w= and =d= to show week- or day-view
+ - =TAB= to go to item in other window
+ - =c= to show calendar, =c= again to jump to selected date
+ - =l= toggle log-mode (show finished tasks)
+
+Check if I need this.
+
+#+BEGIN_SRC emacs-lisp
+;(global-set-key "\C-cl" 'org-store-link)
+;(setq org-log-done 'time)
+;(setq org-log-done t)
+#+END_SRC
+
+*** TOC-Org
+
+Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
+will be updated with the current table of contents.
+
+ - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
+   (the default)
+ - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
+   hrefs in the table of contents (this style is default). The other supported
+   href style is ‘org’, which is the default org style.
+
+
+#+begin_src emacs-lisp
+(ph/install-package 'toc-org)
+(add-hook 'org-mode-hook 'toc-org-enable)
+#+end_src
+
+*** Org-Ref
+
+=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities
+for org-mode.
+
+#+begin_src emacs-lisp
+(ph/install-package 'org-ref)
+#+end_src
 
 * Programming and Markup
 ** Autocomplete
 
-=company= is a text completion framework for Emacs. The name stands for "complete
-anything". It uses pluggable back-ends and front-ends to retrieve and display
-completion candidates.
+=company= is a text completion framework for Emacs. The name stands for
+"complete anything". It uses pluggable back-ends and front-ends to retrieve and
+display completion candidates.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'company)
@@ -1022,29 +1145,6 @@ Use =eslint= instead of =jshint=.
 (setq markdown-command "pandoc")
 #+END_SRC
 
-** Org
-
-Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
-will be updated with the current table of contents.
-
- - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
-   (the default)
- - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
-   hrefs in the table of contents (this style is default). The other supported
-   href style is ‘org’, which is the default org style.
-
-
-#+begin_src emacs-lisp
-(ph/install-package 'toc-org)
-(add-hook 'org-mode-hook 'toc-org-enable)
-#+end_src
-
-=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities for org-mode.
-
-#+begin_src emacs-lisp
-(ph/install-package 'org-ref)
-#+end_src
-
 ** PHP
 
 #+BEGIN_SRC emacs-lisp
@@ -1052,17 +1152,42 @@ will be updated with the current table of contents.
 #+END_SRC
 
 ** Python
+*** Elpy
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'elpy)
 (elpy-enable)
 #+END_SRC
 
-Use Virtual Envirnonments.
+Some useful commands:
+
+ - =M-x run-python= to start a shell
+ - =C-c C-z= to switch to shell
+ - =C-c C-y b= to send buffer to shell
+ - many more send to shell functions
+
+*** Auto Completion
+
+Jedi is a Python auto-completion package for Emacs.
+
+TODO: Check out and compare with rope.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'virtualenvwrapper)
-(venv-initialize-eshell)
+(ph/install-package 'jedi)
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
+;(jedi:install-server)
+#+END_SRC
+
+*** Virtual Envirnoments
+
+Use Virtual Envirnonments.
+
+TODO: Check out alternatives.
+
+#+BEGIN_SRC emacs-lisp
+;(ph/install-package 'virtualenvwrapper)
+;(venv-initialize-eshell)
 #+END_SRC
 
 
@@ -1616,8 +1741,7 @@ Overwriting default bindings (and defining new ones).
  #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   "C-h f" 'counsel-describe-function
-  "C-h v" 'counsel-describe-variable
-  "C-SPC" 'company-complete)
+  "C-h v" 'counsel-describe-variable)
 
 (general-def ph/global-keymap
   :prefix "C-x"
@@ -1636,9 +1760,12 @@ without modifiers).
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   :prefix "C-c"
+  "a" 'org-agenda
+  "c" 'org-capture
   "e" 'elfeed
   "i" 'indent-region
   "k" 'ag
+  "l" 'org-store-link
   "o" 'occur-dwim
   "r" 'ph/mu4e
   "s" 'ph/spawn-some-project-terminals)
@@ -1804,7 +1931,7 @@ Faces to highlight things/spaceline-segments which need special attention.
   :group 'spaceline)
 #+END_SRC
 
-**** Special Segments
+*** Special Segments
 
 Face for mu4e segemnt.
 
@@ -1884,10 +2011,11 @@ Setting the face according to =evil-state=.
 **** Python Virtual Environment
 
 #+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/virtualenvwrapper-segment venv-current-name)
+;(spaceline-define-segment ph/virtualenvwrapper-segment venv-current-name)
+(spaceline-define-segment ph/virtualenvwrapper-segment pyvenv-virtual-env-name)
 #+END_SRC
 
-**** Git status
+**** Git Branch Name
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/git-branch-name ()
