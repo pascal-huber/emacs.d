@@ -1307,6 +1307,22 @@ Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 (setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
+When opening an entry with the browser, don't move down a line.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/elfeed-after-search-browse-url (&optional use-generic-p)
+  (previous-line))
+(advice-add 'elfeed-search-browse-url :after #'ph/elfeed-after-search-browse-url)
+#+END_SRC
+
+Go up and down with =j= and =k=.
+
+#+BEGIN_SRC emacs-lisp
+(general-def elfeed-search-mode-map
+  "j" 'next-line
+  "k" 'previous-line)
+#+END_SRC
+
 * Mail
 
 [[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
