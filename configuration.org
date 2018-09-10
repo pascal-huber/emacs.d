@@ -1799,9 +1799,7 @@ Ajdust the colors for different evil-states.
 *** Segments
 **** Flycheck
 
-Flycheck segments for =info=, =warning= and =error=.
-
-TODO: refactor this, too much redundancy...
+Slightly simplified flycheck segments for =info=, =warning= and =error=.
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment ph/flycheck-warning-segment
