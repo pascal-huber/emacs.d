@@ -1077,6 +1077,13 @@ Stata and OpenBUGS/JAGS.
 (ph/install-package 'ess)
 #+END_SRC
 
+Function:
+ - =C-c C-b= to eval buffer
+ - =C-c C-j= to eval line
+ - =C-c C-r= to eval region
+ - =C-c C-f= to eval function
+ - And [[https://ess.r-project.org/Manual/ess.html][more]]
+
 ** Rainbow
 
 This minor mode sets background color to strings that match color names, e.g.
