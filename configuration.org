@@ -7,6 +7,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#os-setup][OS Setup]]
   - [[#setup][Setup]]
   - [[#mu4e][Mu4e]]
+  - [[#go][Go]]
   - [[#markdown][Markdown]]
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
@@ -54,6 +55,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#display-line-numbers][Display Line Numbers]]
   - [[#flycheck][Flycheck]]
   - [[#git][Git]]
+  - [[#go-1][Go]]
   - [[#haml][Haml]]
   - [[#indentation][Indentation]]
   - [[#javascript][JavaScript]]
@@ -122,6 +124,13 @@ everything.
 
 #+BEGIN_SRC shell
 $ mu index --maildir=~/.mail
+#+END_SRC
+
+** Go
+
+#+BEGIN_SRC shell
+$ go get -u github.com/rogpeppe/godef
+$ go get -u github.com/mdempsky/gocode
 #+END_SRC
 
 ** Markdown
@@ -816,6 +825,8 @@ Install some backends.
 (ph/install-package 'company-web t)
 (require 'company-web-html)
 (add-to-list 'company-backends 'company-web-html)
+
+(ph/install-package 'company-go)
 #+END_SRC
 
 =jquery-doc= provides completion source for auto-complete and company-mode as
@@ -908,6 +919,12 @@ Some major-modes to configure git repositories.
 (ph/install-package 'gitattributes-mode)
 (ph/install-package 'gitconfig-mode)
 (ph/install-package 'gitignore-mode)
+#+END_SRC
+
+** Go
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'go-mode)
 #+END_SRC
 
 ** Haml
