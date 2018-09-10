@@ -1979,10 +1979,11 @@ different window).
 #+END_SRC
 
 Before drawing the powerline, adjust =powerline-text-scale-factor=. The reason
-behind this ist that the font in my graphical frames is a tiny bit smaller than
-the default font in order to have more space for content. Setting the
-scale-factor each time before drawing the powerline allows the parallel use of
-graphical clients and terminal clients (which only have one font-size).
+behind this ist that my mode-line font in my graphical frames is a tiny bit
+smaller than the default font in order to have more space for content. Setting
+the scale-factor each time before drawing the powerline allows the parallel use
+of graphical clients and terminal clients (which only have one font for
+everything).
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/set-powerline-text-scale-factor (face reserve)
