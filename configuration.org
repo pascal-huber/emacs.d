@@ -2035,9 +2035,9 @@ Use the same title for unfocussed/stacked frames.
 
 ** Fringe
 
-Tiny fringe on the right side of the frame. The left side needs a fringe for
-=FlyCheck=.
+no fringe on the right side of the frame. The left side needs a fringe for
+=FlyCheck= indicators.
 
 #+BEGIN_SRC emacs-lisp
-(fringe-mode '(8 . 2))
+(fringe-mode '(8 . 0))
 #+END_SRC
