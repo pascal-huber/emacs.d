@@ -95,7 +95,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#theme-rotation][Theme Rotation]]
   - [[#spaceline][Spaceline]]
     - [[#faces][Faces]]
-    - [[#special-segments][Special Segments]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
     - [[#setup-1][Setup]]
@@ -1931,7 +1930,7 @@ Faces to highlight things/spaceline-segments which need special attention.
   :group 'spaceline)
 #+END_SRC
 
-*** Special Segments
+**** Mu4e
 
 Face for mu4e segemnt.
 
@@ -1942,6 +1941,8 @@ Face for mu4e segemnt.
   "mu4e face asdf"
   :group 'spaceline)
 #+END_SRC
+
+**** Evil States
 
 Ajdust the colors for different evil-states.
 
