@@ -195,13 +195,13 @@ Use the =gnu=, =melpa= and =marmelade= archives.
 A function to install and load packages on demand.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/install-package (package &optional norequire)
-  "Installs PACKAGE and requires it unless NOREQUIRE is set to non-nil."
+(cl-defun ph/install-package (package &optional (req t))
+  "Installs PACKAGE and requires it unless REQ is set to non-nil."
   (unless (package-installed-p package)
     (progn
       (package-refresh-contents)
       (package-install package)))
-  (unless norequire (require package)))
+  (when req (require package)))
 #+END_SRC
 
 Also load packages which are not in an archive but in this repository.
@@ -944,7 +944,7 @@ Install some backends.
 (ph/install-package 'company-tern)
 (add-to-list 'company-backends 'company-tern)
 
-(ph/install-package 'company-web t)
+(ph/install-package 'company-web nil)
 (require 'company-web-html)
 (add-to-list 'company-backends 'company-web-html)
 
@@ -1333,7 +1333,7 @@ AUCTeX is an extensible package for writing and formatting TeX files in GNU
 Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'auctex t)
+(ph/install-package 'auctex nil)
 #+END_SRC
 
 Parse on load and save. This increases performance, especially for large
