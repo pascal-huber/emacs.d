@@ -33,26 +33,32 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#buffers-and-frames][Buffers and Frames]]
   - [[#kill-buffers][Kill Buffers]]
   - [[#sudo-save][Sudo Save]]
+  - [[#occur][Occur]]
+  - [[#dired][Dired]]
+  - [[#project-terminals][Project Terminals]]
+  - [[#org-mode][Org Mode]]
+    - [[#settings][Settings]]
+    - [[#toc-org][TOC-Org]]
+    - [[#org-ref][Org-Ref]]
+- [[#general-packages][General Packages]]
   - [[#session][Session]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
-  - [[#occur][Occur]]
   - [[#ag][Ag]]
-  - [[#dired][Dired]]
   - [[#evil][Evil]]
     - [[#surround][Surround]]
     - [[#god-state][God State]]
     - [[#keybindings][Keybindings]]
   - [[#projectile][Projectile]]
-  - [[#project-terminals][Project Terminals]]
   - [[#ido][Ido]]
   - [[#counsel][Counsel]]
   - [[#dictionary][Dictionary]]
   - [[#pdf][PDF]]
-  - [[#org-mode][Org Mode]]
-    - [[#settings][Settings]]
-    - [[#toc-org][TOC-Org]]
-    - [[#org-ref][Org-Ref]]
-- [[#programming-and-markup][Programming and Markup]]
+  - [[#news-feeds][News Feeds]]
+  - [[#mail][Mail]]
+    - [[#setup][Setup]]
+    - [[#contexts][Contexts]]
+    - [[#forgotten-attachment][Forgotten Attachment]]
+- [[#programming][Programming]]
   - [[#autocomplete][Autocomplete]]
     - [[#settings-1][Settings]]
     - [[#backends][Backends]]
@@ -83,11 +89,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
-- [[#news-feeds][News Feeds]]
-- [[#mail][Mail]]
-  - [[#setup][Setup]]
-  - [[#contexts][Contexts]]
-  - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#tooltips][Tooltips]]
@@ -230,8 +231,8 @@ Update packages at startup.
 
 * Tweaking Defaults
 
-This section contains customizations and extensions of Emacs' default
-functionality.
+This section contains customizations of Emacs' default settings and built-in
+packages configuration and extensions.
 
 ** Disabled Commands
 
@@ -413,29 +414,6 @@ Save file with sudo.
     (write-file (ph/sudo-file-name buffer-file-name))))
    #+END_SRC
 
-** Session
-
-Restore some stuff (command histories, kill-ring, ...) from last session.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'session)
-(add-hook 'after-init-hook 'session-initialize)
-#+END_SRC
-
-** Browse-Kill-Ring
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'browse-kill-ring)
-
-(setq browse-kill-ring-highlight-inserted-item t
-      browse-kill-ring-highlight-current-entry nil
-      browse-kill-ring-show-preview t)
-
-(general-def browse-kill-ring-mode-map
-  "k" 'browse-kill-ring-previous
-  "j" 'browse-kill-ring-forward)
-#+END_SRC
-
 ** Occur
 
 [[http://emacswiki.org/emacs/OccurMode][occur-mode]] is a search minor-mode that shows a buffer with all matching results
@@ -455,15 +433,6 @@ irrelevant)]]
               (regexp-quote sym))))
         regexp-history)
   (call-interactively 'occur))
-#+END_SRC
-
-** Ag
-
-=ag= allows you to search using ag from inside Emacs. You can filter by file
-type, edit results inline, or find files.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ag)
 #+END_SRC
 
 ** Dired
@@ -498,6 +467,211 @@ Open in new frame
 
 (eval-after-load "dired"
   '(define-key dired-mode-map (kbd "C-c C-o") 'ph/dired-find-file-other-frame))
+#+END_SRC
+
+** Project Terminals
+
+Spawn terminal-emulators in project folder.
+
+Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem
+to work with i3. Thus, =-title= is used to place the terminals on the correct
+workspace.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/project-terminal-command-list-urxvt (directory workspace-number)
+  "Command list to start an urxvt client in DIRECTORY on WORKSPACE-NUMBER."
+  (list "/usr/bin/urxvtc"
+        "-cd" directory
+        "-title" (concat "project-terminal-"
+                         (number-to-string (mod workspace-number 10)))))
+
+(defun ph/project-terminal-command-list-termite (directory workspace-number)
+  "Command list to start termite in DIRECTORY on WORKSPACE-NUMBER."
+  (list "/bin/termite"
+        "-d" directory
+        (concat "--class=project-terminal-"
+                (number-to-string (mod workspace-number 10)))))
+
+(setq ph/project-terminal-amount-prompt
+      "How many terminals does my master wish to spawn? :")
+(setq ph/project-terminal-amount-default 3)
+
+(setq ph/project-terminal-workspace-prompt
+      "On which workspace does my master wish to spawn them? :")
+(setq ph/project-terminal-workspace-default 6)
+
+(defun ph/spawn-one-project-terminal ( &optional workspace-number)
+  "Start one terminal in the current project directory on WORKSPACE-NUMBER."
+  (interactive)
+  (unless workspace-number
+    (setq workspace-number
+          (read-number ph/project-terminal-workspace-prompt
+                       ph/project-terminal-workspace-default)))
+  (let ((dir (projectile-project-p)))
+    (if dir
+        (progn
+          (setq project-terminal-buffer
+                (get-buffer-create "project-terminals"))
+           (make-process
+            :name (concat "project-terminal-" dir)
+            :buffer project-terminal-buffer
+            :command (ph/project-terminal-command-list-termite dir workspace-number)))
+      (message "You're not in a project"))))
+
+(defun ph/spawn-some-project-terminals (&optional amount workspace-number)
+  "Start AMOUNT terminals on WORKSPACE-NUMBER in the current project directory."
+  (interactive)
+  (unless amount
+    (setq amount (read-number ph/project-terminal-amount-prompt
+                              ph/project-terminal-amount-default)))
+  (unless workspace-number
+    (setq workspace-number
+          (read-number ph/project-terminal-workspace-prompt
+                       ph/project-terminal-workspace-default)))
+  (while (> amount 0)
+    (ph/spawn-one-project-terminal workspace-number)
+    (setq amount (- amount 1))))
+#+END_SRC
+
+** Org Mode
+
+Org mode is for keeping notes, maintaining TODO lists, planning projects, and
+authoring documents with a fast and effective plain-text system.
+
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+#+END_SRC
+
+*** Settings
+
+Use =TAB= for org-cycle. This is not the case by default in terminal clients
+with =evil-mode= enabled.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook
+  (lambda () (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+#+END_SRC
+
+Automatically fill lines
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook 'auto-fill-mode)
+#+END_SRC
+
+Don't ask every time when executing a code block.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+All files in =~/org/= are agenda-files.
+
+# TODO: find out why this is nil if evaluated during startup.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/set-org-agenda-files ()
+  (setq org-agenda-files '("~/org")))
+(add-hook 'after-init-hook 'ph/set-org-agenda-files)
+#+END_SRC
+
+[[https://orgmode.org/manual/Capture-templates.html][Capture templates]] make it easy to create items in different locations. Call
+=org-capture= to use one of the templates and save it with =C-c C-c=.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates '(("p" "Todo [private]" entry
+                               (file+headline "~/org/private.org" "Inbox")
+                               "* TODO %i%?")
+                              ("e" "Todo [eth]" entry
+                               (file+headline "~/org/eth.org" "Inbox")
+                               "* TODO %i%?")))
+#+END_SRC
+
+Refile to any heading in the same file or to a level 1 entry of an agenda-file.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-refile-targets '((nil :maxlevel . 9)
+                           (org-agenda-files :maxlevel . 1)))
+#+END_SRC
+
+Item usage:
+ - =C-c C-s= to schedule an item
+ - =C-c C-d= to add a deadline
+
+Agenda usage:
+ - =f= and =b= to go forward back
+ - =w= and =d= to show week- or day-view
+ - =TAB= to go to item in other window
+ - =c= to show calendar, =c= again to jump to selected date
+ - =l= toggle log-mode (show finished tasks)
+
+Check if I need this.
+
+#+BEGIN_SRC emacs-lisp
+;(global-set-key "\C-cl" 'org-store-link)
+;(setq org-log-done 'time)
+;(setq org-log-done t)
+#+END_SRC
+
+*** TOC-Org
+
+Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
+will be updated with the current table of contents.
+
+ - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
+   (the default)
+ - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
+   hrefs in the table of contents (this style is default). The other supported
+   href style is ‘org’, which is the default org style.
+
+
+#+begin_src emacs-lisp
+(ph/install-package 'toc-org)
+(add-hook 'org-mode-hook 'toc-org-enable)
+#+end_src
+
+*** Org-Ref
+
+=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities
+for org-mode.
+
+#+begin_src emacs-lisp
+(ph/install-package 'org-ref)
+#+end_src
+
+* General Packages
+
+This section contains some (fully) third party packages.
+
+** Session
+
+Restore some stuff (command histories, kill-ring, ...) from last session.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'session)
+(add-hook 'after-init-hook 'session-initialize)
+#+END_SRC
+
+** Browse-Kill-Ring
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'browse-kill-ring)
+
+(setq browse-kill-ring-highlight-inserted-item t
+      browse-kill-ring-highlight-current-entry nil
+      browse-kill-ring-show-preview t)
+
+(general-def browse-kill-ring-mode-map
+  "k" 'browse-kill-ring-previous
+  "j" 'browse-kill-ring-forward)
+#+END_SRC
+
+** Ag
+
+=ag= allows you to search using ag from inside Emacs. You can filter by file
+type, edit results inline, or find files.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ag)
 #+END_SRC
 
 ** Evil
@@ -630,70 +804,6 @@ dependencies (when feasible).
   "C-c p" 'projectile-command-map)
 #+END_SRC
 
-** Project Terminals
-
-Spawn terminal-emulators in project folder.
-
-Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem
-to work with i3. Thus, =-title= is used to place the terminals on the correct
-workspace.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/project-terminal-command-list-urxvt (directory workspace-number)
-  "Command list to start an urxvt client in DIRECTORY on WORKSPACE-NUMBER."
-  (list "/usr/bin/urxvtc"
-        "-cd" directory
-        "-title" (concat "project-terminal-"
-                         (number-to-string (mod workspace-number 10)))))
-
-(defun ph/project-terminal-command-list-termite (directory workspace-number)
-  "Command list to start termite in DIRECTORY on WORKSPACE-NUMBER."
-  (list "/bin/termite"
-        "-d" directory
-        (concat "--class=project-terminal-"
-                (number-to-string (mod workspace-number 10)))))
-
-(setq ph/project-terminal-amount-prompt
-      "How many terminals does my master wish to spawn? :")
-(setq ph/project-terminal-amount-default 3)
-
-(setq ph/project-terminal-workspace-prompt
-      "On which workspace does my master wish to spawn them? :")
-(setq ph/project-terminal-workspace-default 6)
-
-(defun ph/spawn-one-project-terminal ( &optional workspace-number)
-  "Start one terminal in the current project directory on WORKSPACE-NUMBER."
-  (interactive)
-  (unless workspace-number
-    (setq workspace-number
-          (read-number ph/project-terminal-workspace-prompt
-                       ph/project-terminal-workspace-default)))
-  (let ((dir (projectile-project-p)))
-    (if dir
-        (progn
-          (setq project-terminal-buffer
-                (get-buffer-create "project-terminals"))
-           (make-process
-            :name (concat "project-terminal-" dir)
-            :buffer project-terminal-buffer
-            :command (ph/project-terminal-command-list-termite dir workspace-number)))
-      (message "You're not in a project"))))
-
-(defun ph/spawn-some-project-terminals (&optional amount workspace-number)
-  "Start AMOUNT terminals on WORKSPACE-NUMBER in the current project directory."
-  (interactive)
-  (unless amount
-    (setq amount (read-number ph/project-terminal-amount-prompt
-                              ph/project-terminal-amount-default)))
-  (unless workspace-number
-    (setq workspace-number
-          (read-number ph/project-terminal-workspace-prompt
-                       ph/project-terminal-workspace-default)))
-  (while (> amount 0)
-    (ph/spawn-one-project-terminal workspace-number)
-    (setq amount (- amount 1))))
-#+END_SRC
-
 ** Ido
 
 =ido= ("interactively do things") supercharges Emacs' completion system.
@@ -773,112 +883,298 @@ Kebindings:
  - =C-c C-a l= to list all annotations. Use =SPACE= to jump to the annotation.
  - [[https://github.com/politza/pdf-tools#some-keybindings][and more]]
 
-** Org Mode
+** News Feeds
 
-Org mode is for keeping notes, maintaining TODO lists, planning projects, and
-authoring documents with a fast and effective plain-text system.
-
-#+BEGIN_SRC emacs-lisp
-(require 'org)
-#+END_SRC
-
-*** Settings
-
-Use =TAB= for org-cycle. This is not the case by default in terminal clients
-with =evil-mode= enabled.
+Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'org-mode-hook
-  (lambda () (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+(ph/install-package 'elfeed)
+(ph/install-package 'elfeed-goodies)
+(ph/install-package 'elfeed-org)
+(elfeed-goodies/setup)
+(elfeed-org)
+(setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
 #+END_SRC
 
-Automatically fill lines
+When opening an entry with the browser, don't move down a line.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'org-mode-hook 'auto-fill-mode)
+(defun ph/elfeed-after-search-browse-url (&optional use-generic-p)
+  (previous-line))
+(advice-add 'elfeed-search-browse-url :after #'ph/elfeed-after-search-browse-url)
 #+END_SRC
 
-Don't ask every time when executing a code block.
+Go up and down with =j= and =k=.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-confirm-babel-evaluate nil)
+(general-def elfeed-search-mode-map
+  "j" 'next-line
+  "k" 'previous-line)
 #+END_SRC
 
-All files in =~/org/= are agenda-files.
+** Mail
 
-# TODO: find out why this is nil if evaluated during startup.
+[[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
+indexer/searcher. It attempts to be a super-efficient tool to withstand the
+daily e-mail tsunami.
+
+*** Setup
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/set-org-agenda-files ()
-  (setq org-agenda-files '("~/org")))
-(add-hook 'after-init-hook 'ph/set-org-agenda-files)
+(require 'mu4e)
+(require 'mu4e-contrib)
+(ph/install-package 'evil-mu4e)
+(ph/install-package 'smtpmail)
 #+END_SRC
 
-[[https://orgmode.org/manual/Capture-templates.html][Capture templates]] make it easy to create items in different locations. Call
-=org-capture= to use one of the templates and save it with =C-c C-c=.
+Open mu4e in the current frame, even if it is already opened in another frame.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-capture-templates '(("p" "Todo [private]" entry
-                               (file+headline "~/org/private.org" "Inbox")
-                               "* TODO %i%?")
-                              ("e" "Todo [eth]" entry
-                               (file+headline "~/org/eth.org" "Inbox")
-                               "* TODO %i%?")))
+(defun ph/mu4e ()
+  "Open mu4e even if its already opened somewhere else."
+  (interactive)
+  (unless (string-prefix-p "mu4e" (symbol-name major-mode))
+    (let ((buffer (get-buffer "*mu4e-headers*")))
+      (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
-Refile to any heading in the same file or to a level 1 entry of an agenda-file.
+
+Show dates as =dd.mm.yy=, and times in =HH:MM=
 
 #+BEGIN_SRC emacs-lisp
-(setq org-refile-targets '((nil :maxlevel . 9)
-                           (org-agenda-files :maxlevel . 1)))
+(setq mu4e-headers-time-format "%H:%M")
+(setq mu4e-headers-date-format "%d.%m.%y")
 #+END_SRC
 
-Item usage:
- - =C-c C-s= to schedule an item
- - =C-c C-d= to add a deadline
-
-Agenda usage:
- - =f= and =b= to go forward back
- - =w= and =d= to show week- or day-view
- - =TAB= to go to item in other window
- - =c= to show calendar, =c= again to jump to selected date
- - =l= toggle log-mode (show finished tasks)
-
-Check if I need this.
+Pick first Context as default.
 
 #+BEGIN_SRC emacs-lisp
-;(global-set-key "\C-cl" 'org-store-link)
-;(setq org-log-done 'time)
-;(setq org-log-done t)
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
-*** TOC-Org
+Don't mark for delete, only move to Trash.
 
-Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
-will be updated with the current table of contents.
+# TODO: find a better option for this, should this be an offlineimap setting?
 
- - =:TOC_2:= - sets the max depth of the headlines in the table of contents to 2
-   (the default)
- - =:TOC_2_gh:= - sets the max depth as in above and also uses the GitHub-style
-   hrefs in the table of contents (this style is default). The other supported
-   href style is ‘org’, which is the default org style.
+#+BEGIN_SRC emacs-lisp
+(defun mu4e-headers-mark-for-delete () nil)
+#+END_SRC
 
+Enabling receiving clients that support this feature to reflow my paragraphs.
+Plain text emails with =Content-Type: text/plain; format=flowed= can be reflowed
+(i.e. line endings removed, paragraphs refilled) by receiving clients that
+support this standard. Clients that don’t support this, show them as is, which
+means this feature is truly non-invasive.
 
-#+begin_src emacs-lisp
-(ph/install-package 'toc-org)
-(add-hook 'org-mode-hook 'toc-org-enable)
-#+end_src
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-compose-format-flowed t)
+#+END_SRC
 
-*** Org-Ref
+Dont reply to myself.
 
-=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities
-for org-mode.
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-compose-dont-reply-to-self t)
+#+END_SRC
 
-#+begin_src emacs-lisp
-(ph/install-package 'org-ref)
-#+end_src
+Show me the addresses, not only names.
 
-* Programming and Markup
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-view-show-addresses t)
+#+END_SRC
+
+Show text, not html.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-html2text-command 'mu4e-shr2text)
+#+END_SRC
+
+View html-mail in browser with =aV=.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-view-actions
+             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+Use =smtpmail= with =tnutls= to sending mails.
+
+#+BEGIN_SRC emacs-lisp
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq starttls-use-gnutls t)
+(setq smtpmail-debug-info t)
+#+END_SRC
+
+Show only one of duplicate messages.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-skip-duplicates t)
+#+END_SRC
+
+Kill message-buffer when finished.
+
+#+BEGIN_SRC emacs-lisp
+(setq message-kill-buffer-on-exit t)
+#+END_SRC
+
+*** Contexts
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-maildir "~/.mail")
+
+(setq mu4e-contexts
+    `( ,(make-mu4e-context
+          :name "Private"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal.huber@resolved.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pascal.huber@resolved.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/r/INBOX.Drafts")
+            ( mu4e-sent-folder                . "/r/INBOX.Sent")
+            ( mu4e-trash-folder               . "/r/INBOX.Trash")
+            ( mu4e-maildir-shortcuts
+                .( ("/r/INBOX"                . ?i)
+                   ("/r/INBOX.Sent"           . ?s)
+                   ("/r/INBOX.spambucket"     . ?x)
+                   ("/r/INBOX.keep"           . ?k)
+                   ("/r/INBOX.tempKeep"       . ?t)
+                   ("/r/INBOX.Trash"          . ?b)))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.resolved.ch")
+            ( smtpmail-smtp-server            . "mail.resolved.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pascal.huber@resolved.ch")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.resolved.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "QuickShift"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal@quickshift.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pascal@quickshift.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/q/INBOX.Drafts")
+            ( mu4e-sent-folder                . "/q/INBOX.Sent")
+            ( mu4e-trash-folder               . "/q/INBOX.Trash")
+            ( mu4e-maildir-shortcuts
+                .( ("/q/INBOX"                . ?i)
+                   ("/q/INBOX.Sent"           . ?s)
+                   ("/q/INBOX.spambucket"     . ?x)
+                   ("/q/INBOX.keep"           . ?k)
+                   ("/q/INBOX.tmp"            . ?t)
+                   ("/q/INBOX.Trash"          . ?b)))
+            ( mu4e-compose-signature          . (concat "QuickShift"
+                                                        " - Der vollautomatische Einsatzplaner\n"
+                                                        "quickshift.ch\n\n"
+                                                        "Pascal Huber\n"
+                                                        "pascal@quickshift.ch\n"
+                                                        "+41 79 263 92 98\n"))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.quickshift.ch")
+            ( smtpmail-smtp-server            . "mail.quickshift.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pascal@quickshift.ch")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.quickshift.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "ETH"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "pascal@quickshift.ch")))
+          :vars '(
+            ( user-full-name                  . "Pascal Huber" )
+            ( user-mail-address               . "pahuber@student.ethz.ch")
+            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
+            ( mu4e-drafts-folder              . "/e/Drafts")
+            ( mu4e-sent-folder                . "/e/Sent Items")
+            ( mu4e-trash-folder               . "/e/Deleted Items")
+            ( mu4e-maildir-shortcuts
+                .( ("/e/INBOX"                . ?i)
+                   ("/e/Sent Items"           . ?s)
+                   ("/e/Junk E-Mail"          . ?x)
+                   ("/e/INBOX.keep"           . ?k)
+                   ("/e/INBOX.tmp"            . ?t)
+                   ("/e/Deleted Items"        . ?b)))
+            ( mu4e-sent-messages-behavior     . sent)
+            ( smtpmail-stream-type            . starttls)
+            ( smtpmail-default-smtp-server    . "mail.ethz.ch")
+            ( smtpmail-smtp-server            . "mail.ethz.ch")
+            ( smtpmail-smtp-service           . 587)
+            ( smtpmail-smtp-user              . "pahuber")
+            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials       . '(("mail.ethz.ch" 587 nil nil)))))
+       ,(make-mu4e-context
+          :name "Gmail"
+          :match-func (lambda (msg)
+                (when msg
+                  (mu4e-message-contact-field-matches msg
+                    :to "mr.huber.pascal@gmail.com")))
+          :vars '(
+            ( user-full-name     . "Pascal Huber")
+            ( user-mail-address	 . "mr.huber.pascal@gmail.com")
+            ( mu4e-get-mail-command . "offlineimap -o -a Gmail")
+            ( mu4e-drafts-folder . "/g/[Gmail].Drafts")
+            ( mu4e-sent-folder   . "/g/[Gmail].Sent Mail")
+            ( mu4e-trash-folder  . "/g/[Gmail].Bin")
+            ( mu4e-maildir-shortcuts
+                .( ("/g/INBOX"                   . ?i)
+                   ("/g/[Gmail].Sent Mail"       . ?s)
+                   ("/g/[Gmail].Spam"            . ?x)
+                   ("/g/[Gmail].Bin"             . ?b)))
+            ( mu4e-sent-messages-behavior    . delete)
+            ( smtpmail-stream-type           . starttls)
+            ( smtpmail-default-smtp-server   . "smtp.gmail.com")
+            ( smtpmail-smtp-server           . "smtp.gmail.com")
+            ( smtpmail-smtp-service          . 587)
+            ( smtpmail-smtp-user             . "mr.huber.pascal@gmail.com")
+            ( smtpmail-starttls-credentials  . "/home/pascal/.authinfo.gpg")
+            ( smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 nil nil)))))))
+#+END_SRC
+
+*** Forgotten Attachment
+
+Before sending a message, check if it contains any words that indicate that
+there should be an attachement. If it does, ask if all attachments were added
+before sending the mail.
+
+#+BEGIN_SRC emacs-lisp
+(defvar ph/message-attachment-regexp
+  (concat "\\("
+          "[Ww]e send\\|"
+          "[Ii] send\\|"
+          "attach\\|"
+          "[aA]nhang\\|"
+          "[aA]ngehängt\\|"
+          "[sS]chicke\\|"
+          "haenge\\|"
+          "hänge\\)"))
+
+(defun ph/message-check-attachment nil
+  "Check for forgotten attachments"
+  (save-excursion
+    (message-goto-body)
+    (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
+      (message-goto-body)
+      (unless (message-y-or-n-p
+               "Did you attach all documents?" nil nil)
+        (error "No message sent, add some attachments!")))))
+
+(add-hook 'message-send-hook 'ph/message-check-attachment)
+#+END_SRC
+
+* Programming
+
+This section contains programming-specific packages and settings.
+
 ** Autocomplete
 
 =company= is a text completion framework for Emacs. The name stands for
@@ -1433,294 +1729,6 @@ Use a line width of 100 in =yaml-mode=.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
   (lambda () (set-fill-column 100)))
-#+END_SRC
-
-* News Feeds
-
-Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'elfeed)
-(ph/install-package 'elfeed-goodies)
-(ph/install-package 'elfeed-org)
-(elfeed-goodies/setup)
-(elfeed-org)
-(setq rmh-elfeed-org-files (list "~/git/config/emacs/elfeed.org"))
-#+END_SRC
-
-When opening an entry with the browser, don't move down a line.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/elfeed-after-search-browse-url (&optional use-generic-p)
-  (previous-line))
-(advice-add 'elfeed-search-browse-url :after #'ph/elfeed-after-search-browse-url)
-#+END_SRC
-
-Go up and down with =j= and =k=.
-
-#+BEGIN_SRC emacs-lisp
-(general-def elfeed-search-mode-map
-  "j" 'next-line
-  "k" 'previous-line)
-#+END_SRC
-
-* Mail
-
-[[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
-indexer/searcher. It attempts to be a super-efficient tool to withstand the
-daily e-mail tsunami.
-
-** Setup
-
-#+BEGIN_SRC emacs-lisp
-(require 'mu4e)
-(require 'mu4e-contrib)
-(ph/install-package 'evil-mu4e)
-(ph/install-package 'smtpmail)
-#+END_SRC
-
-Open mu4e in the current frame, even if it is already opened in another frame.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/mu4e ()
-  "Open mu4e even if its already opened somewhere else."
-  (interactive)
-  (unless (string-prefix-p "mu4e" (symbol-name major-mode))
-    (let ((buffer (get-buffer "*mu4e-headers*")))
-      (if buffer (switch-to-buffer buffer) (mu4e)))))
-#+END_SRC
-
-
-Show dates as =dd.mm.yy=, and times in =HH:MM=
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-time-format "%H:%M")
-(setq mu4e-headers-date-format "%d.%m.%y")
-#+END_SRC
-
-Pick first Context as default.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-compose-context-policy 'ask-if-none)
-#+END_SRC
-
-Don't mark for delete, only move to Trash.
-
-# TODO: find a better option for this, should this be an offlineimap setting?
-
-#+BEGIN_SRC emacs-lisp
-(defun mu4e-headers-mark-for-delete () nil)
-#+END_SRC
-
-Enabling receiving clients that support this feature to reflow my paragraphs.
-Plain text emails with =Content-Type: text/plain; format=flowed= can be reflowed
-(i.e. line endings removed, paragraphs refilled) by receiving clients that
-support this standard. Clients that don’t support this, show them as is, which
-means this feature is truly non-invasive.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-compose-format-flowed t)
-#+END_SRC
-
-Dont reply to myself.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-compose-dont-reply-to-self t)
-#+END_SRC
-
-Show me the addresses, not only names.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-view-show-addresses t)
-#+END_SRC
-
-Show text, not html.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-html2text-command 'mu4e-shr2text)
-#+END_SRC
-
-View html-mail in browser with =aV=.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-view-actions
-             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-#+END_SRC
-
-Use =smtpmail= with =tnutls= to sending mails.
-
-#+BEGIN_SRC emacs-lisp
-(setq message-send-mail-function 'smtpmail-send-it)
-(setq starttls-use-gnutls t)
-(setq smtpmail-debug-info t)
-#+END_SRC
-
-Show only one of duplicate messages.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-skip-duplicates t)
-#+END_SRC
-
-Kill message-buffer when finished.
-
-#+BEGIN_SRC emacs-lisp
-(setq message-kill-buffer-on-exit t)
-#+END_SRC
-
-** Contexts
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-maildir "~/.mail")
-
-(setq mu4e-contexts
-    `( ,(make-mu4e-context
-          :name "Private"
-          :match-func (lambda (msg)
-                (when msg
-                  (mu4e-message-contact-field-matches msg
-                    :to "pascal.huber@resolved.ch")))
-          :vars '(
-            ( user-full-name                  . "Pascal Huber" )
-            ( user-mail-address               . "pascal.huber@resolved.ch")
-            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
-            ( mu4e-drafts-folder              . "/r/INBOX.Drafts")
-            ( mu4e-sent-folder                . "/r/INBOX.Sent")
-            ( mu4e-trash-folder               . "/r/INBOX.Trash")
-            ( mu4e-maildir-shortcuts
-                .( ("/r/INBOX"                . ?i)
-                   ("/r/INBOX.Sent"           . ?s)
-                   ("/r/INBOX.spambucket"     . ?x)
-                   ("/r/INBOX.keep"           . ?k)
-                   ("/r/INBOX.tempKeep"       . ?t)
-                   ("/r/INBOX.Trash"          . ?b)))
-            ( mu4e-sent-messages-behavior     . sent)
-            ( smtpmail-stream-type            . starttls)
-            ( smtpmail-default-smtp-server    . "mail.resolved.ch")
-            ( smtpmail-smtp-server            . "mail.resolved.ch")
-            ( smtpmail-smtp-service           . 587)
-            ( smtpmail-smtp-user              . "pascal.huber@resolved.ch")
-            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
-            ( smtpmail-auth-credentials       . '(("mail.resolved.ch" 587 nil nil)))))
-       ,(make-mu4e-context
-          :name "QuickShift"
-          :match-func (lambda (msg)
-                (when msg
-                  (mu4e-message-contact-field-matches msg
-                    :to "pascal@quickshift.ch")))
-          :vars '(
-            ( user-full-name                  . "Pascal Huber" )
-            ( user-mail-address               . "pascal@quickshift.ch")
-            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
-            ( mu4e-drafts-folder              . "/q/INBOX.Drafts")
-            ( mu4e-sent-folder                . "/q/INBOX.Sent")
-            ( mu4e-trash-folder               . "/q/INBOX.Trash")
-            ( mu4e-maildir-shortcuts
-                .( ("/q/INBOX"                . ?i)
-                   ("/q/INBOX.Sent"           . ?s)
-                   ("/q/INBOX.spambucket"     . ?x)
-                   ("/q/INBOX.keep"           . ?k)
-                   ("/q/INBOX.tmp"            . ?t)
-                   ("/q/INBOX.Trash"          . ?b)))
-            ( mu4e-compose-signature          . (concat "QuickShift"
-                                                        " - Der vollautomatische Einsatzplaner\n"
-                                                        "quickshift.ch\n\n"
-                                                        "Pascal Huber\n"
-                                                        "pascal@quickshift.ch\n"
-                                                        "+41 79 263 92 98\n"))
-            ( mu4e-sent-messages-behavior     . sent)
-            ( smtpmail-stream-type            . starttls)
-            ( smtpmail-default-smtp-server    . "mail.quickshift.ch")
-            ( smtpmail-smtp-server            . "mail.quickshift.ch")
-            ( smtpmail-smtp-service           . 587)
-            ( smtpmail-smtp-user              . "pascal@quickshift.ch")
-            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
-            ( smtpmail-auth-credentials       . '(("mail.quickshift.ch" 587 nil nil)))))
-       ,(make-mu4e-context
-          :name "ETH"
-          :match-func (lambda (msg)
-                (when msg
-                  (mu4e-message-contact-field-matches msg
-                    :to "pascal@quickshift.ch")))
-          :vars '(
-            ( user-full-name                  . "Pascal Huber" )
-            ( user-mail-address               . "pahuber@student.ethz.ch")
-            ( mu4e-get-mail-command           . "offlineimap -a Private,QuickshiftPascal,ETH")
-            ( mu4e-drafts-folder              . "/e/Drafts")
-            ( mu4e-sent-folder                . "/e/Sent Items")
-            ( mu4e-trash-folder               . "/e/Deleted Items")
-            ( mu4e-maildir-shortcuts
-                .( ("/e/INBOX"                . ?i)
-                   ("/e/Sent Items"           . ?s)
-                   ("/e/Junk E-Mail"          . ?x)
-                   ("/e/INBOX.keep"           . ?k)
-                   ("/e/INBOX.tmp"            . ?t)
-                   ("/e/Deleted Items"        . ?b)))
-            ( mu4e-sent-messages-behavior     . sent)
-            ( smtpmail-stream-type            . starttls)
-            ( smtpmail-default-smtp-server    . "mail.ethz.ch")
-            ( smtpmail-smtp-server            . "mail.ethz.ch")
-            ( smtpmail-smtp-service           . 587)
-            ( smtpmail-smtp-user              . "pahuber")
-            ( smtpmail-starttls-credentials   . "/home/pascal/.authinfo.gpg")
-            ( smtpmail-auth-credentials       . '(("mail.ethz.ch" 587 nil nil)))))
-       ,(make-mu4e-context
-          :name "Gmail"
-          :match-func (lambda (msg)
-                (when msg
-                  (mu4e-message-contact-field-matches msg
-                    :to "mr.huber.pascal@gmail.com")))
-          :vars '(
-            ( user-full-name     . "Pascal Huber")
-            ( user-mail-address	 . "mr.huber.pascal@gmail.com")
-            ( mu4e-get-mail-command . "offlineimap -o -a Gmail")
-            ( mu4e-drafts-folder . "/g/[Gmail].Drafts")
-            ( mu4e-sent-folder   . "/g/[Gmail].Sent Mail")
-            ( mu4e-trash-folder  . "/g/[Gmail].Bin")
-            ( mu4e-maildir-shortcuts
-                .( ("/g/INBOX"                   . ?i)
-                   ("/g/[Gmail].Sent Mail"       . ?s)
-                   ("/g/[Gmail].Spam"            . ?x)
-                   ("/g/[Gmail].Bin"             . ?b)))
-            ( mu4e-sent-messages-behavior    . delete)
-            ( smtpmail-stream-type           . starttls)
-            ( smtpmail-default-smtp-server   . "smtp.gmail.com")
-            ( smtpmail-smtp-server           . "smtp.gmail.com")
-            ( smtpmail-smtp-service          . 587)
-            ( smtpmail-smtp-user             . "mr.huber.pascal@gmail.com")
-            ( smtpmail-starttls-credentials  . "/home/pascal/.authinfo.gpg")
-            ( smtpmail-auth-credentials      . '(("smtp.gmail.com" 587 nil nil)))))))
-#+END_SRC
-
-** Forgotten Attachment
-
-Before sending a message, check if it contains any words that indicate that
-there should be an attachement. If it does, ask if all attachments were added
-before sending the mail.
-
-#+BEGIN_SRC emacs-lisp
-(defvar ph/message-attachment-regexp
-  (concat "\\("
-          "[Ww]e send\\|"
-          "[Ii] send\\|"
-          "attach\\|"
-          "[aA]nhang\\|"
-          "[aA]ngehängt\\|"
-          "[sS]chicke\\|"
-          "haenge\\|"
-          "hänge\\)"))
-
-(defun ph/message-check-attachment nil
-  "Check for forgotten attachments"
-  (save-excursion
-    (message-goto-body)
-    (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
-      (message-goto-body)
-      (unless (message-y-or-n-p
-               "Did you attach all documents?" nil nil)
-        (error "No message sent, add some attachments!")))))
-
-(add-hook 'message-send-hook 'ph/message-check-attachment)
 #+END_SRC
 
 * Global Keybindings
