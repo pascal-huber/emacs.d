@@ -1612,7 +1612,7 @@ Load it.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
-(require 'rspec-mode)
+(ph/install-package 'rspec-mode)
 (require 'ansi-color)
 (eval-after-load 'rspec-mode '(rspec-install-snippets))
 #+END_SRC
