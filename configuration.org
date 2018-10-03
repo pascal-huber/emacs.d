@@ -1010,6 +1010,12 @@ Show only one of duplicate messages.
 (setq mu4e-headers-skip-duplicates t)
 #+END_SRC
 
+Save attachments in =~/Downloads/=.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-attachment-dir  "~/Downloads")
+#+END_SRC
+
 Kill message-buffer when finished.
 
 #+BEGIN_SRC emacs-lisp
