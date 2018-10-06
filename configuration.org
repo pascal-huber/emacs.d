@@ -923,7 +923,6 @@ daily e-mail tsunami.
 #+BEGIN_SRC emacs-lisp
 (require 'mu4e)
 (require 'mu4e-contrib)
-(ph/install-package 'evil-mu4e)
 (ph/install-package 'smtpmail)
 #+END_SRC
 
