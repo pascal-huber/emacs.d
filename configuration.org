@@ -988,12 +988,6 @@ Show me the addresses, not only names.
 (setq mu4e-view-show-addresses t)
 #+END_SRC
 
-Show text, not html.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-html2text-command 'mu4e-shr2text)
-#+END_SRC
-
 View html-mail in browser with =aV=.
 
 #+BEGIN_SRC emacs-lisp
