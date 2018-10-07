@@ -240,7 +240,7 @@ therefore use the following function to query the number of
 remeber to update my packages regularly.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph-weeks-since-last-update ()
+(defun ph/update-intervals-since-last-update ()
   "Returns the number of auto-update-package-intervals since the last update."
   (when (file-exists-p auto-package-update-last-update-day-path)
     (let* ((last-update-day (apu--read-last-update-day))
