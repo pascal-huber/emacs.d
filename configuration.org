@@ -178,8 +178,12 @@ $ gem install pry pry-doc method_source
 
 * First Use
 
-After the first start, install the jedi-server for python with
-=(jedi:install-server)=.
+After the first start, run the following commands.
+
+#+BEGIN_SRC lisp
+(jedi:install-server)
+(pdf-tools-install)
+#+END_SRC
 
 * Packages
 ** Installation
