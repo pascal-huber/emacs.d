@@ -201,7 +201,7 @@ A function to install and load packages on demand.
 
 #+BEGIN_SRC emacs-lisp
 (cl-defun ph/install-package (package &optional (req t))
-  "Installs PACKAGE and requires it unless REQ is set to non-nil."
+  "Installs PACKAGE and requires it unless REQ is set to nil."
   (unless (package-installed-p package)
     (progn
       (package-refresh-contents)
