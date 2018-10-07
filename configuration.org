@@ -16,7 +16,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#packages][Packages]]
   - [[#installation-1][Installation]]
   - [[#packages-for-configuration][Packages for Configuration]]
-  - [[#auto-update-packages][Auto Update Packages]]
+  - [[#package-updates][Package Updates]]
 - [[#tweaking-defaults][Tweaking Defaults]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#symlinks][Symlinks]]
@@ -220,13 +220,28 @@ both evil and non-evil users).
 (ph/install-package 'general)
  #+END_SRC
 
-** Auto Update Packages
+** Package Updates
 
-Update packages at startup.
+Update all packages with =auto-package-update-now=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'auto-package-update)
-(auto-package-update-maybe)
+(setq auto-package-update-interval 7)
+#+END_SRC
+
+To calculate the number of available updates, =package-refresh-contents= needs
+to be executed. Doing this periodically is annoying since it will block emacs. I
+therefore use the following function to query the number of
+=auto-package-update-interval= since the last update for my status bar so that I
+remeber to update my packages regularly.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph-weeks-since-last-update ()
+  "Returns the number of auto-update-package-intervals since the last update."
+  (when (file-exists-p auto-package-update-last-update-day-path)
+    (let* ((last-update-day (apu--read-last-update-day))
+           (days-since (- (apu--today-day) last-update-day)))
+           (/ days-since auto-package-update-interval))))
 #+END_SRC
 
 * Tweaking Defaults
