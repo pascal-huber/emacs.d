@@ -154,7 +154,7 @@ $ pacaur -S pandoc
 Install =npm= dependencies for linting and auto-completion.
 
 #+BEGIN_SRC shell
-$ npm install -g eslint babel-eslint eslint-plugin-react tern
+$ npm install -g eslint babel-eslint tern
 #+END_SRC
 
 ** Python Development
