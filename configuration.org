@@ -109,7 +109,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
 - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
-- [[https://github.com/bradwright/emacs.d][Bradley Wrights configuration]]
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
 
 * OS Setup
