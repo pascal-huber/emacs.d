@@ -1093,7 +1093,7 @@ Kill message-buffer when finished.
           :match-func (lambda (msg)
                 (when msg
                   (mu4e-message-contact-field-matches msg
-                    :to "pascal@quickshift.ch")))
+                    :to "pahuber@student.ethz.ch")))
           :vars '(
             ( user-full-name                  . "Pascal Huber" )
             ( user-mail-address               . "pahuber@student.ethz.ch")
