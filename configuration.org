@@ -89,6 +89,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
+  - [[#yasnippet][YASnippet]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#tooltips][Tooltips]]
@@ -1733,6 +1734,18 @@ Use a line width of 100 in =yaml-mode=.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
   (lambda () (set-fill-column 100)))
+#+END_SRC
+
+** YASnippet
+
+[[https://github.com/joaotavora/yasnippet][YASnippet]] is a template system for Emacs. It allows you to type an abbreviation
+and automatically expand it into function templates.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'yasnippet)
+(ph/install-package 'yasnippet-snippets)
+(yas-global-mode 1)
+(add-to-list 'yas-snippet-dirs (locate-user-emacs-file "snippets"))
 #+END_SRC
 
 * Global Keybindings
