@@ -944,18 +944,6 @@ daily e-mail tsunami.
 (ph/install-package 'smtpmail)
 #+END_SRC
 
-Open mu4e in the current frame, even if it is already opened in another frame.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/mu4e ()
-  "Open mu4e even if its already opened somewhere else."
-  (interactive)
-  (unless (string-prefix-p "mu4e" (symbol-name major-mode))
-    (let ((buffer (get-buffer "*mu4e-headers*")))
-      (if buffer (switch-to-buffer buffer) (mu4e)))))
-#+END_SRC
-
-
 Show dates as =dd.mm.yy=, and times in =HH:MM=
 
 #+BEGIN_SRC emacs-lisp
@@ -1794,11 +1782,13 @@ without modifiers).
   "a" 'org-agenda
   "c" 'org-capture
   "e" 'elfeed
+  "f" 'ag
   "i" 'indent-region
-  "k" 'ag
+  "j" 'switch-to-next-buffer
+  "k" 'switch-to-prev-buffer
   "l" 'org-store-link
   "o" 'occur-dwim
-  "r" 'ph/mu4e
+  "r" 'mu4e
   "s" 'ph/spawn-some-project-terminals)
 
 (general-def ph/global-keymap
