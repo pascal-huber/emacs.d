@@ -583,54 +583,6 @@ Don't ask every time when executing a code block.
 (setq org-confirm-babel-evaluate nil)
 #+END_SRC
 
-All files in =~/org/= are agenda-files.
-
-# TODO: find out why this is nil if evaluated during startup.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/set-org-agenda-files ()
-  (setq org-agenda-files '("~/org")))
-(add-hook 'after-init-hook 'ph/set-org-agenda-files)
-#+END_SRC
-
-[[https://orgmode.org/manual/Capture-templates.html][Capture templates]] make it easy to create items in different locations. Call
-=org-capture= to use one of the templates and save it with =C-c C-c=.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-capture-templates '(("p" "Todo [private]" entry
-                               (file+headline "~/org/private.org" "Inbox")
-                               "* TODO %i%?")
-                              ("e" "Todo [eth]" entry
-                               (file+headline "~/org/eth.org" "Inbox")
-                               "* TODO %i%?")))
-#+END_SRC
-
-Refile to any heading in the same file or to a level 1 entry of an agenda-file.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-refile-targets '((nil :maxlevel . 9)
-                           (org-agenda-files :maxlevel . 1)))
-#+END_SRC
-
-Item usage:
- - =C-c C-s= to schedule an item
- - =C-c C-d= to add a deadline
-
-Agenda usage:
- - =f= and =b= to go forward back
- - =w= and =d= to show week- or day-view
- - =TAB= to go to item in other window
- - =c= to show calendar, =c= again to jump to selected date
- - =l= toggle log-mode (show finished tasks)
-
-Check if I need this.
-
-#+BEGIN_SRC emacs-lisp
-;(global-set-key "\C-cl" 'org-store-link)
-;(setq org-log-done 'time)
-;(setq org-log-done t)
-#+END_SRC
-
 *** TOC-Org
 
 Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
@@ -1762,7 +1714,7 @@ Create an empty keymap and minor-mode for my global keybindings
 
 Overwriting default bindings (and defining new ones).
 
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   "M-x"   'counsel-M-x
   "C-h f" 'counsel-describe-function
@@ -1785,8 +1737,6 @@ without modifiers).
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   :prefix "C-c"
-  "a" 'org-agenda
-  "c" 'org-capture
   "e" 'elfeed
   "f" 'ag
   "i" 'indent-region
