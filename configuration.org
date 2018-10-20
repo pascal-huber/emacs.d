@@ -182,7 +182,6 @@ After the first start, run the following commands.
 
 #+BEGIN_SRC lisp
 (jedi:install-server)
-(pdf-tools-install)
 #+END_SRC
 
 * Packages
@@ -831,6 +830,7 @@ in the file-system, but rather created on-demand and stored in memory.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'pdf-tools)
+(pdf-loader-install)
 #+END_SRC
 
 When highlighting, automatically add an annotation.
