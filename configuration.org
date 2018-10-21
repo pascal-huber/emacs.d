@@ -972,12 +972,15 @@ Pick first Context as default.
 (setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
-Don't mark for delete, only move to Trash.
-
-# TODO: find a better option for this, should this be an offlineimap setting?
+Ask before I delete something permanently.
 
 #+BEGIN_SRC emacs-lisp
-(defun mu4e-headers-mark-for-delete () nil)
+(defun ph/do-or-dont-execute (fn &rest args)
+  "Ask if FN should be executed (with ARGS)."
+  (when (y-or-n-p "execute?")
+    (apply fn args)))
+(advice-add 'mu4e-headers-mark-for-delete
+            :around 'ph/do-or-dont-execute)
 #+END_SRC
 
 Enabling receiving clients that support this feature to reflow my paragraphs.
