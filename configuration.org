@@ -941,8 +941,7 @@ Set the fields displayed in =mu4e-headers-mode= and =mu4e-view-mode=.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-headers-fields
-      '(
-        (:mailing-list . 4)
+      '((:mailing-list . 4)
         (:flags        . 4)
         (:human-date   . 10)
         (:from         . 25)
@@ -950,20 +949,6 @@ Set the fields displayed in =mu4e-headers-mode= and =mu4e-view-mode=.
 
 (add-to-list 'mu4e-view-fields ':useragent t)
 #+END_SRC
-(setq mu4e-view-fields
-      '(:from
-        :to
-        :cc
-        :subject
-        :flags
-        :date
-        :maildir
-        :mailing-list
-        :tags
-        :attachments
-        :signature
-        :decryption
-        :useragent))
 
 Pick first Context as default.
 
