@@ -365,7 +365,7 @@ Delete trailing whitespaces when saving.
 ** Buffers and Frames
 
 Split functions wich open the previous buffer in the new window instead of
-showing the current buffer twice. [[http://www.alandmoore.com/blog/2013/05/01/better-window-splitting-in-emacs/][stolen from here]]
+showing the current buffer twice. [[http://www.alandmoore.com/blog/2013/05/01/better-window-splitting-in-emacs/][Stolen shamelessly from here]]
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/vsplit-last-buffer ()
@@ -705,7 +705,7 @@ keys. It's similar to Vim's separation of commands and insertion mode.
 (ph/install-package 'evil-god-state)
 #+END_SRC
 
-Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/evil-god-state/issues/4#issuecomment-67760001][stolen from here]]
+Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/evil-god-state/issues/4#issuecomment-67760001][Stolen shamelessly from here]]
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/evil-visual-activate-hook (&optional command)
