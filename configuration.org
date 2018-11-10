@@ -240,11 +240,10 @@ remeber to update my packages regularly.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/update-intervals-since-last-update ()
-  "Returns the number of auto-update-package-intervals since the last update."
+  "Return the number of auto-update-package-intervals since the last update."
   (when (file-exists-p auto-package-update-last-update-day-path)
-    (let* ((last-update-day (apu--read-last-update-day))
-           (days-since (- (apu--today-day) last-update-day)))
-           (/ days-since auto-package-update-interval))))
+    (/ (- (apu--today-day) (apu--read-last-update-day))
+       auto-package-update-interval)))
 #+END_SRC
 
 * Tweaking Defaults
