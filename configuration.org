@@ -630,6 +630,12 @@ your currently entered incomplete command (a prefix) in a popup.
 (which-key-mode)
 #+END_SRC
 
+Also use which-key in god-mode-state.
+
+#+BEGIN_SRC emacs-lisp
+(which-key-enable-god-mode-support)
+#+END_SRC
+
 ** Session
 
 Restore some stuff (command histories, kill-ring, ...) from last session.
