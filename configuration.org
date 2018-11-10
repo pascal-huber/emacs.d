@@ -1864,7 +1864,6 @@ without modifiers).
   "i" 'indent-region
   "j" 'switch-to-next-buffer
   "k" 'switch-to-prev-buffer
-  "l" 'org-store-link
   "o" 'occur-dwim
   "r" 'mu4e
   "s" 'ph/spawn-some-project-terminals
