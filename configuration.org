@@ -41,6 +41,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#toc-org][TOC-Org]]
     - [[#org-ref][Org-Ref]]
 - [[#general-packages][General Packages]]
+  - [[#which-key][Which-Key]]
   - [[#session][Session]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#ag][Ag]]
@@ -618,6 +619,16 @@ for org-mode.
 * General Packages
 
 This section contains some (fully) third party packages.
+
+** Which-Key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following
+your currently entered incomplete command (a prefix) in a popup.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'which-key)
+(which-key-mode)
+#+END_SRC
 
 ** Session
 
@@ -2194,6 +2205,8 @@ of minor-modes.
   '(diminish 'auto-revert-mode))
 (eval-after-load "undo-tree"
   '(diminish 'undo-tree-mode))
+(eval-after-load "which-key"
+  '(diminish 'which-key-mode))
 #+END_SRC
 
 *** Setup
