@@ -35,7 +35,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#sudo-save][Sudo Save]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
-  - [[#ranger][Ranger]]
   - [[#project-terminals][Project Terminals]]
   - [[#org-mode][Org Mode]]
     - [[#settings][Settings]]
@@ -54,6 +53,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#ido][Ido]]
   - [[#counsel][Counsel]]
   - [[#imenu][Imenu]]
+  - [[#ranger][Ranger]]
   - [[#dictionary][Dictionary]]
   - [[#pdf][PDF]]
   - [[#news-feeds][News Feeds]]
@@ -489,32 +489,6 @@ Open in new frame
   '(define-key dired-mode-map (kbd "C-c C-o") 'ph/dired-find-file-other-frame))
 #+END_SRC
 
-** Ranger
-
-[[https://github.com/ralesi/ranger.el][ranger]] is a minor mode that runs within dired, it emulates many of [[https://ranger.github.io/][ranger's]]
-features. This minor mode shows a stack of parent directories, and updates the
-parent buffers, while you're navigating the file system. The preview window
-takes some of the ideas from [[https://github.com/asok/peep-dired][Peep-Dired]], to display previews for the selected
-files, in the primary dired buffer.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ranger)
-#+END_SRC
-
-Kill the buffers, after moving to another entry in the dired buffer.
-
-#+BEGIN_SRC emacs-lisp
-(setq ranger-cleanup-eagerly t)
-#+END_SRC
-
-Don't show hidden files by default. This can be toggled with =zh=.
-
-#+BEGIN_SRC emacs-lisp
-(setq ranger-show-hidden nil)
-#+END_SRC
-
-See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][keybindings here]].
-
 ** Project Terminals
 
 Spawn terminal-emulators in project folder.
@@ -870,6 +844,32 @@ Show current entry number.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'imenu-anywhere)
  #+END_SRC
+
+** Ranger
+
+[[https://github.com/ralesi/ranger.el][ranger]] is a minor mode that runs within dired, it emulates many of [[https://ranger.github.io/][ranger's]]
+features. This minor mode shows a stack of parent directories, and updates the
+parent buffers, while you're navigating the file system. The preview window
+takes some of the ideas from [[https://github.com/asok/peep-dired][Peep-Dired]], to display previews for the selected
+files, in the primary dired buffer.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ranger)
+#+END_SRC
+
+Kill the buffers, after moving to another entry in the dired buffer.
+
+#+BEGIN_SRC emacs-lisp
+(setq ranger-cleanup-eagerly t)
+#+END_SRC
+
+Don't show hidden files by default. This can be toggled with =zh=.
+
+#+BEGIN_SRC emacs-lisp
+(setq ranger-show-hidden nil)
+#+END_SRC
+
+See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][keybindings here]].
 
 ** Dictionary
 
