@@ -2098,7 +2098,8 @@ Functions to change the mode-line faces.
 (defun ph/spaceline-dark()
   (interactive)
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#005f87")
+                      :foreground "#3a3a3a"
+                      :background "#7ec0ee")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#c6c6c6"
@@ -2395,7 +2396,7 @@ everything).
 #+BEGIN_SRC emacs-lisp
 (defun ph/set-powerline-text-scale-factor (face reserve)
   (if (display-graphic-p (selected-frame))
-      (setq powerline-text-scale-factor 0.92)
+      (setq powerline-text-scale-factor 0.85)
     (setq powerline-text-scale-factor nil)))
 
 (advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
