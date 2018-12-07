@@ -802,6 +802,7 @@ dependencies (when feasible).
 (projectile-mode +1)
 (general-def projectile-mode-map
   "C-c p" 'projectile-command-map)
+(setq projectile-completion-system 'ivy)
 #+END_SRC
 
 ** Ido
