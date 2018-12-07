@@ -44,6 +44,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#which-key][Which-Key]]
   - [[#session][Session]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
+  - [[#crux][Crux]]
   - [[#ag][Ag]]
   - [[#evil][Evil]]
     - [[#surround][Surround]]
@@ -652,6 +653,15 @@ Restore some stuff (command histories, kill-ring, ...) from last session.
 (general-def browse-kill-ring-mode-map
   "k" 'browse-kill-ring-previous
   "j" 'browse-kill-ring-forward)
+#+END_SRC
+
+** Crux
+
+[[https://github.com/bbatsov/crux][A Collection of Ridiculously Useful eXtensions]] for Emacs. crux bundles a few
+useful interactive commands to enhance your overall Emacs experience.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'crux)
 #+END_SRC
 
 ** Ag
