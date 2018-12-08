@@ -1031,6 +1031,12 @@ daily e-mail tsunami.
 
 *** Setup
 
+To prevent UID errors with mbsync
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-change-filenames-when-moving t)
+#+END_SRC
+
 Show dates as =dd.mm.yy=, and times in =HH:MM=.
 
 #+BEGIN_SRC emacs-lisp
