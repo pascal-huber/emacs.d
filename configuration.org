@@ -62,6 +62,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#setup][Setup]]
     - [[#encryption][Encryption]]
     - [[#contexts][Contexts]]
+    - [[#bookmarks][Bookmarks]]
     - [[#forgotten-attachment][Forgotten Attachment]]
 - [[#programming][Programming]]
   - [[#autocomplete][Autocomplete]]
@@ -1031,12 +1032,6 @@ daily e-mail tsunami.
 
 *** Setup
 
-To prevent UID errors with mbsync
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-change-filenames-when-moving t)
-#+END_SRC
-
 Show dates as =dd.mm.yy=, and times in =HH:MM=.
 
 #+BEGIN_SRC emacs-lisp
@@ -1205,7 +1200,7 @@ here]].
 *** Contexts
 
 #+BEGIN_SRC emacs-lisp
-(setq mu4e-maildir "~/.mbsync")
+(setq mu4e-maildir "~/.mail")
 
 (setq mu4e-contexts
       `(,(make-mu4e-context
@@ -1217,17 +1212,17 @@ here]].
                            :to "pascal.huber@resolved.ch")))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pascal.huber@resolved.ch")
-                  (mu4e-get-mail-command         . "mbsync {private,quickshift,eth}")
-                  (mu4e-drafts-folder            . "/private/Drafts")
-                  (mu4e-sent-folder              . "/private/Sent")
-                  (mu4e-trash-folder             . "/private/Trash")
+                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
+                  (mu4e-drafts-folder            . "/r/INBOX.Drafts")
+                  (mu4e-sent-folder              . "/r/INBOX.Sent")
+                  (mu4e-trash-folder             . "/r/INBOX.Trash")
                   (mu4e-maildir-shortcuts
-                   .( ("/private/Inbox"          . ?i)
-                      ("/private/Sent"           . ?s)
-                      ("/private/spambucket"     . ?x)
-                      ("/private/keep"           . ?k)
-                      ("/private/tempKeep"       . ?t)
-                      ("/private/Trash"          . ?b)))
+                   .( ("/r/INBOX"                . ?i)
+                      ("/r/INBOX.Sent"           . ?s)
+                      ("/r/INBOX.spambucket"     . ?x)
+                      ("/r/INBOX.keep"           . ?k)
+                      ("/r/INBOX.tempKeep"       . ?t)
+                      ("/r/INBOX.Trash"          . ?b)))
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.resolved.ch")
@@ -1244,17 +1239,17 @@ here]].
                                                               :to "pascal@quickshift.ch")))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pascal@quickshift.ch")
-                  (mu4e-get-mail-command         . "mbsync {private,quickshift,eth}")
-                  (mu4e-drafts-folder            . "/quickshift/Drafts")
-                  (mu4e-sent-folder              . "/quickshift/Sent")
-                  (mu4e-trash-folder             . "/quickshift/Trash")
+                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
+                  (mu4e-drafts-folder            . "/q/INBOX.Drafts")
+                  (mu4e-sent-folder              . "/q/INBOX.Sent")
+                  (mu4e-trash-folder             . "/q/INBOX.Trash")
                   (mu4e-maildir-shortcuts
-                   .( ("/quickshift/Inbox"       . ?i)
-                      ("/quickshift/Sent"        . ?s)
-                      ("/quickshift/spambucket"  . ?x)
-                      ("/quickshift/keep"        . ?k)
-                      ("/quickshift/tempKeep"    . ?t)
-                      ("/quickshift/Trash"       . ?b)))
+                   .( ("/q/INBOX"                . ?i)
+                      ("/q/INBOX.Sent"           . ?s)
+                      ("/q/INBOX.spambucket"     . ?x)
+                      ("/q/INBOX.keep"           . ?k)
+                      ("/q/INBOX.tempKeep"       . ?t)
+                      ("/q/INBOX.Trash"          . ?b)))
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.quickshift.ch")
@@ -1272,18 +1267,18 @@ here]].
                            :to "pahuber@student.ethz.ch")))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pahuber@student.ethz.ch")
-                  (mu4e-get-mail-command         . "mbsync {private,quickshift,eth}")
-                  (mu4e-drafts-folder            . "/eth/Drafts")
-                  (mu4e-sent-folder              . "/eth/Sent Items")
-                  (mu4e-trash-folder             . "/eth/Deleted Items")
+                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
+                  (mu4e-drafts-folder            . "/e/Drafts")
+                  (mu4e-sent-folder              . "/e/Sent Items")
+                  (mu4e-trash-folder             . "/e/Deleted Items")
                   (mu4e-maildir-shortcuts
-                   .( ("/eth/INBOX"              . ?i)
-                      ("/eth/Sent Items"         . ?s)
-                      ("/eth/Junk E-Mail"        . ?x)
-                      ("/eth/INBOX.keep"         . ?k)
-                      ("/eth/INBOX.and"          . ?a)
-                      ("/eth/INBOX.tmp"          . ?t)
-                      ("/eth/Deleted Items"      . ?b)))
+                   .( ("/e/INBOX"                . ?i)
+                      ("/e/Sent Items"           . ?s)
+                      ("/e/Junk E-Mail"          . ?x)
+                      ("/e/INBOX.keep"           . ?k)
+                      ("/e/INBOX.and"            . ?a)
+                      ("/e/INBOX.tmp"            . ?t)
+                      ("/e/Deleted Items"        . ?b)))
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.ethz.ch")
@@ -1301,15 +1296,15 @@ here]].
                            :to "mr.huber.pascal@gmail.com")))
           :vars '((user-full-name                . "Pascal Huber")
                   (user-mail-address	           . "mr.huber.pascal@gmail.com")
-                  (mu4e-get-mail-command         . "mbsync gmail")
-                  (mu4e-drafts-folder            . "/gmail/Drafts")
-                  (mu4e-sent-folder              . "/gmail/Sent Mail")
-                  (mu4e-trash-folder             . "/gmail/Bin")
+                  (mu4e-get-mail-command         . "offlineimap -a Gmail")
+                  (mu4e-drafts-folder            . "/g/[Gmail].Drafts")
+                  (mu4e-sent-folder              . "/g/[Gmail].Sent Mail")
+                  (mu4e-trash-folder             . "/g/[Gmail].Bin")
                   (mu4e-maildir-shortcuts
-                   .( ("/gmail/Inbox"            . ?i)
-                      ("/gmail/Sent Mail"        . ?s)
-                      ("/gmail/Spam"             . ?x)
-                      ("/gmail/Bin"              . ?b)))
+                   .( ("/g/INBOX"                . ?i)
+                      ("/g/[Gmail].Sent Mail"    . ?s)
+                      ("/g/[Gmail].Spam"         . ?x)
+                      ("/g/[Gmail].Bin"          . ?b)))
                   (mu4e-sent-messages-behavior   . delete)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "smtp.gmail.com")
@@ -1318,6 +1313,18 @@ here]].
                   (smtpmail-smtp-user            . "mr.huber.pascal@gmail.com")
                   (smtpmail-starttls-credentials . "/home/pascal/.authinfo.gpg")
                   (smtpmail-auth-credentials     . '(("smtp.gmail.com" 587 nil nil)))))))
+#+END_SRC
+
+*** Bookmarks
+
+List all mails from all my main accounts.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-bookmarks
+             '((concat "maildir:/eth/"
+                       " OR maildir:/private/"
+                       " OR maildir:/quickshift/")
+         "All messages from private,quickshift,eth" ?a))
 #+END_SRC
 
 *** Forgotten Attachment
