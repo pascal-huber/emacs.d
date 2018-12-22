@@ -2073,7 +2073,6 @@ Call =M-x ph/next-theme= to load the next theme.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'spaceline)
-(setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
 #+END_SRC
 
 *** Faces
@@ -2371,10 +2370,10 @@ spaceline-compile=.
   'main
   '((evil-state :when active :face highlight-face)
     (buffer-id)
-    (ph/mu4e-context-segment :face ph/spaceline-mu4e-context-face)
-    (ph/special-file-permissions :face ph/spaceline-alert-face)
-    (ph/remote-method :face ph/spaceline-warn-face)
-    (ph/remote-user-and-host :face ph/spaceline-another-warn-face)
+    (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
+    (ph/special-file-permissions :face 'ph/spaceline-alert-face)
+    (ph/remote-method :face 'ph/spaceline-warn-face)
+    (ph/remote-user-and-host :face 'ph/spaceline-another-warn-face)
     (ph/virtualenvwrapper-segment)
     (buffer-modified)
     (process :when active))
@@ -2384,9 +2383,9 @@ spaceline-compile=.
     (ph/version-control :when active)
     (line-column)
     (buffer-position)
-    (ph/flycheck-info-segment :face ph/spaceline-info-face)
-    (ph/flycheck-warning-segment :face ph/spaceline-warn-face)
-    (ph/flycheck-error-segment :face ph/spaceline-alert-face)
+    (ph/flycheck-info-segment :face 'ph/spaceline-info-face)
+    (ph/flycheck-warning-segment :face 'ph/spaceline-warn-face)
+    (ph/flycheck-error-segment :face 'ph/spaceline-alert-face)
     (major-mode)))
 #+END_SRC
 
