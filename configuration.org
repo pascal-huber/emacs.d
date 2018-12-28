@@ -2063,7 +2063,8 @@ Call =M-x ph/next-theme= to load the next theme.
 (defun ph/next-theme ()
   "Loads next theme in the theme-list and rotates the list"
   (interactive)
-  (cl-loop for f in (nth 0 ph/theme-list) do (apply f))
+	(mapcar 'disable-theme custom-enabled-themes)
+  (mapcar (lambda (fn) (apply fn)) (nth 0 ph/theme-list))
   (setq ph/theme-list (-rotate 1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
