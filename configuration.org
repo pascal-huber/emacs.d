@@ -2189,7 +2189,7 @@ Face for mu4e segemnt.
 (defface ph/spaceline-mu4e-context-face
   '((t :inherit 'mode-line
        :weight bold))
-  "mu4e face asdf"
+  "mu4e face"
   :group 'spaceline)
 #+END_SRC
 
