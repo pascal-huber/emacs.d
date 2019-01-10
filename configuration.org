@@ -338,6 +338,7 @@ Use Firefox to browse urls.
 #+BEGIN_SRC emacs-lisp
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "firefox-developer-edition"
+      browse-url-generic-args '("--private-window")
       browse-url-new-window-flag t)
 #+END_SRC
 
