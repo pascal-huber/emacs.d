@@ -1192,22 +1192,20 @@ Custom Bookmarks
     :key ?b))
 #+END_SRC
 
-Add default search values (per context) for =mu4e-headers-search=. Set
-=ph/mu4e-default-search-expr= in the context definition.
+Add default search values for =mu4e-headers-search= unless
+arguments are given to =mu4e-headers-search= or the search is not
+called from within a mu4e-buffer. The values are set in the
+context definition (=ph/mu4e-default-search-expr=).
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/mu4e-headers-search (fn &rest args)
-  "If no ARGS are provided, mu4e is opened in the current buffer and
-  ph/mu4e-default-search-expr is defined, the the search will have a
-  default value defined by ph/mu4e-default-search-expr."
-  (if (and (= 0 (length args))
-           (string-prefix-p "mu4e" (symbol-name major-mode)
-                            (< 0 (length ph/mu4e-default-search-expr))))
-      (apply fn (list (concat ph/mu4e-default-search-expr " ") "Search for: " t))
-    (apply fn args)))
-
-(advice-add 'mu4e-headers-search
-            :around 'ph/mu4e-headers-search)
+(advice-add 'mu4e-headers-search :around
+            (lambda (fn &rest args)
+              (if (and (= 0 (length args))
+                       (string-prefix-p "mu4e" (symbol-name major-mode))
+                       (< 0 (length ph/mu4e-default-search-expr)))
+                  (apply fn (list (concat ph/mu4e-default-search-expr " ")
+                                  "Search for: " t))
+                (apply fn args))))
 #+END_SRC
 
 *** Encryption
