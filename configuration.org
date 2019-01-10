@@ -35,7 +35,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#sudo-save][Sudo Save]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
-  - [[#project-terminals][Project Terminals]]
   - [[#org-mode][Org Mode]]
     - [[#settings][Settings]]
     - [[#toc-org][TOC-Org]]
@@ -401,7 +400,6 @@ A function to kill all buffers except the current one and other important buffer
 #+BEGIN_SRC emacs-lisp
 (setq ph/buffer-dont-kill-regexp
       (concat "\\("
-              "project-terminals"
               "\\|\\*Messages\\*"
               "\\)"))
 
@@ -490,70 +488,6 @@ Open in new frame
 
 (eval-after-load "dired"
   '(define-key dired-mode-map (kbd "C-c C-o") 'ph/dired-find-file-other-frame))
-#+END_SRC
-
-** Project Terminals
-
-Spawn terminal-emulators in project folder.
-
-Note: Urxvt's =-name= option which sets the =WM_CLASS= attribute does not seem
-to work with i3. Thus, =-title= is used to place the terminals on the correct
-workspace.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/project-terminal-command-list-urxvt (directory workspace-number)
-  "Command list to start an urxvt client in DIRECTORY on WORKSPACE-NUMBER."
-  (list "/usr/bin/urxvtc"
-        "-cd" directory
-        "-title" (concat "project-terminal-"
-                         (number-to-string (mod workspace-number 10)))))
-
-(defun ph/project-terminal-command-list-termite (directory workspace-number)
-  "Command list to start termite in DIRECTORY on WORKSPACE-NUMBER."
-  (list "/bin/termite"
-        "-d" directory
-        (concat "--class=project-terminal-"
-                (number-to-string (mod workspace-number 10)))))
-
-(setq ph/project-terminal-amount-prompt
-      "How many terminals does my master wish to spawn? :")
-(setq ph/project-terminal-amount-default 3)
-
-(setq ph/project-terminal-workspace-prompt
-      "On which workspace does my master wish to spawn them? :")
-(setq ph/project-terminal-workspace-default 6)
-
-(defun ph/spawn-one-project-terminal ( &optional workspace-number)
-  "Start one terminal in the current project directory on WORKSPACE-NUMBER."
-  (interactive)
-  (unless workspace-number
-    (setq workspace-number
-          (read-number ph/project-terminal-workspace-prompt
-                       ph/project-terminal-workspace-default)))
-  (let ((dir (projectile-project-p)))
-    (if dir
-        (progn
-          (setq project-terminal-buffer
-                (get-buffer-create "project-terminals"))
-           (make-process
-            :name (concat "project-terminal-" dir)
-            :buffer project-terminal-buffer
-            :command (ph/project-terminal-command-list-termite dir workspace-number)))
-      (message "You're not in a project"))))
-
-(defun ph/spawn-some-project-terminals (&optional amount workspace-number)
-  "Start AMOUNT terminals on WORKSPACE-NUMBER in the current project directory."
-  (interactive)
-  (unless amount
-    (setq amount (read-number ph/project-terminal-amount-prompt
-                              ph/project-terminal-amount-default)))
-  (unless workspace-number
-    (setq workspace-number
-          (read-number ph/project-terminal-workspace-prompt
-                       ph/project-terminal-workspace-default)))
-  (while (> amount 0)
-    (ph/spawn-one-project-terminal workspace-number)
-    (setq amount (- amount 1))))
 #+END_SRC
 
 ** Org Mode
@@ -2042,7 +1976,6 @@ without modifiers).
   "k" 'switch-to-prev-buffer
   "o" 'occur-dwim
   "r" 'ph/mu4e
-  "s" 'ph/spawn-some-project-terminals
   "u" 'ivy-imenu-anywhere
   "y" 'ivy-yasnippet)
 
