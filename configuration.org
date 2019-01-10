@@ -664,7 +664,7 @@ Set initial state by major mode.
 
 *** God State
 
-=god-mode= is a global minor mode for entering Emacs commands without modifier
+=evil-god-state= is a global minor mode for entering Emacs commands without modifier
 keys. It's similar to Vim's separation of commands and insertion mode.
 =evil-god-state= is =god-mode= for =evil-mode=.
 
@@ -672,44 +672,27 @@ keys. It's similar to Vim's separation of commands and insertion mode.
 (ph/install-package 'evil-god-state)
 #+END_SRC
 
-Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/evil-god-state/issues/4#issuecomment-67760001][Stolen shamelessly from here]]
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/evil-visual-activate-hook (&optional command)
-  "Enable Visual state if the region is activated."
-  (unless (evil-visual-state-p)
-    (evil-delay nil
-        '(unless (or (evil-visual-state-p)
-                     (evil-insert-state-p)
-                     (evil-emacs-state-p)
-                     (evil-god-state-p))
-           (when (and (region-active-p)
-                      (not deactivate-mark))
-             (evil-visual-state)))
-      'post-command-hook nil t
-      "evil-activate-visual-state")))
-(ph/evil-visual-activate-hook)
-#+END_SRC
-
-*** Keybindings
-
-Exit and enter =god-mode=.
+Keybinding to escape god-state.
 
 #+BEGIN_SRC emacs-lisp
 (general-def 'god
   [escape] 'evil-god-state-bail
   "C-g"    'evil-god-state-bail)
+#+END_SRC
 
-(general-def 'motion
-  ","      'evil-execute-in-god-state)
+*** Keybindings
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'normal
+  "," 'evil-execute-in-god-state)
 #+END_SRC
 
 Evil motion-states are the evil states where we don't edit text.
 
 #+BEGIN_SRC emacs-lisp
 (general-def 'motion
-  "j"     'evil-next-visual-line
-  "k"      'evil-previous-visual-line)
+  "j" 'evil-next-visual-line
+  "k" 'evil-previous-visual-line)
 #+END_SRC
 
 Free =M-.= and =M-,​= since they are popular kebinings for "jump to definition"
