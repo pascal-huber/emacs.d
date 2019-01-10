@@ -31,7 +31,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#line-filling][Line Filling]]
   - [[#whitespace-cleanup][Whitespace Cleanup]]
   - [[#buffers-and-frames][Buffers and Frames]]
-  - [[#kill-buffers][Kill Buffers]]
   - [[#sudo-save][Sudo Save]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
@@ -394,26 +393,6 @@ A function to open the previous buffer in a new frame.
   (interactive)
   (switch-to-buffer-other-frame (other-buffer)))
 #+END_SRC
-
-** Kill Buffers
-
-A function to kill all buffers except the current one and other important buffers.
-
-#+BEGIN_SRC emacs-lisp
-(setq ph/buffer-dont-kill-regexp
-      (concat "\\("
-              "\\|\\*Messages\\*"
-              "\\)"))
-
-(defun ph/kill-other-buffers ()
-  "Kill all other buffers unless the buffer-name matches
-  `ph/buffer-kill-regexp`."
-  (interactive)
-  (mapc #'(lambda (buffer)
-            (unless (string-match ph/buffer-dont-kill-regexp (buffer-name buffer))
-              (kill-buffer buffer)))
-        (delq (current-buffer) (buffer-list))))
-              #+END_SRC
 
 ** Sudo Save
 
