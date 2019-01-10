@@ -1492,13 +1492,6 @@ Highlight matching brackets.
 (add-hook 'prog-mode-hook 'show-paren-mode)
 #+END_SRC
 
-Typing any left bracket automatically insert the right matching bracket.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'smartparens)
-(add-hook 'prog-mode-hook 'smartparens-mode)
-#+END_SRC
-
 ** Display Line Numbers
 
 Show line numbers in programming modes
