@@ -47,7 +47,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#ag][Ag]]
   - [[#evil][Evil]]
     - [[#surround][Surround]]
-    - [[#god-state][God State]]
     - [[#keybindings][Keybindings]]
   - [[#projectile][Projectile]]
   - [[#ido][Ido]]
@@ -563,12 +562,6 @@ your currently entered incomplete command (a prefix) in a popup.
 (which-key-mode)
 #+END_SRC
 
-Also use which-key in god-mode-state.
-
-#+BEGIN_SRC emacs-lisp
-(which-key-enable-god-mode-support)
-#+END_SRC
-
 ** Session
 
 Restore some stuff (command histories, kill-ring, ...) from last session.
@@ -662,47 +655,7 @@ Set initial state by major mode.
 (global-evil-surround-mode 1)
 #+END_SRC
 
-*** God State
-
-=god-mode= is a global minor mode for entering Emacs commands without modifier
-keys. It's similar to Vim's separation of commands and insertion mode.
-=evil-god-state= is =god-mode= for =evil-mode=.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'evil-god-state)
-#+END_SRC
-
-Make =evil-god-state= work also in visual-mode. [[https://github.com/gridaphobe/evil-god-state/issues/4#issuecomment-67760001][Stolen shamelessly from here]]
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/evil-visual-activate-hook (&optional command)
-  "Enable Visual state if the region is activated."
-  (unless (evil-visual-state-p)
-    (evil-delay nil
-        '(unless (or (evil-visual-state-p)
-                     (evil-insert-state-p)
-                     (evil-emacs-state-p)
-                     (evil-god-state-p))
-           (when (and (region-active-p)
-                      (not deactivate-mark))
-             (evil-visual-state)))
-      'post-command-hook nil t
-      "evil-activate-visual-state")))
-(ph/evil-visual-activate-hook)
-#+END_SRC
-
 *** Keybindings
-
-Exit and enter =god-mode=.
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'god
-  [escape] 'evil-god-state-bail
-  "C-g"    'evil-god-state-bail)
-
-(general-def 'motion
-  ","      'evil-execute-in-god-state)
-#+END_SRC
 
 Evil motion-states are the evil states where we don't edit text.
 
@@ -2171,14 +2124,6 @@ Face for mu4e segemnt.
 Ajdust the colors for different evil-states.
 
 #+BEGIN_SRC emacs-lisp
-(defface ph/spaceline-evil-god-face
-  '((t (:background "tomato"
-        :inherit 'spaceline-evil-normal)))
-  "Spaceline Evil God State"
-  :group 'spaceline)
-(add-to-list 'spaceline-evil-state-faces
-             '(god . ph/spaceline-evil-god-face))
-
 (defface ph/spaceline-evil-operator-face
   '((t (:background "cornflower blue"
         :inherit 'spaceline-evil-normal)))
@@ -2315,8 +2260,6 @@ of minor-modes.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'diminish)
 
-(eval-after-load "god-mode"
-  '(diminish 'god-local-mode))
 (eval-after-load "rainbow-mode"
   '(diminish 'rainbow-mode))
 (eval-after-load "projectile"
