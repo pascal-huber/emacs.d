@@ -58,11 +58,13 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#pdf][PDF]]
   - [[#news-feeds][News Feeds]]
   - [[#mail][Mail]]
-    - [[#setup][Setup]]
-    - [[#encryption][Encryption]]
-    - [[#contexts][Contexts]]
+    - [[#general][General]]
+    - [[#headers][Headers]]
+    - [[#view][View]]
     - [[#bookmarks][Bookmarks]]
-    - [[#forgotten-attachment][Forgotten Attachment]]
+    - [[#compose][Compose]]
+    - [[#send][Send]]
+    - [[#contexts][Contexts]]
 - [[#programming][Programming]]
   - [[#autocomplete][Autocomplete]]
     - [[#settings-1][Settings]]
@@ -104,7 +106,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#faces][Faces]]
     - [[#segments][Segments]]
     - [[#diminish][Diminish]]
-    - [[#setup-1][Setup]]
+    - [[#setup][Setup]]
     - [[#config][Config]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
@@ -964,16 +966,28 @@ daily e-mail tsunami.
 (ph/install-package 'smtpmail)
 #+END_SRC
 
-*** Setup
+*** General
 
-Show dates as =dd.mm.yy=, and times in =HH:MM=.
+Mail directory
 
 #+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-time-format "%H:%M")
-(setq mu4e-headers-date-format "%d.%m.%y")
+(setq mu4e-maildir "~/.mail")
 #+END_SRC
 
-Open mu4e in the current frame, even if it is already opened in another frame.
+Save attachments in =~/Downloads/=.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-attachment-dir  "~/Downloads")
+#+END_SRC
+
+Close mu4e without asking
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-confirm-quit nil)
+#+END_SRC
+
+Open mu4e in the current frame, even if it is already opened in another
+,possibly forgotten, frame.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/mu4e ()
@@ -984,7 +998,52 @@ Open mu4e in the current frame, even if it is already opened in another frame.
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
-Some functions to get some information of emails. [[https://etienne.depar.is/emacs.d/mu4e.html][Stolen shamelessly from here]]
+# TODO: Evalute if mu4e-maildirs-extension is something for me.
+
+#+BEGIN_SRC emacs-lisp
+;; (ph/install-package 'mu4e-maildirs-extension)
+;; (mu4e-maildirs-extension)
+#+END_SRC
+
+*** Headers
+
+Show dates as =dd.mm.yy=, and times in =HH:MM=.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-time-format "%H:%M")
+(setq mu4e-headers-date-format "%d.%m.%y")
+#+END_SRC
+
+Do not show related messages by default (toggle with =W=)
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-include-related nil)
+#+END_SRC
+
+Don't show duplicate messages.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-headers-skip-duplicates t)
+#+END_SRC
+
+Add default search values for =mu4e-headers-search= unless arguments are given
+to =mu4e-headers-search= or the search is not called from within a mu4e-buffer.
+The values are set in the context definition (=ph/mu4e-default-search-expr=).
+
+#+BEGIN_SRC emacs-lisp
+(advice-add 'mu4e-headers-search :around
+            (lambda (fn &rest args)
+              (if (and (= 0 (length args))
+                       (string-prefix-p "mu4e" (symbol-name major-mode))
+                       (< 0 (length ph/mu4e-default-search-expr)))
+                  (apply fn (list (concat ph/mu4e-default-search-expr " ")
+                                  "Search for: " t))
+                (apply fn args))))
+#+END_SRC
+
+
+Some functions to get some additional information about emails. [[https://etienne.depar.is/emacs.d/mu4e.html][Stolen
+shamelessly from here]]
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/mu4e-get-user-agent (msg)
@@ -1027,21 +1086,6 @@ Set the fields displayed in =mu4e-headers-mode= and =mu4e-view-mode=.
         (:human-date   . 10)
         (:from         . 25)
         (:subject)))
-
-(add-to-list 'mu4e-view-fields ':useragent t)
-#+END_SRC
-
-Do not show related messages by default (toggle with =W=)
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-include-related nil)
-#+END_SRC
-
-Pick first Context as default.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-compose-context-policy 'ask-if-none)
 #+END_SRC
 
 Ask before I delete something permanently.
@@ -1049,11 +1093,49 @@ Ask before I delete something permanently.
 #+BEGIN_SRC emacs-lisp
 (defun ph/do-or-dont-execute (fn &rest args)
   "Ask if FN should be executed (with ARGS)."
-  (when (y-or-n-p "execute?")
+  (when (y-or-n-p "Execute ? ")
     (apply fn args)))
+
 (advice-add 'mu4e-headers-mark-for-delete
             :around 'ph/do-or-dont-execute)
+(advice-add 'mu4e-view-mark-for-delete
+            :around 'ph/do-or-dont-execute)
 #+END_SRC
+
+*** View
+
+Show the useragent of the sender.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-view-fields ':useragent t)
+#+END_SRC
+
+Show me the addresses, not only names.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-view-show-addresses t)
+#+END_SRC
+
+View html-mail in browser with =aV=.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-view-actions
+             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+*** Bookmarks
+
+Custom Bookmarks
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-bookmarks
+             (make-mu4e-bookmark
+              :name  "Big messages"
+              :query "size:5M..50000M"
+              :key ?b))
+#+END_SRC
+
+*** Compose
 
 Enabling receiving clients that support this feature to reflow my paragraphs.
 Plain text emails with =Content-Type: text/plain; format=flowed= can be reflowed
@@ -1071,83 +1153,14 @@ Dont reply to myself.
 (setq mu4e-compose-dont-reply-to-self t)
 #+END_SRC
 
-Show me the addresses, not only names.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-view-show-addresses t)
-#+END_SRC
-
-View html-mail in browser with =aV=.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-view-actions
-             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-#+END_SRC
-
-Use =smtpmail= with =tnutls= to sending mails.
-
-#+BEGIN_SRC emacs-lisp
-(setq message-send-mail-function 'smtpmail-send-it)
-(setq starttls-use-gnutls t)
-(setq smtpmail-debug-info t)
-#+END_SRC
-
-Show only one of duplicate messages.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-skip-duplicates t)
-#+END_SRC
-
-Save attachments in =~/Downloads/=.
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-attachment-dir  "~/Downloads")
-#+END_SRC
-
 Kill message-buffer when finished.
 
 #+BEGIN_SRC emacs-lisp
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
-Close mu4e without asking
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-confirm-quit nil)
-#+END_SRC
-
-Custom Bookmarks
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-bookmarks
-  (make-mu4e-bookmark
-    :name  "Big messages"
-    :query "size:5M..500M"
-    :key ?b))
-#+END_SRC
-
-Add default search values for =mu4e-headers-search= unless
-arguments are given to =mu4e-headers-search= or the search is not
-called from within a mu4e-buffer. The values are set in the
-context definition (=ph/mu4e-default-search-expr=).
-
-#+BEGIN_SRC emacs-lisp
-(advice-add 'mu4e-headers-search :around
-            (lambda (fn &rest args)
-              (if (and (= 0 (length args))
-                       (string-prefix-p "mu4e" (symbol-name major-mode))
-                       (< 0 (length ph/mu4e-default-search-expr)))
-                  (apply fn (list (concat ph/mu4e-default-search-expr " ")
-                                  "Search for: " t))
-                (apply fn args))))
-#+END_SRC
-
-*** Encryption
-
-First of all: Make sure the drafts folder is not synchronized.
-
-When replying an encrypted message, use encryption too. [[https://github.com/djcb/mu/issues/865#issuecomment-228297390][Stolen shamelessly from
-here]].
+When replying an encrypted message, encrypt and sign the answer. [[https://github.com/djcb/mu/issues/865#issuecomment-228297390][Stolen
+shamelessly from here]].
 
  #+BEGIN_SRC emacs-lisp
 (add-hook 'mu4e-compose-mode-hook
@@ -1157,10 +1170,52 @@ here]].
         (mml-secure-message-sign-encrypt)))))
  #+END_SRC
 
-*** Contexts
+*** Send
+
+Use =smtpmail= with =tnutls= to sending mails.
 
 #+BEGIN_SRC emacs-lisp
-(setq mu4e-maildir "~/.mail")
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq starttls-use-gnutls t)
+(setq smtpmail-debug-info t)
+#+END_SRC
+
+Before sending a message, check if it contains any words that indicate that
+there should be an attachement. If it does, ask if all attachments were added
+before sending the mail.
+
+#+BEGIN_SRC emacs-lisp
+(defvar ph/message-attachment-regexp
+  (concat "\\("
+          "[Ww]e send\\|"
+          "[Ii] send\\|"
+          "attach\\|"
+          "[aA]nhang\\|"
+          "[aA]ngehängt\\|"
+          "[sS]chicke\\|"
+          "haenge\\|"
+          "hänge\\)"))
+
+(defun ph/message-check-attachment nil
+  "Check for forgotten attachments"
+  (save-excursion
+    (message-goto-body)
+    (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
+      (message-goto-body)
+      (unless (message-y-or-n-p
+               "Did you attach all documents?" nil nil)
+        (error "No message sent, add some attachments!")))))
+
+(add-hook 'message-send-hook 'ph/message-check-attachment)
+#+END_SRC
+
+*** Contexts
+
+Pick first Context as default.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'ask-if-none)
 
 (setq mu4e-contexts
       `(,(make-mu4e-context
@@ -1280,49 +1335,6 @@ here]].
                   (smtpmail-smtp-user            . "mr.huber.pascal@gmail.com")
                   (smtpmail-starttls-credentials . "/home/pascal/.authinfo.gpg")
                   (smtpmail-auth-credentials     . '(("smtp.gmail.com" 587 nil nil)))))))
-#+END_SRC
-
-*** Bookmarks
-
-List all mails from all my main accounts.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-bookmarks
-             '((concat "maildir:/eth/"
-                       " OR maildir:/private/"
-                       " OR maildir:/quickshift/")
-         "All messages from private,quickshift,eth" ?a))
-#+END_SRC
-
-*** Forgotten Attachment
-
-Before sending a message, check if it contains any words that indicate that
-there should be an attachement. If it does, ask if all attachments were added
-before sending the mail.
-
-#+BEGIN_SRC emacs-lisp
-(defvar ph/message-attachment-regexp
-  (concat "\\("
-          "[Ww]e send\\|"
-          "[Ii] send\\|"
-          "attach\\|"
-          "[aA]nhang\\|"
-          "[aA]ngehängt\\|"
-          "[sS]chicke\\|"
-          "haenge\\|"
-          "hänge\\)"))
-
-(defun ph/message-check-attachment nil
-  "Check for forgotten attachments"
-  (save-excursion
-    (message-goto-body)
-    (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
-      (message-goto-body)
-      (unless (message-y-or-n-p
-               "Did you attach all documents?" nil nil)
-        (error "No message sent, add some attachments!")))))
-
-(add-hook 'message-send-hook 'ph/message-check-attachment)
 #+END_SRC
 
 * Programming
