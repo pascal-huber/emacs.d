@@ -1182,6 +1182,34 @@ Close mu4e without asking
 (setq mu4e-confirm-quit nil)
 #+END_SRC
 
+Custom Bookmarks
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'mu4e-bookmarks
+  (make-mu4e-bookmark
+    :name  "Big messages"
+    :query "size:5M..500M"
+    :key ?b))
+#+END_SRC
+
+Add default search values (per context) for =mu4e-headers-search=. Set
+=ph/mu4e-default-search-expr= in the context definition.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/mu4e-headers-search (fn &rest args)
+  "If no ARGS are provided, mu4e is opened in the current buffer and
+  ph/mu4e-default-search-expr is defined, the the search will have a
+  default value defined by ph/mu4e-default-search-expr."
+  (if (and (= 0 (length args))
+           (string-prefix-p "mu4e" (symbol-name major-mode)
+                            (< 0 (length ph/mu4e-default-search-expr))))
+      (apply fn (list (concat ph/mu4e-default-search-expr " ") "Search for: " t))
+    (apply fn args)))
+
+(advice-add 'mu4e-headers-search
+            :around 'ph/mu4e-headers-search)
+#+END_SRC
+
 *** Encryption
 
 First of all: Make sure the drafts folder is not synchronized.
@@ -1223,6 +1251,7 @@ here]].
                       ("/r/INBOX.keep"           . ?k)
                       ("/r/INBOX.tempKeep"       . ?t)
                       ("/r/INBOX.Trash"          . ?b)))
+                  (ph/mu4e-default-search-expr   . "maildir:/r/*")
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.resolved.ch")
@@ -1248,8 +1277,12 @@ here]].
                       ("/q/INBOX.Sent"           . ?s)
                       ("/q/INBOX.spambucket"     . ?x)
                       ("/q/INBOX.keep"           . ?k)
-                      ("/q/INBOX.tempKeep"       . ?t)
+                      ("/q/INBOX.live"           . ?l)
+                      ("/q/INBOX.customers"      . ?c)
+                      ("/q/INBOX.tempKeep"       . ?k)
+                      ("/q/INBOX.bugsnag"        . ?e)
                       ("/q/INBOX.Trash"          . ?b)))
+                  (ph/mu4e-default-search-expr   . "maildir:/q/*")
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.quickshift.ch")
@@ -1279,6 +1312,7 @@ here]].
                       ("/e/INBOX.and"            . ?a)
                       ("/e/INBOX.tmp"            . ?t)
                       ("/e/Deleted Items"        . ?b)))
+                  (ph/mu4e-default-search-expr   . "maildir:/e/*")
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.ethz.ch")
@@ -1305,6 +1339,7 @@ here]].
                       ("/g/[Gmail].Sent Mail"    . ?s)
                       ("/g/[Gmail].Spam"         . ?x)
                       ("/g/[Gmail].Bin"          . ?b)))
+                  (ph/mu4e-default-search-expr   . "")
                   (mu4e-sent-messages-behavior   . delete)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "smtp.gmail.com")
@@ -2008,7 +2043,7 @@ without modifiers).
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   :prefix "C-c"
-  "d" 'ranger
+  "d" 'crux-kill-line-backwards
   "e" 'elfeed
   "f" 'ag
   "i" 'indent-region
