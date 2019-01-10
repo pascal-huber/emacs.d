@@ -84,7 +84,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#python][Python]]
     - [[#elpy][Elpy]]
     - [[#auto-completion][Auto Completion]]
-    - [[#virtual-envirnoments][Virtual Envirnoments]]
   - [[#r][R]]
   - [[#rainbow][Rainbow]]
   - [[#ruby-1][Ruby]]
@@ -1577,44 +1576,13 @@ Some useful commands:
 
 Jedi is a Python auto-completion package for Emacs.
 
-TODO: Check out and compare with rope.
+# TODO: Compare jedi with rope.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'jedi)
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
-;(jedi:install-server)
 #+END_SRC
-
-*** Virtual Envirnoments
-
-Use Virtual Envirnonments.
-
-TODO: Check out alternatives.
-
-#+BEGIN_SRC emacs-lisp
-;(ph/install-package 'virtualenvwrapper)
-;(venv-initialize-eshell)
-#+END_SRC
-
-
-Virtual-Environment handling  shell:
-   - create a virtualenv: `mkvirtualenv -p /usr/bin/python2.7 theproject`
-   - activate virtualenv: `workon theproject`
-   - exit the env: `deactivate`
-   - delete the env: `rmvirtualenv theproject`
-
-Virtual-Envirnoment handling with emacs:
-   - create a virtualenv: `M-x venv-mkvirtualenv-using`
-   - activate virtualenv: `M-x venv-workon`
-   - exit the env with: `M-x venv-deactivate`
-   - delete the env: `M-x venv-rmvirtualenv`
-
-pip in Virtual-Envirnoment
-   - save pip dependencies: `pip freeze > requirements.txt`
-   - install pip dependencies `pip install -r requirements.txt`
-
-Debugging with `import pdb` , `pdb.set_trace()`, `python -m pdb script.py`
 
 ** R
 
