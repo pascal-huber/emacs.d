@@ -2093,6 +2093,7 @@ Call =M-x ph/next-theme= to load the next theme.
   (interactive)
 	(mapcar 'disable-theme custom-enabled-themes)
   (mapcar (lambda (fn) (apply fn)) (nth 0 ph/theme-list))
+  (setq-default line-spacing 0)
   (setq ph/theme-list (-rotate 1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
