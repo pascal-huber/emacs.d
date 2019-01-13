@@ -1988,7 +1988,7 @@ Set the default face.
 (set-face-attribute 'default nil
                     :family "DejaVu Sans Mono"
                     :weight 'normal
-                    :height 110
+                    :height 105
                     :width 'normal)
 #+END_SRC
 
@@ -2012,7 +2012,6 @@ Call =M-x ph/next-theme= to load the next theme.
   (interactive)
 	(mapcar 'disable-theme custom-enabled-themes)
   (mapcar (lambda (fn) (apply fn)) (nth 0 ph/theme-list))
-  (setq-default line-spacing 0)
   (setq ph/theme-list (-rotate 1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
@@ -2091,7 +2090,7 @@ A slightly smaller font for the mode-line.
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'mode-line nil
                     :inherit 'default
-                    :height 100)
+                    :height 0.8)
 (set-face-attribute 'mode-line-inactive nil
                     :inherit 'mode-line)
 #+END_SRC
