@@ -985,13 +985,6 @@ Open mu4e in the current frame, even if it is already opened in another
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
-# TODO: Evalute if mu4e-maildirs-extension is something for me.
-
-#+BEGIN_SRC emacs-lisp
-;; (ph/install-package 'mu4e-maildirs-extension)
-;; (mu4e-maildirs-extension)
-#+END_SRC
-
 *** Headers
 
 Show dates as =dd.mm.yy=, and times in =HH:MM=.
