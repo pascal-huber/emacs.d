@@ -3,6 +3,7 @@
 This is my Emacs configuration. There are many like it, but this one is mine.
 
 * Content :TOC_3_gh:
+- [[#notes-for-me][Notes for me]]
 - [[#inspiration][Inspiration]]
 - [[#os-setup][OS Setup]]
   - [[#installation][Installation]]
@@ -115,6 +116,11 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#frame-title][Frame Title]]
   - [[#fringe][Fringe]]
 
+* Notes for me
+  - Use =C-c u= more (=imenu=)
+  - Close other window in same frame with =C-w C-o=.
+  - Use =C-c p 5 f= to open a file in a new frame with projectile.
+  - Use =C-c p n= for =projectile-rails=.
 * Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
