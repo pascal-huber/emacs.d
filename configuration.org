@@ -12,6 +12,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#web-development][Web Development]]
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
+  - [[#dumb-jump][Dumb Jump]]
 - [[#first-use][First Use]]
 - [[#packages][Packages]]
   - [[#installation-1][Installation]]
@@ -44,6 +45,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#crux][Crux]]
   - [[#ag][Ag]]
+  - [[#ripgrep][Ripgrep]]
   - [[#evil][Evil]]
     - [[#surround][Surround]]
     - [[#god-state][God State]]
@@ -70,6 +72,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#backends][Backends]]
   - [[#brackets][Brackets]]
   - [[#display-line-numbers][Display Line Numbers]]
+  - [[#dumb-jump-1][Dumb Jump]]
   - [[#flycheck][Flycheck]]
   - [[#git][Git]]
   - [[#go-1][Go]]
@@ -180,6 +183,12 @@ dependencies have to be installed with it.
 
 #+BEGIN_SRC shell
 $ gem install pry pry-doc method_source
+#+END_SRC
+
+** Dumb Jump
+
+#+BEGIN_SRC shell
+$ sudo pacman -S ripgrep
 #+END_SRC
 
 * First Use
@@ -594,6 +603,15 @@ type, edit results inline, or find files.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'ag)
+#+END_SRC
+
+** Ripgrep
+
+=Ripgrep= is a replacement for both grep like (search one file) and ag like
+(search many files) tools. It's fast and versatile and written in Rust.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'rg)
 #+END_SRC
 
 ** Evil
@@ -1419,6 +1437,20 @@ Count the number of lines to use for line number width.
 (setq display-line-numbers-width-start t)
 #+END_SRC
 
+** Dumb Jump
+
+[[https://github.com/jacktasia/dumb-jump][Dumb Jump]] is an Emacs "jump to definition" package with support for multiple
+programming languages that favors "just working". This means minimal -- and
+ideally zero -- configuration with absolutely no stored indexes (TAGS) or
+persistent background processes
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'dumb-jump)
+(dumb-jump-mode)
+(setq dumb-jump-selector 'ivy)
+(setq dumb-jump-use-visible-window nil)
+ #+END_SRC
+
 ** Flycheck
 
 Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
@@ -1926,16 +1958,21 @@ without modifiers).
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keymap
   :prefix "C-c"
-  "d" 'crux-kill-line-backwards
-  "e" 'elfeed
-  "f" 'ag
-  "i" 'indent-region
-  "j" 'switch-to-next-buffer
-  "k" 'switch-to-prev-buffer
-  "o" 'occur-dwim
-  "r" 'ph/mu4e
-  "u" 'ivy-imenu-anywhere
-  "y" 'ivy-yasnippet)
+  "u"   'crux-kill-line-backwards
+  "e"   'elfeed
+  "f d" 'rg-dwim
+  "f f" 'counsel-rg
+  "f p" 'rg-project
+  "f r" 'rg
+  "h b" 'dumb-jump-back
+  "h f" 'dumb-jump-go
+  "h p" 'dumb-jump-go-prompt
+  "i"   'indent-region
+  "j"   'switch-to-next-buffer
+  "k"   'switch-to-prev-buffer
+  "o"   'occur-dwim
+  "r"   'ph/mu4e
+  "u"   'ivy-imenu-anywhere)
 
 (general-def ph/global-keymap
   "<f5>" 'ph/next-theme)
