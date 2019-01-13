@@ -91,6 +91,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#ruby-mode][Ruby Mode]]
     - [[#robe][Robe]]
     - [[#rspec-mode][Rspec-mode]]
+    - [[#rails][Rails]]
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
@@ -542,10 +543,16 @@ your currently entered incomplete command (a prefix) in a popup.
 (which-key-mode)
 #+END_SRC
 
-Also use which-key in god-mode-state.
+Also use which-key in all evil states.
 
 #+BEGIN_SRC emacs-lisp
 (which-key-enable-god-mode-support)
+#+END_SRC
+
+Show command names up to 40 columns before cutting them.
+
+#+BEGIN_SRC emacs-lisp
+(setq which-key-max-description-length 40)
 #+END_SRC
 
 ** Session
@@ -1711,6 +1718,14 @@ When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'inf-ruby-switch-setup)
+#+END_SRC
+
+*** Rails
+
+#+BEGIN_SRC emacs-lisp
+(setq projectile-rails-keymap-prefix (kbd "C-c p n"))
+(ph/install-package 'projectile-rails)
+(projectile-rails-global-mode)
 #+END_SRC
 
 ** TeX
