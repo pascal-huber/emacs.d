@@ -2284,8 +2284,7 @@ that the permissions change if the file is deleted and rewritten.
   (let ((context (mu4e-context-current)))
     (if (and context
              (string-prefix-p "mu4e" (symbol-name major-mode)))
-        (powerline-raw
-         (mu4e-context-name context)))))
+        (mu4e-context-name context))))
 #+END_SRC
 
 *** Diminish
