@@ -2311,9 +2311,9 @@ Ajdust the colors for different evil-states.
 (defun ph/next-theme ()
   "Disable all enabled themes and then load next theme."
   (interactive)
-	(mapcar 'disable-theme custom-enabled-themes)
+  (mapcar 'disable-theme custom-enabled-themes)
   (load-theme (nth 0 ph/theme-list) t)
-  (setq ph/theme-list (-rotate 1 ph/theme-list)))
+  (setq ph/theme-list (-rotate -1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
 #+END_SRC
