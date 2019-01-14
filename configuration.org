@@ -68,18 +68,21 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#send][Send]]
     - [[#contexts][Contexts]]
 - [[#programming][Programming]]
-  - [[#autocomplete][Autocomplete]]
-    - [[#settings-1][Settings]]
+  - [[#general-purpose][General Purpose]]
+    - [[#autocomplete][Autocomplete]]
     - [[#backends][Backends]]
-  - [[#brackets][Brackets]]
-  - [[#display-line-numbers][Display Line Numbers]]
-  - [[#dumb-jump-1][Dumb Jump]]
-  - [[#flycheck][Flycheck]]
-  - [[#git][Git]]
+    - [[#brackets][Brackets]]
+    - [[#display-line-numbers][Display Line Numbers]]
+    - [[#dumb-jump-1][Dumb Jump]]
+    - [[#flycheck][Flycheck]]
+    - [[#git][Git]]
+    - [[#rainbow][Rainbow]]
+    - [[#settings-1][Settings]]
   - [[#go-1][Go]]
   - [[#haml][Haml]]
   - [[#indentation][Indentation]]
   - [[#javascript][JavaScript]]
+    - [[#js2-mode][JS2-mode]]
     - [[#tern][Tern]]
     - [[#eslint][Eslint]]
   - [[#lua][Lua]]
@@ -89,7 +92,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#elpy][Elpy]]
     - [[#auto-completion][Auto Completion]]
   - [[#r][R]]
-  - [[#rainbow][Rainbow]]
   - [[#ruby-1][Ruby]]
     - [[#inf-ruby][Inf-ruby]]
     - [[#ruby-mode][Ruby Mode]]
@@ -99,7 +101,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
-  - [[#yasnippet][YASnippet]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#spaceline][Spaceline]]
@@ -1326,7 +1327,8 @@ Pick first Context as default.
 
 This section contains programming-specific packages and settings.
 
-** Autocomplete
+** General Purpose
+*** Autocomplete
 
 =company= is a text completion framework for Emacs. The name stands for
 "complete anything". It uses pluggable back-ends and front-ends to retrieve and
@@ -1335,40 +1337,6 @@ display completion candidates.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
-#+END_SRC
-
-*** Settings
-
-Automatically show completion after 1 character.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-minimum-prefix-length 1)
-#+END_SRC
-
-Don't require a match to continue typing.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-require-match nil)
-#+END_SRC
-
-Switch between suggestions with =C-n= and =C-p=.
-
-#+BEGIN_SRC emacs-lisp
-(general-def company-active-map
-  "C-n" 'company-select-next
-  "C-p" 'company-select-previous)
-
-(general-def company-search-map
-  "C-n" 'company-select-next
-  "C-p" 'company-select-previous)
-#+END_SRC
-
-Disable evil-complete
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'insert
-  "C-p" nil
-  "C-n" nil)
 #+END_SRC
 
 *** Backends
@@ -1405,7 +1373,7 @@ well as a =jquery-doc= command to lookup documentation.
 (ph/install-package 'jquery-doc)
 #+END_SRC
 
-** Brackets
+*** Brackets
 
 Make brackets colorful
 
@@ -1421,7 +1389,7 @@ Highlight matching brackets.
 (add-hook 'prog-mode-hook 'show-paren-mode)
 #+END_SRC
 
-** Display Line Numbers
+*** Display Line Numbers
 
 Show line numbers in programming modes
 
@@ -1435,7 +1403,7 @@ Count the number of lines to use for line number width.
 (setq display-line-numbers-width-start t)
 #+END_SRC
 
-** Dumb Jump
+*** Dumb Jump
 
 [[https://github.com/jacktasia/dumb-jump][Dumb Jump]] is an Emacs "jump to definition" package with support for multiple
 programming languages that favors "just working". This means minimal -- and
@@ -1449,7 +1417,7 @@ persistent background processes
 (setq dumb-jump-use-visible-window nil)
  #+END_SRC
 
-** Flycheck
+*** Flycheck
 
 Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
 
@@ -1474,7 +1442,7 @@ list the following key bindings are available:
  - =g= Check the source buffer and update the error list
  - =q= Quit the error list and hide its window
 
-** Git
+*** Git
 
 Magit is an interface to the version control system Git.
 
@@ -1495,6 +1463,50 @@ Some major-modes to configure git repositories.
 (ph/install-package 'gitattributes-mode)
 (ph/install-package 'gitconfig-mode)
 (ph/install-package 'gitignore-mode)
+#+END_SRC
+
+*** Rainbow
+
+This minor mode sets background color to strings that match color names, e.g.
+#0000ff is displayed in white with a blue background
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'rainbow-mode)
+(add-hook 'prog-mode-hook 'rainbow-mode)
+#+END_SRC
+
+*** Settings
+
+Automatically show completion after 1 character.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-minimum-prefix-length 1)
+#+END_SRC
+
+Don't require a match to continue typing.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-require-match nil)
+#+END_SRC
+
+Switch between suggestions with =C-n= and =C-p=.
+
+#+BEGIN_SRC emacs-lisp
+(general-def company-active-map
+  "C-n" 'company-select-next
+  "C-p" 'company-select-previous)
+
+(general-def company-search-map
+  "C-n" 'company-select-next
+  "C-p" 'company-select-previous)
+#+END_SRC
+
+Disable evil-complete
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'insert
+  "C-p" nil
+  "C-n" nil)
 #+END_SRC
 
 ** Go
@@ -1522,6 +1534,7 @@ Some major-modes to configure git repositories.
 #+END_SRC
 
 ** JavaScript
+*** JS2-mode
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'js2-mode)
@@ -1647,16 +1660,6 @@ Function:
  - =C-c C-r= to eval region
  - =C-c C-f= to eval function
  - And [[https://ess.r-project.org/Manual/ess.html][more]]
-
-** Rainbow
-
-This minor mode sets background color to strings that match color names, e.g.
-#0000ff is displayed in white with a blue background
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'rainbow-mode)
-(add-hook 'prog-mode-hook 'rainbow-mode)
-#+END_SRC
 
 ** Ruby
 *** Inf-ruby
@@ -1887,27 +1890,6 @@ Use a line width of 100 in =yaml-mode=.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
   (lambda () (set-fill-column 100)))
-#+END_SRC
-
-** YASnippet
-
-[[https://github.com/joaotavora/yasnippet][YASnippet]] is a template system for Emacs. It allows you to type an abbreviation
-and automatically expand it into function templates.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'yasnippet)
-(ph/install-package 'yasnippet-snippets)
-(ph/install-package 'ivy-yasnippet)
-(yas-global-mode 1)
-(add-to-list 'yas-snippet-dirs (locate-user-emacs-file "snippets"))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(setq yas-prompt-functions
-      '(yas-ido-prompt
-        yas-x-prompt
-        yas-completing-prompt
-        yas-no-prompt))
 #+END_SRC
 
 * Global Keybindings
@@ -2401,7 +2383,7 @@ Don't use ugly GTK tooltips.
 
 ** Fringe
 
-no fringe on the right side of the frame. The left side needs a fringe for
+No fringe on the right side of the frame. The left side needs a fringe for
 =FlyCheck= indicators.
 
 #+BEGIN_SRC emacs-lisp
