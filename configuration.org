@@ -518,6 +518,12 @@ Don't ask every time when executing a code block.
 (setq org-confirm-babel-evaluate nil)
 #+END_SRC
 
+Don't indent code blocks
+
+#+BEGIN_SRC emacs-lisp
+(setq org-edit-src-content-indentation 0)
+#+END_SRC
+
 *** TOC-Org
 
 Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
