@@ -1793,15 +1793,6 @@ Sync with evince. Use =Control + Left Click= for backward search.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
 (setq TeX-source-correlate-start-server t)
-
-
-;; Use pdf-tools to open PDF files
-;; (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-;;       TeX-source-correlate-start-server t)
-
-;; Update PDF buffers after successful LaTeX runs
-;; (add-hook 'TeX-after-compilation-finished-functions
-;;            #'TeX-revert-document-buffer)
 #+END_SRC
 
 ** Web mode
