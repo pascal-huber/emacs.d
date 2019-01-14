@@ -102,18 +102,18 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#yasnippet][YASnippet]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
-  - [[#tooltips][Tooltips]]
-  - [[#default-face][Default Face]]
-  - [[#theme-rotation][Theme Rotation]]
   - [[#spaceline][Spaceline]]
-    - [[#faces][Faces]]
     - [[#segments][Segments]]
-    - [[#diminish][Diminish]]
     - [[#setup][Setup]]
     - [[#config][Config]]
+  - [[#themes-and-faces][Themes and Faces]]
+    - [[#faces][Faces]]
+    - [[#themes][Themes]]
+  - [[#diminish][Diminish]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
+  - [[#tooltips][Tooltips]]
   - [[#fringe][Fringe]]
 
 * Notes for me
@@ -121,6 +121,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - Close other window in same frame with =C-w C-o=.
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
+  - Use =C-c '= to edit code blocks in =org-mode=.
 * Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
@@ -1923,22 +1924,22 @@ and automatically expand it into function templates.
 Create an empty keymap and minor-mode for my global keybindings
 
 #+BEGIN_SRC emacs-lisp
-(defvar ph/global-keymap (make-sparse-keymap))
+(defvar ph/global-keys-keymap (make-sparse-keymap))
 (define-minor-mode ph/global-keys-mode
   :init-value t
-  :keymap ph/global-keymap)
+  :keymap ph/global-keys-keymap)
 (ph/global-keys-mode t)
 #+END_SRC
 
 Overwriting default bindings (and defining new ones).
 
 #+BEGIN_SRC emacs-lisp
-(general-def ph/global-keymap
+(general-def ph/global-keys-keymap
   "M-x"   'counsel-M-x
   "C-h f" 'counsel-describe-function
   "C-h v" 'counsel-describe-variable)
 
-(general-def ph/global-keymap
+(general-def ph/global-keys-keymap
   :prefix "C-x"
   "2"   'ph/vsplit-last-buffer
   "3"   'ph/hsplit-last-buffer
@@ -1953,9 +1954,9 @@ User-defined bindings (=C-c= followed by a letter and =<F5>= through =<F9>=
 without modifiers).
 
 #+BEGIN_SRC emacs-lisp
-(general-def ph/global-keymap
+(general-def ph/global-keys-keymap
   :prefix "C-c"
-  "u"   'crux-kill-line-backwards
+  "d"   'crux-kill-line-backwards
   "e"   'elfeed
   "f d" 'rg-dwim
   "f f" 'counsel-rg
@@ -1971,22 +1972,188 @@ without modifiers).
   "r"   'ph/mu4e
   "u"   'ivy-imenu-anywhere)
 
-(general-def ph/global-keymap
+(general-def ph/global-keys-keymap
   "<f5>" 'ph/next-theme)
 #+END_SRC
 
 * User Interface
-** Tooltips
-
-Don't use ugly GTK tooltips.
+** Spaceline
 
 #+BEGIN_SRC emacs-lisp
-(setq x-gtk-use-system-tooltips nil)
+(ph/install-package 'spaceline)
 #+END_SRC
 
-** Default Face
+*** Segments
+**** Flycheck
 
-Set the default face.
+Slightly simplified flycheck segments for =info=, =warning= and =error=.
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment ph/flycheck-warning-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'warning (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "%s" c))))))
+
+(spaceline-define-segment ph/flycheck-error-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'error (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "%s" c))))))
+
+(spaceline-define-segment ph/flycheck-info-segment
+  (if (flycheck-has-current-errors-p)
+      (let ((c (cdr (assq 'info (flycheck-count-errors
+                                    flycheck-current-errors)))))
+        (powerline-raw
+         (if c (format "%s" c))))))
+#+END_SRC
+
+**** Evil
+
+Setting the face according to =evil-state=.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/spaceline-highlight-face-evil-state ()
+  "Set the highlight face depending on the evil state."
+  (if (bound-and-true-p evil-local-mode)
+      (let* ((face (assq evil-state spaceline-evil-state-faces)))
+        (if face (cdr face) (spaceline-highlight-face-default)))
+    (spaceline-highlight-face-default)))
+
+(setq-default spaceline-highlight-face-func
+              'ph/spaceline-highlight-face-evil-state)
+#+END_SRC
+
+**** Git Branch Name
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/git-branch-name ()
+  (replace-regexp-in-string "^ Git[:-]" "" vc-mode))
+
+(spaceline-define-segment ph/version-control
+  "Version control information."
+  (when vc-mode
+    (powerline-raw
+     (s-trim (concat (ph/git-branch-name))))))
+#+END_SRC
+
+**** Tramp
+
+Tramp offers the following file name syntax to refer to files on other machines.
+
+#+BEGIN_SRC config
+/method:host:filename
+/method:user@host:filename
+/method:user@host#port:filename
+#+END_SRC
+
+The following segemnts display the current buffer's =method= and =user@host=.
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment ph/remote-method
+  (when (and default-directory
+             (file-remote-p default-directory 'method))
+    (file-remote-p default-directory 'method)))
+
+(spaceline-define-segment ph/remote-user-and-host
+  (when (and default-directory
+             (or
+              (file-remote-p default-directory 'user)
+              (file-remote-p default-directory 'host)))
+    (concat
+     (file-remote-p default-directory 'user) "@"
+     (file-remote-p default-directory 'host))))
+#+END_SRC
+
+**** File Permission
+
+I want to see if the current file has "special" permissions. Special meaning
+that the permissions change if the file is deleted and rewritten.
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment ph/special-file-permissions
+  (if (and (buffer-file-name)
+           (not (file-ownership-preserved-p (buffer-file-name))))
+      (powerline-raw
+       (concat (if (file-readable-p (buffer-file-name)) "r" "-")
+               (if (file-writable-p (buffer-file-name)) "w" "-")
+               (if (file-executable-p (buffer-file-name)) "x" "-")))))
+#+END_SRC
+
+**** Mu4e Context
+
+#+BEGIN_SRC emacs-lisp
+(spaceline-define-segment ph/mu4e-context-segment
+  (let ((context (mu4e-context-current)))
+    (if (and context
+             (string-prefix-p "mu4e" (symbol-name major-mode)))
+        (mu4e-context-name context))))
+#+END_SRC
+
+*** Setup
+
+Setting up the mode-line and order of segements. Compile the modeline with =M-x
+spaceline-compile=.
+
+#+BEGIN_SRC emacs-lisp
+(require 'spaceline-config)
+(spaceline-emacs-theme)
+(spaceline-install
+  'main
+  '((evil-state :when active :face highlight-face)
+    (buffer-id)
+    (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
+    (ph/special-file-permissions :face 'ph/spaceline-alert-face)
+    (ph/remote-method :face 'ph/spaceline-warn-face)
+    (ph/remote-user-and-host :face 'ph/spaceline-another-warn-face)
+    (ph/virtualenvwrapper-segment)
+    (buffer-modified)
+    (process :when active))
+  '((minor-modes)
+    (anzu)
+    (projectile-root)
+    (ph/version-control :when active)
+    (line-column)
+    (buffer-position)
+    (ph/flycheck-info-segment :face 'ph/spaceline-info-face)
+    (ph/flycheck-warning-segment :face 'ph/spaceline-warn-face)
+    (ph/flycheck-error-segment :face 'ph/spaceline-alert-face)
+    (major-mode)))
+#+END_SRC
+
+*** Config
+
+Set mode-line always active (don't hide any information when focus is on a
+different window).
+
+#+BEGIN_SRC emacs-lisp
+(defun powerline-selected-window-active () t)
+#+END_SRC
+
+Before drawing the powerline, adjust =powerline-text-scale-factor=. The reason
+behind this ist that my mode-line font in my graphical frames is a tiny bit
+smaller than the default font in order to have more space for content. Setting
+the scale-factor each time before drawing the powerline allows the parallel use
+of graphical clients and terminal clients (which only have one font for
+everything).
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/set-powerline-text-scale-factor (face reserve)
+  (if (display-graphic-p (selected-frame))
+      (setq powerline-text-scale-factor 0.92)
+    (setq powerline-text-scale-factor nil)))
+
+(advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
+#+END_SRC
+
+** Themes and Faces
+*** Faces
+**** Default
+
+The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
@@ -1996,39 +2163,17 @@ Set the default face.
                     :width 'normal)
 #+END_SRC
 
-The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
+**** Mode Line
 
-** Theme Rotation
-
-Call =M-x ph/next-theme= to load the next theme.
+A slightly smaller font for the mode-line.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'moe-theme)
-(ph/install-package 'dash)
-
-(setq ph/theme-list (list (list '(load-theme moe-dark t)
-                                '(ph/spaceline-dark))
-                          (list '(load-theme moe-light t)
-                                '(ph/spaceline-light))))
-
-(defun ph/next-theme ()
-  "Loads next theme in the theme-list and rotates the list"
-  (interactive)
-	(mapcar 'disable-theme custom-enabled-themes)
-  (mapcar (lambda (fn) (apply fn)) (nth 0 ph/theme-list))
-  (setq ph/theme-list (-rotate 1 ph/theme-list)))
-
-(add-hook 'after-init-hook 'ph/next-theme)
+(set-face-attribute 'mode-line nil
+                    :inherit 'default
+                    :height 0.8)
+(set-face-attribute 'mode-line-inactive nil
+                    :inherit 'mode-line)
 #+END_SRC
-
-** Spaceline
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'spaceline)
-#+END_SRC
-
-*** Faces
-**** Changing Faces
 
 Functions to change the mode-line faces.
 
@@ -2085,18 +2230,6 @@ Functions to change the mode-line faces.
                       :box '(:color "#252525")
                       :background "#383838")
   (powerline-reset))
-#+END_SRC
-
-**** Mode Line
-
-A slightly smaller font for the mode-line.
-
-#+BEGIN_SRC emacs-lisp
-(set-face-attribute 'mode-line nil
-                    :inherit 'default
-                    :height 0.8)
-(set-face-attribute 'mode-line-inactive nil
-                    :inherit 'mode-line)
 #+END_SRC
 
 **** Attention-Faces
@@ -2167,125 +2300,43 @@ Ajdust the colors for different evil-states.
              '(operator . ph/spaceline-evil-operator-face))
 #+END_SRC
 
-*** Segments
-**** Flycheck
-
-Slightly simplified flycheck segments for =info=, =warning= and =error=.
+*** Themes
+**** Rotation
 
 #+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/flycheck-warning-segment
-  (if (flycheck-has-current-errors-p)
-      (let ((c (cdr (assq 'warning (flycheck-count-errors
-                                    flycheck-current-errors)))))
-        (powerline-raw
-         (if c (format "%s" c))))))
+(ph/install-package 'moe-theme)
+(ph/install-package 'dash)
+(setq ph/theme-list '(moe-dark moe-light))
 
-(spaceline-define-segment ph/flycheck-error-segment
-  (if (flycheck-has-current-errors-p)
-      (let ((c (cdr (assq 'error (flycheck-count-errors
-                                    flycheck-current-errors)))))
-        (powerline-raw
-         (if c (format "%s" c))))))
+(defun ph/next-theme ()
+  "Disable all enabled themes and then load next theme."
+  (interactive)
+	(mapcar 'disable-theme custom-enabled-themes)
+  (load-theme (nth 0 ph/theme-list) t)
+  (setq ph/theme-list (-rotate 1 ph/theme-list)))
 
-(spaceline-define-segment ph/flycheck-info-segment
-  (if (flycheck-has-current-errors-p)
-      (let ((c (cdr (assq 'info (flycheck-count-errors
-                                    flycheck-current-errors)))))
-        (powerline-raw
-         (if c (format "%s" c))))))
+(add-hook 'after-init-hook 'ph/next-theme)
 #+END_SRC
 
-**** Evil
+**** Customizations
 
-Setting the face according to =evil-state=.
+Customize the loaded themes.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/spaceline-highlight-face-evil-state ()
-  "Set the highlight face depending on the evil state.
-   Set `spaceline-highlight-face-func' to
-   `spaceline-highlight-face-evil-state' to use this."
-  (if (bound-and-true-p evil-local-mode)
-      (let* ((face (assq evil-state spaceline-evil-state-faces)))
-        (if face (cdr face) (spaceline-highlight-face-default)))
-    (spaceline-highlight-face-default)))
+(advice-add 'load-theme :after
+            (lambda (&rest args)
+              (mapcar 'ph/customize-theme custom-enabled-themes)))
 
-(setq-default spaceline-highlight-face-func 'ph/spaceline-highlight-face-evil-state)
+(defun ph/customize-theme (theme)
+  "Customize the given THEME if necessary."
+  (let ((theme-name (symbol-name theme)))
+    (cond ((string= theme-name "moe-dark")
+           (ph/spaceline-dark))
+          ((string= theme-name "moe-light")
+           (ph/spaceline-light)))))
 #+END_SRC
 
-**** Python Virtual Environment
-
-#+BEGIN_SRC emacs-lisp
-;(spaceline-define-segment ph/virtualenvwrapper-segment venv-current-name)
-(spaceline-define-segment ph/virtualenvwrapper-segment pyvenv-virtual-env-name)
-#+END_SRC
-
-**** Git Branch Name
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/git-branch-name ()
-  (replace-regexp-in-string "^ Git[:-]" "" vc-mode))
-
-(spaceline-define-segment ph/version-control
-  "Version control information."
-  (when vc-mode
-    (powerline-raw
-     (s-trim (concat (ph/git-branch-name))))))
-#+END_SRC
-
-**** Tramp
-
-Tramp offers the following file name syntax to refer to files on other machines.
-
-#+BEGIN_SRC config
-/method:host:filename
-/method:user@host:filename
-/method:user@host#port:filename
-#+END_SRC
-
-The following segemnts display the current buffer's =method= and =user@host=.
-
-#+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/remote-method
-  (when (and default-directory
-             (file-remote-p default-directory 'method))
-    (file-remote-p default-directory 'method)))
-
-(spaceline-define-segment ph/remote-user-and-host
-  (when (and default-directory
-             (or
-              (file-remote-p default-directory 'user)
-              (file-remote-p default-directory 'host)))
-    (concat
-     (file-remote-p default-directory 'user) "@"
-     (file-remote-p default-directory 'host))))
-#+END_SRC
-
-**** File Permission
-
-I want to see if the current file has "special" permissions. Special meaning
-that the permissions change if the file is deleted and rewritten.
-
-#+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/special-file-permissions
-  (if (and (buffer-file-name)
-           (not (file-ownership-preserved-p (buffer-file-name))))
-      (powerline-raw
-       (concat (if (file-readable-p (buffer-file-name)) "r" "-")
-               (if (file-writable-p (buffer-file-name)) "w" "-")
-               (if (file-executable-p (buffer-file-name)) "x" "-")))))
-#+END_SRC
-
-**** Mu4e Context
-
-#+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/mu4e-context-segment
-  (let ((context (mu4e-context-current)))
-    (if (and context
-             (string-prefix-p "mu4e" (symbol-name major-mode)))
-        (mu4e-context-name context))))
-#+END_SRC
-
-*** Diminish
+** Diminish
 
 Diminish implements hiding or abbreviation of the mode line displays (lighters)
 of minor-modes.
@@ -2307,62 +2358,6 @@ of minor-modes.
   '(diminish 'undo-tree-mode))
 (eval-after-load "which-key"
   '(diminish 'which-key-mode))
-#+END_SRC
-
-*** Setup
-
-Setting up the mode-line and order of segements. Compile the modeline with =M-x
-spaceline-compile=.
-
-#+BEGIN_SRC emacs-lisp
-(require 'spaceline-config)
-(spaceline-emacs-theme)
-(spaceline-install
-  'main
-  '((evil-state :when active :face highlight-face)
-    (buffer-id)
-    (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
-    (ph/special-file-permissions :face 'ph/spaceline-alert-face)
-    (ph/remote-method :face 'ph/spaceline-warn-face)
-    (ph/remote-user-and-host :face 'ph/spaceline-another-warn-face)
-    (ph/virtualenvwrapper-segment)
-    (buffer-modified)
-    (process :when active))
-  '((minor-modes)
-    (anzu)
-    (projectile-root)
-    (ph/version-control :when active)
-    (line-column)
-    (buffer-position)
-    (ph/flycheck-info-segment :face 'ph/spaceline-info-face)
-    (ph/flycheck-warning-segment :face 'ph/spaceline-warn-face)
-    (ph/flycheck-error-segment :face 'ph/spaceline-alert-face)
-    (major-mode)))
-#+END_SRC
-
-*** Config
-
-Set mode-line always active (don't hide any information when focus is on a
-different window).
-
-#+BEGIN_SRC emacs-lisp
-(defun powerline-selected-window-active () t)
-#+END_SRC
-
-Before drawing the powerline, adjust =powerline-text-scale-factor=. The reason
-behind this ist that my mode-line font in my graphical frames is a tiny bit
-smaller than the default font in order to have more space for content. Setting
-the scale-factor each time before drawing the powerline allows the parallel use
-of graphical clients and terminal clients (which only have one font for
-everything).
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/set-powerline-text-scale-factor (face reserve)
-  (if (display-graphic-p (selected-frame))
-      (setq powerline-text-scale-factor 0.85)
-    (setq powerline-text-scale-factor nil)))
-
-(advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
 #+END_SRC
 
 ** Beacon
@@ -2403,6 +2398,14 @@ Use the same title for unfocussed/stacked frames.
         " | %m"))
 (setq frame-title-format ph/frame-title-format)
 (setq icon-title-format ph/frame-title-format)
+#+END_SRC
+
+** Tooltips
+
+Don't use ugly GTK tooltips.
+
+#+BEGIN_SRC emacs-lisp
+(setq x-gtk-use-system-tooltips nil)
 #+END_SRC
 
 ** Fringe
