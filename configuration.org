@@ -121,7 +121,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - Close other window in same frame with =C-w C-o=.
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
-  - Use =C-c '= to edit code blocks in =org-mode=.
+  - Use =C-c ​'​= to edit code blocks in =org-mode=.
 * Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
