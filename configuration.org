@@ -70,14 +70,12 @@ This is my Emacs configuration. There are many like it, but this one is mine.
 - [[#programming][Programming]]
   - [[#general-purpose][General Purpose]]
     - [[#autocomplete][Autocomplete]]
-    - [[#backends][Backends]]
     - [[#brackets][Brackets]]
     - [[#display-line-numbers][Display Line Numbers]]
     - [[#dumb-jump-1][Dumb Jump]]
     - [[#flycheck][Flycheck]]
     - [[#git][Git]]
     - [[#rainbow][Rainbow]]
-    - [[#settings-1][Settings]]
   - [[#go-1][Go]]
   - [[#haml][Haml]]
   - [[#indentation][Indentation]]
@@ -1339,7 +1337,41 @@ display completion candidates.
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
 
-*** Backends
+**** Settings
+
+Automatically show completion after 1 character.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-minimum-prefix-length 1)
+#+END_SRC
+
+Don't require a match to continue typing.
+
+#+BEGIN_SRC emacs-lisp
+(setq company-require-match nil)
+#+END_SRC
+
+Switch between suggestions with =C-n= and =C-p=.
+
+#+BEGIN_SRC emacs-lisp
+(general-def company-active-map
+  "C-n" 'company-select-next
+  "C-p" 'company-select-previous)
+
+(general-def company-search-map
+  "C-n" 'company-select-next
+  "C-p" 'company-select-previous)
+#+END_SRC
+
+Disable evil-complete
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'insert
+  "C-p" nil
+  "C-n" nil)
+#+END_SRC
+
+**** Backends
 
 Install some backends.
 
@@ -1473,40 +1505,6 @@ This minor mode sets background color to strings that match color names, e.g.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'rainbow-mode)
 (add-hook 'prog-mode-hook 'rainbow-mode)
-#+END_SRC
-
-*** Settings
-
-Automatically show completion after 1 character.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-minimum-prefix-length 1)
-#+END_SRC
-
-Don't require a match to continue typing.
-
-#+BEGIN_SRC emacs-lisp
-(setq company-require-match nil)
-#+END_SRC
-
-Switch between suggestions with =C-n= and =C-p=.
-
-#+BEGIN_SRC emacs-lisp
-(general-def company-active-map
-  "C-n" 'company-select-next
-  "C-p" 'company-select-previous)
-
-(general-def company-search-map
-  "C-n" 'company-select-next
-  "C-p" 'company-select-previous)
-#+END_SRC
-
-Disable evil-complete
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'insert
-  "C-p" nil
-  "C-n" nil)
 #+END_SRC
 
 ** Go
