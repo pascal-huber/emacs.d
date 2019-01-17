@@ -48,9 +48,11 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#ag][Ag]]
   - [[#ripgrep][Ripgrep]]
   - [[#evil][Evil]]
-    - [[#surround][Surround]]
-    - [[#god-state][God State]]
+    - [[#states][States]]
+    - [[#evil-surround][Evil Surround]]
+    - [[#evil-god-state][Evil God State]]
     - [[#keybindings][Keybindings]]
+    - [[#commands][Commands]]
   - [[#projectile][Projectile]]
   - [[#ido][Ido]]
   - [[#counsel][Counsel]]
@@ -633,16 +635,10 @@ and provides facilities for writing custom extensions.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil)
-(ph/install-package 'evil-ediff)
-
 (evil-mode 1)
 #+END_SRC
 
-Call =ph/sudo-save= with =:ww=.
-
-#+BEGIN_SRC emacs-lisp
-(evil-ex-define-cmd "ww" 'ph/sudo-save)
-#+END_SRC
+*** States
 
 Set initial state by major mode.
 
@@ -666,7 +662,7 @@ Set initial state by major mode.
   (evil-set-initial-state `,(car mode-map) `,(cdr mode-map)))
 #+END_SRC
 
-*** Surround
+*** Evil Surround
 
 - Add surrounding ~​'​~ with ~S'​~ from visual-state (use =viw= to mark current
   word)
@@ -678,7 +674,7 @@ Set initial state by major mode.
 (global-evil-surround-mode 1)
 #+END_SRC
 
-*** God State
+*** Evil God State
 
 =evil-god-state= is a global minor mode for entering Emacs commands without modifier
 keys. It's similar to Vim's separation of commands and insertion mode.
@@ -725,6 +721,14 @@ Auto complete with =C-SPC=.
 #+BEGIN_SRC emacs-lisp
 (general-def 'insert
   "C-SPC" 'company-complete)
+#+END_SRC
+
+*** Commands
+
+Call =ph/sudo-save= with =:ww=.
+
+#+BEGIN_SRC emacs-lisp
+(evil-ex-define-cmd "ww" 'ph/sudo-save)
 #+END_SRC
 
 ** Projectile
