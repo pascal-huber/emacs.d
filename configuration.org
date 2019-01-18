@@ -10,7 +10,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#mu4e][Mu4e]]
   - [[#go][Go]]
   - [[#markdown][Markdown]]
-  - [[#web-development][Web Development]]
+  - [[#javascript][JavaScript]]
   - [[#python-development][Python Development]]
   - [[#ruby][Ruby]]
   - [[#dumb-jump][Dumb Jump]]
@@ -81,7 +81,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#go-1][Go]]
   - [[#haml][Haml]]
   - [[#indentation][Indentation]]
-  - [[#javascript][JavaScript]]
+  - [[#javascript-1][JavaScript]]
     - [[#js2-mode][JS2-mode]]
     - [[#tern][Tern]]
     - [[#eslint][Eslint]]
@@ -166,7 +166,7 @@ $ go get -u github.com/mdempsky/gocode
 $ pacaur -S pandoc
 #+END_SRC
 
-** Web Development
+** JavaScript
 
 Install =npm= dependencies for linting and auto-completion.
 
