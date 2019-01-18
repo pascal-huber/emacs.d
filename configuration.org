@@ -91,6 +91,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#python][Python]]
     - [[#elpy][Elpy]]
     - [[#auto-completion][Auto Completion]]
+    - [[#pipenv][Pipenv]]
   - [[#r][R]]
   - [[#ruby-1][Ruby]]
     - [[#inf-ruby][Inf-ruby]]
@@ -176,12 +177,8 @@ $ npm install -g eslint babel-eslint tern
 
 ** Python Development
 
-Install Python dependencies and packages to manage virtual environments.
-
 #+BEGIN_SRC shell
-$ sudo pacman -S python-pip python-virtualenv python2-virtualenv
-$ pip install --user jedi flake8 autopep8 yapf
-$ mkdir $WORKON_HOME
+$ sudo pacman -S python-pipenv
 #+END_SRC
 
 ** Ruby
@@ -1644,6 +1641,29 @@ Jedi is a Python auto-completion package for Emacs.
 (ph/install-package 'jedi)
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
+#+END_SRC
+
+*** Pipenv
+
+There are several tools and helpers to handle virtual environments,
+dependencies, etc. (virtualenv, pyenv, pyenv-virtualenv, virtualenvwrapper,
+pyenv-virtualenvwrapper, pipenv, venv, pip-tools, ...).
+
+[[https://github.com/pypa/pipenv][Pipenv]] is the newest and combines =Pipfile=, =pip= and =virtualenv= and plays
+well with =projectile=.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'pipenv)
+(add-hook 'python-mode 'pipenv-mode)
+#+END_SRC
+
+To run a shell, use =pipenv-shell=. Some example commands are:
+
+#+BEGIN_SRC shell
+pipenv --python 3.7 # create project with python 3.7
+pipenv run python main.py # run application
+pipenv install numpy # with Pipfile
+pipenv install -r path/to/requirements.txt # with requirements.txt
 #+END_SRC
 
 ** R
