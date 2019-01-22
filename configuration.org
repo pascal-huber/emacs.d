@@ -117,7 +117,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
   - [[#tooltips][Tooltips]]
-  - [[#fringe][Fringe]]
 
 * Notes for me
   - Use =C-c u= more (=imenu=)
@@ -2386,13 +2385,4 @@ Don't use ugly GTK tooltips.
 
 #+BEGIN_SRC emacs-lisp
 (setq x-gtk-use-system-tooltips nil)
-#+END_SRC
-
-** Fringe
-
-No fringe on the right side of the frame. The left side needs a fringe for
-=FlyCheck= indicators.
-
-#+BEGIN_SRC emacs-lisp
-(fringe-mode '(8 . 0))
 #+END_SRC
