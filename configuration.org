@@ -71,7 +71,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#contexts][Contexts]]
 - [[#programming][Programming]]
   - [[#general-purpose][General Purpose]]
-    - [[#autocomplete][Autocomplete]]
+    - [[#company][Company]]
     - [[#brackets][Brackets]]
     - [[#display-line-numbers][Display Line Numbers]]
     - [[#dumb-jump-1][Dumb Jump]]
@@ -92,13 +92,13 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#elpy][Elpy]]
     - [[#auto-completion][Auto Completion]]
     - [[#pipenv][Pipenv]]
-  - [[#r][R]]
+  - [[#emacs-speaks-statistics][Emacs speaks Statistics]]
   - [[#ruby-1][Ruby]]
     - [[#inf-ruby][Inf-ruby]]
     - [[#ruby-mode][Ruby Mode]]
     - [[#robe][Robe]]
     - [[#rspec-mode][Rspec-mode]]
-    - [[#rails][Rails]]
+    - [[#projectile-rails][Projectile Rails]]
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
@@ -1353,9 +1353,9 @@ Pick first Context as default.
 This section contains programming-specific packages and settings.
 
 ** General Purpose
-*** Autocomplete
+*** Company
 
-=company= is a text completion framework for Emacs. The name stands for
+[[http://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for
 "complete anything". It uses pluggable back-ends and front-ends to retrieve and
 display completion candidates.
 
@@ -1434,7 +1434,7 @@ well as a =jquery-doc= command to lookup documentation.
 
 *** Brackets
 
-Make brackets colorful
+[[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]] makes brackets colorful.
 
  #+BEGIN_SRC emacs-lisp
 (ph/install-package 'rainbow-delimiters)
@@ -1464,7 +1464,7 @@ Count the number of lines to use for line number width.
 
 *** Dumb Jump
 
-[[https://github.com/jacktasia/dumb-jump][Dumb Jump]] is an Emacs "jump to definition" package with support for multiple
+[[https://github.com/jacktasia/dumb-jump][Dumb-Jump]] is an Emacs "jump to definition" package with support for multiple
 programming languages that favors "just working". This means minimal -- and
 ideally zero -- configuration with absolutely no stored indexes (TAGS) or
 persistent background processes
@@ -1478,7 +1478,7 @@ persistent background processes
 
 *** Flycheck
 
-Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs.
+[[https://www.flycheck.org/en/latest/][Flycheck]] is a modern on-the-fly syntax checking extension for GNU Emacs.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'flycheck)
@@ -1503,13 +1503,13 @@ list the following key bindings are available:
 
 *** Git
 
-Magit is an interface to the version control system Git.
+[[https://magit.vc/][Magit]] is an interface to the version control system Git.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'magit)
 #+END_SRC
 
-Show =TODO= in magit-buffer
+[[https://github.com/alphapapa/magit-todos][Magit-Todos]] shows all =TODO= items of the projct in the main magit-buffer.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'magit-todos)
@@ -1526,7 +1526,7 @@ Some major-modes to configure git repositories.
 
 *** Rainbow
 
-This minor mode sets background color to strings that match color names, e.g.
+[[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]] sets background color to strings that match color names, e.g.
 #0000ff is displayed in white with a blue background
 
 #+BEGIN_SRC emacs-lisp
@@ -1683,7 +1683,7 @@ well with =projectile=.
 (add-hook 'python-mode 'pipenv-mode)
 #+END_SRC
 
-To run a shell, use =pipenv-shell=. Some example commands are:
+To run a shell, use =M-x pipenv-shell=. Some example commands are:
 
 #+BEGIN_SRC shell
 pipenv --python 3.7 # create project with python 3.7
@@ -1692,9 +1692,9 @@ pipenv install numpy # with Pipfile
 pipenv install -r path/to/requirements.txt # with requirements.txt
 #+END_SRC
 
-** R
+** Emacs speaks Statistics
 
-Emacs Speaks Statistics (=ess=) is designed to support editing of scripts and
+[[https://github.com/emacs-ess/ESS][Emacs Speaks Statistics (ess)]] is designed to support editing of scripts and
 interaction with various statistical analysis programs such as R, S-Plus, SAS,
 Stata and OpenBUGS/JAGS.
 
@@ -1711,6 +1711,8 @@ Function:
 
 ** Ruby
 *** Inf-ruby
+[[https://github.com/nonsequitur/inf-ruby][
+Inf-Ruby]] provides a REPL buffer connected to a Ruby subprocess.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'inf-ruby)
@@ -1718,7 +1720,7 @@ Function:
 
 *** Ruby Mode
 
-Use =ruby-mode= for all common ruby-files.
+Use the built-in =ruby-mode= for all common ruby-files.
 
 No magic comments
 
@@ -1727,6 +1729,10 @@ No magic comments
 #+END_SRC
 
 *** Robe
+
+[[https://github.com/dgutov/robe][Robe]] is a code assistance tool that uses a Ruby REPL subprocess with your
+application or gem code loaded, to provide information about loaded classes and
+modules, and where each method is defined.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'robe)
@@ -1771,12 +1777,16 @@ Use company mode for code completion.
 
 *** Rspec-mode
 
-Put the following in the =Gemfile=.
+[[https://github.com/pezra/rspec-mode][Rspec-Mode]] provides some convenience functions for dealing with RSpec.
 
-#+BEGIN_SRC ruby
-group :development do
-  gem 'spring-commands-rspec'
-end
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'rspec-mode)
+#+END_SRC
+
+When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
 #+END_SRC
 
 Usage:
@@ -1786,22 +1796,18 @@ Usage:
 - =C-c , a= Run spec for entire project
 - [[https://github.com/pezra/rspec-mode#usage][and more]]
 
-Load it.
+Put the following in the =Gemfile= of the projects.
 
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/vendor/rspec-mode")
-(ph/install-package 'rspec-mode)
-(require 'ansi-color)
-(eval-after-load 'rspec-mode '(rspec-install-snippets))
+#+BEGIN_SRC ruby
+group :development do
+  gem 'spring-commands-rspec'
+end
 #+END_SRC
 
-When you've hit the breakpoint, hit =C-x C-q= to enable inf-ruby.
+*** Projectile Rails
 
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'inf-ruby-switch-setup)
-#+END_SRC
-
-*** Rails
+[[https://github.com/asok/projectile-rails][Projectile Rails]] is a minor mode for working with Ruby on Rails applications and
+engines in GNU Emacs. Internally it is based on Projectile.
 
 #+BEGIN_SRC emacs-lisp
 (setq projectile-rails-keymap-prefix (kbd "C-c p n"))
@@ -1848,7 +1854,7 @@ Sync with evince. Use =Control + Left Click= for backward search.
 
 ** Web mode
 
-=web-mode= is an autonomous emacs major-mode for editing web templates. HTML
+[[http://web-mode.org/][Web-Mode]] is an autonomous emacs major-mode for editing web templates. HTML
 documents can embed parts (CSS / JavaScript) and blocks (client / server side).
 
 #+BEGIN_SRC emacs-lisp
@@ -1883,12 +1889,13 @@ Some web-mode settings.
 Use company backends for =tern=, =html= and =css=.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/web-mode-hook ()
-  "Hook for `web-mode'."
-  (set (make-local-variable 'company-backends)
-       '(company-tern company-web-html company-css company-files)))
-
-(add-hook 'web-mode-hook 'ph/web-mode-hook)
+(add-hook 'web-mode-hook
+          '(lambda ()
+             (set (make-local-variable 'company-backends)
+                  '(company-tern
+                    company-web-html
+                    company-css
+                    company-files))))
 #+END_SRC
 
 Enable =tern= when the current language is JavaScript.
