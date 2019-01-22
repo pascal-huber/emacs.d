@@ -54,7 +54,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#evil-surround][Evil Surround]]
     - [[#evil-god-state][Evil God State]]
     - [[#keybindings][Keybindings]]
-    - [[#commands][Commands]]
   - [[#projectile][Projectile]]
   - [[#counsel-ivy-and-swiper][Counsel, Ivy and Swiper]]
   - [[#imenu][Imenu]]
@@ -443,25 +442,32 @@ Enable the built-in fuzzy-matching
 
 ** Sudo Save
 
-Save file with sudo.
+If the file to be saved is not writable, ask if it should be written as root.
 
-# TODO: Make this compatible with all sudo-filenames like /su:root@localhost,
-# /sudo:: etc.
-
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun ph/sudo-file-name (filename)
-  "prepends '/sudo:root@localhost:' if not already present"
-  (if (not (string-prefix-p "/sudo:root@localhost:" filename))
-      (concat "/sudo:root@localhost:" filename)
+  "Prepend '/sudo:root@localhost:' to FILENAME if not already present."
+  (if (not (or (string-prefix-p "/sudo:root@localhost:"
+                                filename)
+               (string-prefix-p (format "/sudo:root@%s:" system-name)
+                                filename)))
+      (format "/sudo:root@localhost:%s" filename)
     filename))
 
-(defun ph/sudo-save ()
-  "save file with sudo"
-  (interactive)
-  (if (not buffer-file-name)
-      (write-file (ph/sudo-file-name (ido-read-file-name "File:")))
-    (write-file (ph/sudo-file-name buffer-file-name))))
-   #+END_SRC
+(defun ph/sudo-save-buffer (filename)
+  "Save FILENAME with sudo if the user approves."
+  (let ((file (ph/sudo-file-name buffer-file-name)))
+    (when (yes-or-no-p
+           (format "Save file as %s ? " file))
+      (write-file file))))
+
+(advice-add 'save-buffer :around
+            '(lambda (fn &rest args)
+               (if (or (not buffer-file-name)
+                       (file-writable-p buffer-file-name))
+                   (apply fn args)
+                 (ph/sudo-save-buffer buffer-file-name))))
+#+END_SRC
 
 ** Occur
 
@@ -750,14 +756,6 @@ Auto complete with =C-SPC=.
 #+BEGIN_SRC emacs-lisp
 (general-def 'insert
   "C-SPC" 'company-complete)
-#+END_SRC
-
-*** Commands
-
-Call =ph/sudo-save= with =:ww=.
-
-#+BEGIN_SRC emacs-lisp
-(evil-ex-define-cmd "ww" 'ph/sudo-save)
 #+END_SRC
 
 ** Projectile
