@@ -21,6 +21,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#package-updates][Package Updates]]
 - [[#tweaking-defaults][Tweaking Defaults]]
   - [[#disabled-commands][Disabled Commands]]
+  - [[#yes-or-no][Yes or No]]
   - [[#symlinks][Symlinks]]
   - [[#final-newline][Final Newline]]
   - [[#backup][Backup]]
@@ -277,6 +278,12 @@ Enable all disabled commands.
 
 #+BEGIN_SRC emacs-lisp
 (setq disabled-command-function nil)
+#+END_SRC
+
+** Yes or No
+
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 ** Symlinks
