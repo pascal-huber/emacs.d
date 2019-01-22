@@ -2390,14 +2390,7 @@ Show the buffer-name, projectile-project-name and major-mode in the frame title.
 Use the same title for unfocussed/stacked frames.
 
 #+BEGIN_SRC emacs-lisp
-(setq ph/frame-title-format
-      '(""
-        "%b"
-        (:eval
-         (let ((project-name (projectile-project-name)))
-           (unless (string= "-" project-name)
-             (format " | %s" project-name))))
-        " | %m"))
+(setq ph/frame-title-format '("%b"))
 (setq frame-title-format ph/frame-title-format)
 (setq icon-title-format ph/frame-title-format)
 #+END_SRC
