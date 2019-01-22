@@ -34,6 +34,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#line-filling][Line Filling]]
   - [[#whitespace-cleanup][Whitespace Cleanup]]
   - [[#buffers-and-frames][Buffers and Frames]]
+  - [[#ido][Ido]]
   - [[#sudo-save][Sudo Save]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
@@ -55,14 +56,13 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#keybindings][Keybindings]]
     - [[#commands][Commands]]
   - [[#projectile][Projectile]]
-  - [[#ido][Ido]]
-  - [[#counsel][Counsel]]
+  - [[#counsel-ivy-and-swiper][Counsel, Ivy and Swiper]]
   - [[#imenu][Imenu]]
   - [[#ranger][Ranger]]
-  - [[#dictionary][Dictionary]]
-  - [[#pdf][PDF]]
-  - [[#news-feeds][News Feeds]]
-  - [[#mail][Mail]]
+  - [[#dictcc][Dictcc]]
+  - [[#pdf-tools][PDF-Tools]]
+  - [[#elfeed][Elfeed]]
+  - [[#mu4e-1][Mu4e]]
     - [[#general][General]]
     - [[#headers][Headers]]
     - [[#view][View]]
@@ -415,6 +415,31 @@ A function to open the previous buffer in a new frame.
   (switch-to-buffer-other-frame (other-buffer)))
 #+END_SRC
 
+** Ido
+
+[[https://www.emacswiki.org/emacs/InteractivelyDoThings][ido]] ("interactively do things") supercharges Emacs' completion system. I use
+=ido= everywhere =ivy= is not set up.
+
+#+BEGIN_SRC emacs-lisp
+(ido-mode 1)
+(ido-everywhere 1)
+#+END_SRC
+
+Enable the built-in fuzzy-matching
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-flex-matching t)
+#+END_SRC
+
+[[https://github.com/creichert/ido-vertical-mode.el][ido-vertical-mode]] makes ido-mode display vertically.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ido-vertical-mode)
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(setq ido-vertical-show-count t)
+#+END_SRC
+
 ** Sudo Save
 
 Save file with sudo.
@@ -748,51 +773,47 @@ dependencies (when feasible).
 (setq projectile-completion-system 'ivy)
 #+END_SRC
 
-** Ido
-
-=ido= ("interactively do things") supercharges Emacs' completion system.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-#+END_SRC
-
-Enable the built-in fuzzy-matching
-
-#+BEGIN_SRC emacs-lisp
-(setq ido-enable-flex-matching t)
-#+END_SRC
-
-Enable =ido-vertical-mode=
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'ido-vertical-mode)
-(ido-vertical-mode 1)
-(setq ido-vertical-define-keys 'C-n-and-C-p-only)
-(setq ido-vertical-show-count t)
-#+END_SRC
-
-** Counsel
+** Counsel, Ivy and Swiper
 
 =counsel=, a collection of Ivy-enhanced versions of common Emacs commands.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
-(ph/install-package 'counsel-projectile)
-(counsel-projectile-mode)
- #+END_SRC
+#+END_SRC
+
+Use =ivy= for completion instead of =ido=.
 
 #+BEGIN_SRC emacs-lisp
+(ph/install-package 'ivy)
+(ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
  #+END_SRC
 
+Some packages need special attention.
+
+#+BEGIN_SRC emacs-lisp
+(setq magit-completing-read-function 'ivy-completing-read)
+(setq projectile-completion-system 'ivy)
+(setq mu4e-completing-read-function 'ivy-completing-read)
+#+END_SRC
+
 Show current entry number.
 
 #+BEGIN_SRC emacs-lisp
-(setq ivy-count-format "%d/%d ")
- #+END_SRC
+(setq ivy-count-format " %d/%d ")
+#+END_SRC
+
+Prevent swiper from swiping itself.
+
+# TODO: is this swiper setup really good???
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/swiper ()
+  (interactive)
+  (unless (string= (symbol-name major-mode) "minibuffer-inactive-mode")
+    (swiper)))
+#+END_SRC
 
 ** Imenu
 
@@ -826,7 +847,7 @@ Don't show hidden files by default. This can be toggled with =zh=.
 
 See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][keybindings here]].
 
-** Dictionary
+** Dictcc
 
 =dictcc= translates English to German and vice versa.
 
@@ -834,7 +855,7 @@ See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][
 (ph/install-package 'dictcc)
 #+END_SRC
 
-** PDF
+** PDF-Tools
 
 =pdf-tools= is, among other things, a replacement of DocView for PDF files. The
 key difference is that pages are not pre-rendered by e.g. ghostscript and stored
@@ -865,7 +886,7 @@ Kebindings:
  - =C-c C-a l= to list all annotations. Use =SPACE= to jump to the annotation.
  - [[https://github.com/politza/pdf-tools#some-keybindings][and more]]
 
-** News Feeds
+** Elfeed
 
 Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 
@@ -952,7 +973,7 @@ Show date
       (insert (propertize title 'face title-faces 'kbd-help title)))))
 #+END_SRC
 
-** Mail
+** Mu4e
 
 [[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
 indexer/searcher. It attempts to be a super-efficient tool to withstand the
@@ -1914,7 +1935,9 @@ Overwriting default bindings (and defining new ones).
 
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keys-keymap
+  "<f6>"  'ivy-resume
   "M-x"   'counsel-M-x
+  "C-s"   'ph/swiper
   "C-h f" 'counsel-describe-function
   "C-h v" 'counsel-describe-variable)
 
