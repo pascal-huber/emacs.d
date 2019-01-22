@@ -124,6 +124,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
   - Use =C-c ​'​= to edit code blocks in =org-mode=.
+  - Use =C-u M-!= to execute shell command and insert the output.
 * Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
