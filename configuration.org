@@ -55,8 +55,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#evil-god-state][Evil God State]]
     - [[#keybindings][Keybindings]]
   - [[#projectile][Projectile]]
-  - [[#counsel-ivy-and-swiper][Counsel, Ivy and Swiper]]
-  - [[#imenu][Imenu]]
+  - [[#ivy-counsel-and-swiper][Ivy, Counsel and Swiper]]
   - [[#ranger][Ranger]]
   - [[#dictcc][Dictcc]]
   - [[#pdf-tools][PDF-Tools]]
@@ -442,8 +441,7 @@ Enable the built-in fuzzy-matching
 
 ** Sudo Save
 
-=M-x ph/save-buffer= checks if the current buffer's file is writable. If not, try
-saving it as root.
+If the current buffer is not writable, ask if it should be saved with sudo.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/sudo-file-name (filename)
