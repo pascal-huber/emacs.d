@@ -161,8 +161,7 @@ $ go get -u github.com/mdempsky/gocode
 
 ** Markdown
 
-[[https://github.com/jgm/pandoc][Pandoc]] [[https://github.com/jgm/pandoc ][http://githubbadges.com/star.svg?user=sirpscl&repo=emacs.d&style=flat]] is
-a swiss-army knife for converting documents.
+[[https://github.com/jgm/pandoc][Pandoc]] is a swiss-army knife for converting documents.
 
 #+BEGIN_SRC shell
 $ pacaur -S pandoc
