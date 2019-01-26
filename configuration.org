@@ -38,7 +38,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#sudo-save][Sudo Save]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
-  - [[#org-mode][Org Mode]]
+  - [[#org-mode][Org-Mode]]
     - [[#settings][Settings]]
     - [[#toc-org][TOC-Org]]
     - [[#org-ref][Org-Ref]]
@@ -117,7 +117,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tooltips][Tooltips]]
 
 * Notes for me
-  - Use =C-c u= more (=imenu=)
+  - Use =C-c u= more often (=imenu=)
   - Close other window in same frame with =C-w C-o=.
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
@@ -219,7 +219,7 @@ A function to install and load packages on demand.
 
 #+BEGIN_SRC emacs-lisp
 (cl-defun ph/install-package (package &optional (req t))
-  "Installs PACKAGE and requires it unless REQ is set to nil."
+  "Install PACKAGE and require it unless REQ is set to nil."
   (unless (package-installed-p package)
     (progn
       (package-refresh-contents)
@@ -235,7 +235,7 @@ Also load packages which are not in an archive but in this repository.
 
 ** Packages for Configuration
 
-=general.el= provides a more convenient method for binding keys in emacs (for
+[[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for
 both evil and non-evil users).
 
 #+BEGIN_SRC emacs-lisp
@@ -244,7 +244,7 @@ both evil and non-evil users).
 
 ** Package Updates
 
-Update all packages with =auto-package-update-now=.
+Update all packages with =M-x auto-package-update-now=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'auto-package-update)
@@ -279,6 +279,8 @@ Enable all disabled commands.
 #+END_SRC
 
 ** Yes or No
+
+For reasons of simplicity.
 
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -370,7 +372,7 @@ Use a line width of 80 columns.
 (setq-default fill-column 80)
 #+END_SRC
 
-To reorganize a paragraph to fit the 80 columns, use =M-q= (=fill-paragraph=)
+To reorganize a paragraph to fit the 80 columns, use =M-q= (=M-x fill-paragraph=)
 and/or enable =auto-fill-mode=.
 
 Don't do double-spaces between sentences.
@@ -389,7 +391,7 @@ Delete trailing whitespaces when saving.
 
 ** Buffers and Frames
 
-Split functions wich open the previous buffer in the new window instead of
+Split functions which open the previous buffer in the new window instead of
 showing the current buffer twice. [[http://www.alandmoore.com/blog/2013/05/01/better-window-splitting-in-emacs/][Stolen shamelessly from here]]
 
 #+BEGIN_SRC emacs-lisp
@@ -416,7 +418,7 @@ A function to open the previous buffer in a new frame.
 
 ** Ido
 
-[[https://www.emacswiki.org/emacs/InteractivelyDoThings][ido]] ("interactively do things") supercharges Emacs' completion system. I use
+[[https://www.emacswiki.org/emacs/InteractivelyDoThings][Ido ("interactively do things")]] supercharges Emacs' completion system. I use
 =ido= everywhere =ivy= is not set up.
 
 #+BEGIN_SRC emacs-lisp
@@ -473,12 +475,12 @@ This is, when it doesn't already have a sudo-prefix."
 
 ** Occur
 
-[[http://emacswiki.org/emacs/OccurMode][occur-mode]] is a search minor-mode that shows a buffer with all matching results
+[[http://emacswiki.org/emacs/OccurMode][Occur-Mode]] is a search minor-mode that shows a buffer with all matching results
 in a popup buffer. Use the occur-dwim (do what I mean) function from [[https://oremacs.com/2015/01/26/occur-dwim/][(or emacs
 irrelevant)]]
 
 #+BEGIN_SRC emacs-lisp
-(defun occur-dwim ()
+(defun ph/occur-dwim ()
   "Call `occur' with a sane default."
   (interactive)
   (push (if (region-active-p)
@@ -526,9 +528,9 @@ Open in new frame
   '(define-key dired-mode-map (kbd "C-c C-o") 'ph/dired-find-file-other-frame))
 #+END_SRC
 
-** Org Mode
+** Org-Mode
 
-Org mode is for keeping notes, maintaining TODO lists, planning projects, and
+[[https://orgmode.org/][Org-Mode]] is for keeping notes, maintaining TODO lists, planning projects, and
 authoring documents with a fast and effective plain-text system.
 
 #+BEGIN_SRC emacs-lisp
@@ -595,7 +597,7 @@ This section contains some third party packages.
 
 ** Which-Key
 
-[[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following
+[[https://github.com/justbur/emacs-which-key][Which-Key]] is a minor mode for Emacs that displays the key bindings following
 your currently entered incomplete command (a prefix) in a popup.
 
 #+BEGIN_SRC emacs-lisp
@@ -649,8 +651,8 @@ useful interactive commands to enhance your overall Emacs experience.
 
 ** Ag
 
-=ag= allows you to search using ag from inside Emacs. You can filter by file
-type, edit results inline, or find files.
+[[https://github.com/Wilfred/ag.el][Ag]] allows you to search using ag from inside Emacs. You can filter by file type,
+edit results inline, or find files.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'ag)
@@ -658,7 +660,7 @@ type, edit results inline, or find files.
 
 ** Ripgrep
 
-=Ripgrep= is a replacement for both grep like (search one file) and ag like
+[[https://github.com/dajva/rg.el][Ripgrep (rg)]] is a replacement for both grep like (search one file) and ag like
 (search many files) tools. It's fast and versatile and written in Rust.
 
 #+BEGIN_SRC emacs-lisp
@@ -667,7 +669,7 @@ type, edit results inline, or find files.
 
 ** Evil
 
-=evil= is an extensible vi layer for Emacs. It emulates the main features of Vim,
+[[https://github.com/emacs-evil/evil][Evil]] is an extensible vi layer for Emacs. It emulates the main features of Vim,
 and provides facilities for writing custom extensions.
 
 #+BEGIN_SRC emacs-lisp
@@ -762,7 +764,7 @@ Auto complete with =C-SPC=.
 
 ** Projectile
 
-=projectile= is a project interaction library for Emacs. Its goal is to provide a
+[[https://github.com/bbatsov/projectile][Projectile]] is a project interaction library for Emacs. Its goal is to provide a
 nice set of features operating on a project level without introducing external
 dependencies (when feasible).
 
@@ -807,8 +809,6 @@ Show current entry number.
 
 Prevent swiper from swiping itself.
 
-# TODO: is this swiper setup really good???
-
 #+BEGIN_SRC emacs-lisp
 (defun ph/swiper ()
   (interactive)
@@ -816,15 +816,9 @@ Prevent swiper from swiping itself.
     (swiper)))
 #+END_SRC
 
-** Imenu
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'imenu-anywhere)
- #+END_SRC
-
 ** Ranger
 
-[[https://github.com/ralesi/ranger.el][ranger]] is a minor mode that runs within dired, it emulates many of [[https://ranger.github.io/][ranger's]]
+[[https://github.com/ralesi/ranger.el][Ranger]] is a minor mode that runs within dired, it emulates many of [[https://ranger.github.io/][ranger's]]
 features. This minor mode shows a stack of parent directories, and updates the
 parent buffers, while you're navigating the file system. The preview window
 takes some of the ideas from [[https://github.com/asok/peep-dired][Peep-Dired]], to display previews for the selected
@@ -850,7 +844,7 @@ See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][
 
 ** Dictcc
 
-=dictcc= translates English to German and vice versa.
+[[https://github.com/cqql/dictcc.el][Dictcc]] translates English to German and vice versa.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'dictcc)
@@ -858,7 +852,7 @@ See the full list of [[https://github.com/ralesi/ranger.el#ranger-key-bindings][
 
 ** PDF-Tools
 
-=pdf-tools= is, among other things, a replacement of DocView for PDF files. The
+[[https://github.com/politza/pdf-tools][Pdf-Tools]] is, among other things, a replacement of DocView for PDF files. The
 key difference is that pages are not pre-rendered by e.g. ghostscript and stored
 in the file-system, but rather created on-demand and stored in memory.
 
@@ -889,7 +883,7 @@ Kebindings:
 
 ** Elfeed
 
-Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS.
+[[https://github.com/skeeto/elfeed][Elfeed]] is an extensible web feed reader for Emacs, supporting both Atom and RSS.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'elfeed)
@@ -976,7 +970,7 @@ Show date
 
 ** Mu4e
 
-[[https://www.djcbsoftware.nl/code/mu/mu4e.html][mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
+[[https://www.djcbsoftware.nl/code/mu/mu4e.html][Mu4e]] is an emacs-based e-mail client. It’s based on the mu e-mail
 indexer/searcher. It attempts to be a super-efficient tool to withstand the
 daily e-mail tsunami.
 
@@ -1185,7 +1179,7 @@ shamelessly from here]].
 
 *** Send
 
-Use =smtpmail= with =tnutls= to sending mails.
+Use =smtpmail= with =gnutls= to sending mails.
 
 #+BEGIN_SRC emacs-lisp
 (setq message-send-mail-function 'smtpmail-send-it)
@@ -1978,9 +1972,9 @@ without modifiers).
   "i"   'indent-region
   "j"   'switch-to-next-buffer
   "k"   'switch-to-prev-buffer
-  "o"   'occur-dwim
+  "o"   'ph/occur-dwim
   "r"   'ph/mu4e
-  "u"   'ivy-imenu-anywhere)
+  "u"   'imenu)
 
 (general-def ph/global-keys-keymap
   "<f5>" 'ph/next-theme)
@@ -2046,8 +2040,7 @@ Setting the face according to =evil-state=.
 (spaceline-define-segment ph/version-control
   "Version control information."
   (when vc-mode
-    (powerline-raw
-     (s-trim (concat (ph/git-branch-name))))))
+    (s-trim (concat (ph/git-branch-name)))))
 #+END_SRC
 
 **** Tramp
@@ -2078,29 +2071,14 @@ The following segemnts display the current buffer's =method= and =user@host=.
      (file-remote-p default-directory 'host))))
 #+END_SRC
 
-**** File Permission
-
-I want to see if the current file has "special" permissions. Special meaning
-that the permissions change if the file is deleted and rewritten.
-
-#+BEGIN_SRC emacs-lisp
-(spaceline-define-segment ph/special-file-permissions
-  (if (and (buffer-file-name)
-           (not (file-ownership-preserved-p (buffer-file-name))))
-      (powerline-raw
-       (concat (if (file-readable-p (buffer-file-name)) "r" "-")
-               (if (file-writable-p (buffer-file-name)) "w" "-")
-               (if (file-executable-p (buffer-file-name)) "x" "-")))))
-#+END_SRC
-
 **** Mu4e Context
 
 #+BEGIN_SRC emacs-lisp
 (spaceline-define-segment ph/mu4e-context-segment
   (let ((context (mu4e-context-current)))
-    (if (and context
-             (string-prefix-p "mu4e" (symbol-name major-mode)))
-        (mu4e-context-name context))))
+    (when (and context
+               (string-prefix-p "mu4e" (symbol-name major-mode)))
+      (mu4e-context-name context))))
 #+END_SRC
 
 *** Setup
@@ -2116,7 +2094,6 @@ spaceline-compile=.
   '((evil-state :when active :face highlight-face)
     (buffer-id)
     (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
-    (ph/special-file-permissions :face 'ph/spaceline-alert-face)
     (ph/remote-method :face 'ph/spaceline-warn-face)
     (ph/remote-user-and-host :face 'ph/spaceline-another-warn-face)
     (ph/virtualenvwrapper-segment)
@@ -2368,6 +2345,8 @@ of minor-modes.
   '(diminish 'undo-tree-mode))
 (eval-after-load "which-key"
   '(diminish 'which-key-mode))
+(eval-after-load "ivy"
+  '(diminish 'ivy-mode))
 #+END_SRC
 
 ** Beacon
