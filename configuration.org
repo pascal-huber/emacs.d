@@ -84,6 +84,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#js2-mode][JS2-mode]]
     - [[#tern][Tern]]
     - [[#eslint][Eslint]]
+  - [[#json][JSON]]
   - [[#lua][Lua]]
   - [[#markdown-1][Markdown]]
   - [[#php][PHP]]
@@ -1617,6 +1618,12 @@ Use =eslint= instead of =jshint=.
 (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers
                       '(javascript-jshint)))
 (flycheck-add-mode 'javascript-eslint 'web-mode)
+#+END_SRC
+
+** JSON
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'json-mode)
 #+END_SRC
 
 ** Lua
