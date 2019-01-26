@@ -732,7 +732,7 @@ Keybinding to escape god-state.
 *** Keybindings
 
 #+BEGIN_SRC emacs-lisp
-(general-def 'normal
+(general-def '(emacs normal)
   "," 'evil-execute-in-god-state)
 #+END_SRC
 
@@ -774,9 +774,9 @@ dependencies (when feasible).
 (setq projectile-completion-system 'ivy)
 #+END_SRC
 
-** Counsel, Ivy and Swiper
+** Ivy, Counsel and Swiper
 
-=counsel=, a collection of Ivy-enhanced versions of common Emacs commands.
+[[https://github.com/abo-abo/swiper][Ivy, Counsel (and Swiper)]], a collection of Ivy-enhanced versions of common Emacs commands.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
