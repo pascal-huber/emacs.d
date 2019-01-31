@@ -103,6 +103,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
   - [[#yaml][Yaml]]
+- [[#random-stuff][Random Stuff]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
   - [[#spaceline][Spaceline]]
@@ -1938,6 +1939,53 @@ Use a line width of 100 in =yaml-mode=.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
   (lambda () (set-fill-column 100)))
+#+END_SRC
+* Random Stuff
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/qs-notes ()
+  "Open my QuickShift time file."
+  (interactive)
+  (find-file "~/Dropbox/quickshift/admin/stunden/2019/pascal.org"))
+#+END_SRC
+
+Open File in External App. [[http://ergoemacs.org/emacs/emacs_dired_open_file_in_ext_apps.html][Stolen shamelessly from here]].
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/xdg-open (&optional @fname)
+  "Open the current file or dired marked files in external app.
+The app is chosen from your OS's preference.
+
+When called in emacs lisp, if @fname is given, open that.
+
+URL `http://ergoemacs.org/emacs/emacs_dired_open_file_in_ext_apps.html'
+Version 2019-01-18"
+  (interactive)
+  (let* (
+         ($file-list
+          (if @fname
+              (progn (list @fname))
+            (if (string-equal major-mode "dired-mode")
+                (dired-get-marked-files)
+              (list (buffer-file-name)))))
+         ($do-it-p (if (<= (length $file-list) 5)
+                       t
+                     (y-or-n-p "Open more than 5 files? "))))
+    (when $do-it-p
+      (cond
+       ((string-equal system-type "windows-nt")
+        (mapc
+         (lambda ($fpath)
+           (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" $fpath t t))) $file-list))
+       ((string-equal system-type "darwin")
+        (mapc
+         (lambda ($fpath)
+           (shell-command
+            (concat "open " (shell-quote-argument $fpath))))  $file-list))
+       ((string-equal system-type "gnu/linux")
+        (mapc
+         (lambda ($fpath) (let ((process-connection-type nil))
+                            (start-process "" nil "xdg-open" $fpath))) $file-list))))))
 #+END_SRC
 
 * Global Keybindings
