@@ -568,6 +568,14 @@ Don't indent code blocks
 (setq org-edit-src-content-indentation 0)
 #+END_SRC
 
+No empty lines between items
+
+#+BEGIN_SRC emacs-lisp
+(setq org-blank-before-new-entry
+      '((heading . nil)
+        (plain-list-item . nil)))
+#+END_SRC
+
 *** TOC-Org
 
 Every time you’ll be saving an org file, the first headline with a =:TOC:= tag
