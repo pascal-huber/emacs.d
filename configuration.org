@@ -80,6 +80,7 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#rainbow][Rainbow]]
   - [[#go-1][Go]]
   - [[#haml][Haml]]
+  - [[#haskell][Haskell]]
   - [[#indentation][Indentation]]
   - [[#javascript-1][JavaScript]]
     - [[#js2-mode][JS2-mode]]
@@ -712,6 +713,8 @@ Set initial state by major mode.
                     (flycheck-error-list-mode . emacs)
                     (git-commit-mode . insert)
                     (git-rebase-mode . emacs)
+                    (haskell-error-mode . emacs)
+                    (haskell-interactive-mode . emacs)
                     (help-mode . emacs)
                     (inferior-ess-mode . emacs)
                     (inf-ruby-mode . emacs)
@@ -1562,6 +1565,71 @@ Some major-modes to configure git repositories.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'haml-mode)
+#+END_SRC
+
+** Haskell
+
+[[https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/haskell][how spacemacs does it]]
+
+OS setup
+
+#+BEGIN_SRC shell
+sudo pacman -S cabal-install
+curl -sSL https://get.haskellstack.org/ | sh
+#+END_SRC
+
+Create a new project
+
+#+BEGIN_SRC shell
+stack new myproject
+...
+#+END_SRC
+
+[[https://github.com/haskell/haskell-mode][Haskell-Mode]] is an Emacs mode for editing, debugging and developing Haskell
+programs. [[http://haskell.github.io/haskell-mode/][Home page]].
+
+The most important keybindings start with =C-c
+C-....=, use =which-key= for an overview.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'haskell-mode)
+#+END_SRC
+
+Settings
+
+#+BEGIN_SRC emacs-lisp
+(defun prelude-haskell-mode-defaults ()
+  (subword-mode +1)
+  (eldoc-mode +1)
+  (haskell-indentation-mode +1)
+  (interactive-haskell-mode +1))
+
+(setq prelude-haskell-mode-hook 'prelude-haskell-mode-defaults)
+
+(add-hook 'haskell-mode-hook
+          (lambda () (run-hooks 'prelude-haskell-mode-hook)))
+#+END_SRC
+
+Syntax checker
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flycheck-haskell)
+(add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+#+END_SRC
+
+Auto-completion without =stack= (I think I'll use =stack=)
+
+#+BEGIN_SRC emacs-lisp
+;; (ph/install-package 'company-ghc)
+;; (add-to-list 'company-backends 'company-ghc)
+;; (custom-set-variables '(company-ghc-show-info t))
+#+END_SRC
+
+Auto-completion with =stack=
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'intero)
+(add-to-list 'company-backends 'intero-repl-mode)
 #+END_SRC
 
 ** Indentation
