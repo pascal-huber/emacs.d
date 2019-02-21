@@ -718,6 +718,7 @@ Set initial state by major mode.
                     (help-mode . emacs)
                     (inferior-ess-mode . emacs)
                     (inf-ruby-mode . emacs)
+                    (intero-repl-mode . emacs)
                     (pdf-occur-buffer-mode . emacs)
                     (ranger-mode . emacs)
                     (rspec-compilation-mode . emacs)
@@ -1545,6 +1546,18 @@ Some major-modes to configure git repositories.
 (ph/install-package 'gitignore-mode)
 #+END_SRC
 
+*** Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil
+              tab-width 2)
+(setq js-indent-level 2)
+(setq python-indent 2)
+(setq css-indent-offset 2)
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+#+END_SRC
+
 *** Rainbow
 
 [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]] sets background color to strings that match color names, e.g.
@@ -1569,8 +1582,6 @@ Some major-modes to configure git repositories.
 
 ** Haskell
 
-[[https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/haskell][how spacemacs does it]]
-
 OS setup
 
 #+BEGIN_SRC shell
@@ -1581,33 +1592,37 @@ curl -sSL https://get.haskellstack.org/ | sh
 Create a new project
 
 #+BEGIN_SRC shell
-stack new myproject
-...
+stack new myproject # to create a new project
+# see stack --help
 #+END_SRC
 
-[[https://github.com/haskell/haskell-mode][Haskell-Mode]] is an Emacs mode for editing, debugging and developing Haskell
-programs. [[http://haskell.github.io/haskell-mode/][Home page]].
-
-The most important keybindings start with =C-c
-C-....=, use =which-key= for an overview.
+[[http://chrisdone.github.io/intero/][Intero]] is a complete interactive development program for Haskell. It offers many
+useful functions ([[https://github.com/chrisdone/intero/blob/master/EMACS.md#default-key-bindings][see here]]) and an (automatically loaded) company-backend.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'haskell-mode)
+(ph/install-package 'intero)
+(with-eval-after-load 'haskell-mode (intero-global-mode))
 #+END_SRC
 
-Settings
+Don't jump to the repl everytime it does something.
+
+# TODO: find out if there is a nicer solution to prevent intero from jumping to
+# the repl every time.
 
 #+BEGIN_SRC emacs-lisp
-(defun prelude-haskell-mode-defaults ()
-  (subword-mode +1)
-  (eldoc-mode +1)
-  (haskell-indentation-mode +1)
-  (interactive-haskell-mode +1))
+(defun ph/intero-repl-switch-back (&rest _)
+  (intero-repl-switch-back))
+(advice-add 'intero-repl-eval-region :after 'ph/intero-repl-switch-back)
+(advice-add 'intero-repl-load        :after 'ph/intero-repl-switch-back)
+#+END_SRC
 
-(setq prelude-haskell-mode-hook 'prelude-haskell-mode-defaults)
+Some more convenient keybindings
 
-(add-hook 'haskell-mode-hook
-          (lambda () (run-hooks 'prelude-haskell-mode-hook)))
+#+BEGIN_SRC emacs-lisp
+(general-def  'intero-mode-map
+  "C-c C-b" 'intero-repl)
+(general-def  'intero-repl-mode-map
+  "C-c C-b" 'intero-repl-switch-back)
 #+END_SRC
 
 Syntax checker
@@ -1615,33 +1630,6 @@ Syntax checker
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'flycheck-haskell)
 (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
-#+END_SRC
-
-Auto-completion without =stack= (I think I'll use =stack=)
-
-#+BEGIN_SRC emacs-lisp
-;; (ph/install-package 'company-ghc)
-;; (add-to-list 'company-backends 'company-ghc)
-;; (custom-set-variables '(company-ghc-show-info t))
-#+END_SRC
-
-Auto-completion with =stack=
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'intero)
-(add-to-list 'company-backends 'intero-repl-mode)
-#+END_SRC
-
-** Indentation
-
-#+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil
-              tab-width 2)
-(setq js-indent-level 2)
-(setq python-indent 2)
-(setq css-indent-offset 2)
-(setq sh-basic-offset 2)
-(setq sh-indentation 2)
 #+END_SRC
 
 ** JavaScript
