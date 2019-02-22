@@ -300,7 +300,7 @@ For reasons of simplicity.
 Always Follow Symlinks, no questions asked.
 
 #+BEGIN_SRC emacs-lisp
-(setq vc-follow-symlinks nil)
+(setq vc-follow-symlinks t)
 #+END_SRC
 
 ** Final Newline
