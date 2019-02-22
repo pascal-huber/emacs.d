@@ -101,8 +101,11 @@ This is my Emacs configuration. There are many like it, but this one is mine.
     - [[#robe][Robe]]
     - [[#rspec-mode][Rspec-mode]]
     - [[#projectile-rails][Projectile Rails]]
+    - [[#autocompletion-1][Autocompletion]]
+  - [[#shell][Shell]]
   - [[#tex][TeX]]
   - [[#web-mode][Web mode]]
+    - [[#autocompletion-2][Autocompletion]]
   - [[#yaml][Yaml]]
 - [[#random-stuff][Random Stuff]]
 - [[#global-keybindings][Global Keybindings]]
@@ -1378,7 +1381,7 @@ Pick first Context as default.
 
 * Programming
 
-This section contains programming-specific packages and settings.
+This section contains programming packages and settings.
 
 ** General Purpose
 *** Company
@@ -1424,40 +1427,6 @@ Disable evil-complete
 (general-def 'insert
   "C-p" nil
   "C-n" nil)
-#+END_SRC
-
-**** Backends
-
-Install some backends.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'company-bibtex)
-(add-to-list 'company-backends 'company-bibtex)
-
-(ph/install-package 'company-auctex)
-(company-auctex-init)
-
-(ph/install-package 'company-inf-ruby)
-(add-to-list 'company-backends 'company-inf-ruby)
-
-(ph/install-package 'company-shell)
-(add-to-list 'company-backends 'company-shell)
-
-(ph/install-package 'company-tern)
-(add-to-list 'company-backends 'company-tern)
-
-(ph/install-package 'company-web nil)
-(require 'company-web-html)
-(add-to-list 'company-backends 'company-web-html)
-
-(ph/install-package 'company-go)
-#+END_SRC
-
-=jquery-doc= provides completion source for auto-complete and company-mode as
-well as a =jquery-doc= command to lookup documentation.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'jquery-doc)
 #+END_SRC
 
 *** Brackets
@@ -1557,11 +1526,6 @@ Some major-modes to configure git repositories.
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil
               tab-width 2)
-(setq js-indent-level 2)
-(setq python-indent 2)
-(setq css-indent-offset 2)
-(setq sh-basic-offset 2)
-(setq sh-indentation 2)
 #+END_SRC
 
 *** Rainbow
@@ -1574,10 +1538,24 @@ Some major-modes to configure git repositories.
 (add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
 
+** CSS
+
+Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq css-indent-offset 2)
+#+END_SRC
+
 ** Go
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'go-mode)
+#+END_SRC
+
+Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-go)
 #+END_SRC
 
 ** Haml
@@ -1639,6 +1617,27 @@ Syntax checker
 #+END_SRC
 
 ** JavaScript
+
+Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq js-indent-level 2)
+#+END_SRC
+
+*** Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-tern)
+(add-to-list 'company-backends 'company-tern)
+#+END_SRC
+
+=jquery-doc= provides completion source for auto-complete and company-mode as
+well as a =jquery-doc= command to lookup documentation.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'jquery-doc)
+#+END_SRC
+
 *** JS2-mode
 
 #+BEGIN_SRC emacs-lisp
@@ -1734,6 +1733,12 @@ Use =eslint= instead of =jshint=.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'elpy)
 (elpy-enable)
+#+END_SRC
+
+Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq python-indent 2)
 #+END_SRC
 
 Some useful commands:
@@ -1900,6 +1905,28 @@ engines in GNU Emacs. Internally it is based on Projectile.
 (ph/install-package 'projectile-rails)
 (projectile-rails-global-mode)
 #+END_SRC
+*** Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-inf-ruby)
+(add-to-list 'company-backends 'company-inf-ruby)
+#+END_SRC
+
+** Shell
+
+Indentation
+
+#+BEGIN_SRC emacs-lisp
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+#+END_SRC
+
+Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-shell)
+(add-to-list 'company-backends 'company-shell)
+#+END_SRC
 
 ** TeX
 
@@ -1938,6 +1965,16 @@ Sync with evince. Use =Control + Left Click= for backward search.
 (setq TeX-source-correlate-start-server t)
 #+END_SRC
 
+Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-bibtex)
+(add-to-list 'company-backends 'company-bibtex)
+
+(ph/install-package 'company-auctex)
+(company-auctex-init)
+#+END_SRC
+
 ** Web mode
 
 [[http://web-mode.org/][Web-Mode]] is an autonomous emacs major-mode for editing web templates. HTML
@@ -1970,6 +2007,14 @@ Some web-mode settings.
       web-mode-block-padding 0
       web-mode-enable-current-element-highlight t
       web-mode-enable-current-column-highlight t)
+#+END_SRC
+
+*** Autocompletion
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'company-web nil)
+(require 'company-web-html)
+(add-to-list 'company-backends 'company-web-html)
 #+END_SRC
 
 Use company backends for =tern=, =html= and =css=.
