@@ -1006,6 +1006,12 @@ daily e-mail tsunami.
 (ph/install-package 'smtpmail)
 #+END_SRC
 
+Update every 10 minutes
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-update-interval (* 10 60))
+#+END_SRC
+
 *** General
 
 Mail directory
