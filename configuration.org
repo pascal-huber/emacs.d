@@ -2491,7 +2491,16 @@ where it is.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'beacon)
 (beacon-mode 1)
-(setq beacon-color "orange")
+(setq beacon-color "medium sea green")
+(setq beacon-blink-duration 0.1)
+#+END_SRC
+
+Blink when moving with evil.
+
+#+BEGIN_SRC emacs-lisp
+(advice-add 'evil-window-top    :after 'beacon-blink)
+(advice-add 'evil-window-middle :after 'beacon-blink)
+(advice-add 'evil-window-bottom :after 'beacon-blink)
 #+END_SRC
 
 ** Fancy stuff
