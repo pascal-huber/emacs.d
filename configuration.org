@@ -763,7 +763,7 @@ Keybinding to escape god-state.
 *** Keybindings
 
 #+BEGIN_SRC emacs-lisp
-(general-def '(emacs normal)
+(general-def '(normal)
   "," 'evil-execute-in-god-state)
 #+END_SRC
 
