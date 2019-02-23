@@ -1011,12 +1011,6 @@ daily e-mail tsunami.
 (ph/install-package 'smtpmail)
 #+END_SRC
 
-Update every 10 minutes
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-update-interval (* 10 60))
-#+END_SRC
-
 *** General
 
 Mail directory
@@ -1047,6 +1041,25 @@ Open mu4e in the current frame, even if it is already opened in another
   (unless (string-prefix-p "mu4e" (symbol-name major-mode))
     (let ((buffer (get-buffer "*mu4e-headers*")))
       (if buffer (switch-to-buffer buffer) (mu4e)))))
+#+END_SRC
+
+Update every 10 minutes
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-update-interval (* 10 60))
+#+END_SRC
+
+Update in background by default.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/mu4e-update-mail-and-index-in-background ()
+  "Fetch emails in background."
+  (interactive)
+  (mu4e-update-mail-and-index t))
+
+(general-def 'mu4e-main-mode-map
+  "U" 'ph/mu4e-update-mail-and-index-in-background
+  "i" 'mu4e-update-mail-and-index)
 #+END_SRC
 
 *** Headers
