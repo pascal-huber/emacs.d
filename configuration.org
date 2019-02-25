@@ -1584,7 +1584,6 @@ Autocompletion
 OS setup
 
 #+BEGIN_SRC shell
-sudo pacman -S cabal-install
 curl -sSL https://get.haskellstack.org/ | sh
 #+END_SRC
 
