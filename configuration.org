@@ -1628,9 +1628,11 @@ Don't jump to the repl everytime it does something.
 Some more convenient keybindings
 
 #+BEGIN_SRC emacs-lisp
-(general-def  'intero-mode-map
+(general-def 'haskell-mode-map
+  "C-c C-d" 'haskell-hoogle)
+(general-def 'intero-mode-map
   "C-c C-b" 'intero-repl)
-(general-def  'intero-repl-mode-map
+(general-def 'intero-repl-mode-map
   "C-c C-b" 'intero-repl-switch-back)
 #+END_SRC
 
