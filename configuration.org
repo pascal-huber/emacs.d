@@ -2378,29 +2378,31 @@ Functions to change the mode-line faces.
 (defun ph/spaceline-light()
   (interactive)
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#afd7ff")
+                      :background "#7ec0ee")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#fdfde7")
+                      :box '(:color "#8a8a8a")
+                      :background "#d7d7af")
   (set-face-attribute 'mode-line-buffer-id nil
                       :inherit 'mode-line
                       :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#fdfde7")
+                      :box '(:color "#8a8a8a")
+                      :background "#d7d7af")
   (set-face-attribute 'powerline-active1 nil
                       :inherit 'mode-line
                       :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#f3f3f3")
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7")
   (set-face-attribute 'powerline-active2 nil
                       :inherit 'mode-line
                       :foreground "#3a3a3a"
-                      :box '(:color "#e6e6e0")
-                      :background "#e6e6e6")
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7")
   (powerline-reset))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
 (defun ph/spaceline-dark()
   (interactive)
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
@@ -2425,7 +2427,7 @@ Functions to change the mode-line faces.
                       :inherit 'mode-line
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
-                      :background "#383838")
+                      :background "#303030")
   (powerline-reset))
 #+END_SRC
 
