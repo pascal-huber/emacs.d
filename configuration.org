@@ -1062,7 +1062,7 @@ Update in background by default.
   "i" 'mu4e-update-mail-and-index)
 #+END_SRC
 
-For some reason the first two cited faces are equal.
+For some reason the first two cited faces are equal by default. Let's fix this.
 
 # TODO: find out why they are equal (see mu4e-vars.el)
 
@@ -1070,8 +1070,6 @@ For some reason the first two cited faces are equal.
 (set-face-attribute 'mu4e-cited-2-face nil
                     :foreground "#5fafd7")
 #+END_SRC
-
-#+RESULTS:
 
 *** Headers
 
