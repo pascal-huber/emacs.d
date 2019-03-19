@@ -1228,13 +1228,31 @@ Kill message-buffer when finished.
 When replying an encrypted message, encrypt and sign the answer. [[https://github.com/djcb/mu/issues/865#issuecomment-228297390][Stolen
 shamelessly from here]].
 
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (add-hook 'mu4e-compose-mode-hook
   (defun my/maybe-reply-encrypted ()
     (let ((msg mu4e-compose-parent-message))
       (when (and msg (member 'encrypted (mu4e-message-field msg :flags)))
         (mml-secure-message-sign-encrypt)))))
- #+END_SRC
+#+END_SRC
+
+When sending a message with no =<#secure= option, ask if it should at least be
+signed.
+
+#+BEGIN_SRC emacs-lisp
+(defvar ph/message-security-regexp "<#secure")
+
+(defun ph/message-check-security nil
+  "Check for security options."
+  (save-excursion
+    (message-goto-body)
+    (unless (search-forward-regexp ph/message-security-regexp nil t nil)
+      (message-goto-body) ; TODO: is this message-goto-body redundant?
+      (if (message-y-or-n-p "Sign the message? " nil nil)
+          (mml-secure-sign-pgpmime)))))
+
+(add-hook 'message-send-hook 'ph/message-check-security)
+#+END_SRC
 
 *** Send
 
@@ -1267,7 +1285,7 @@ before sending the mail.
   (save-excursion
     (message-goto-body)
     (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
-      (message-goto-body)
+      (message-goto-body) ; TODO: is this message-goto-body redundant?
       (unless (message-y-or-n-p
                "Did you attach all documents?" nil nil)
         (error "No message sent, add some attachments!")))))
