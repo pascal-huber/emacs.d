@@ -1246,10 +1246,10 @@ signed.
   "Check for security options."
   (save-excursion
     (message-goto-body)
-    (unless (search-forward-regexp ph/message-security-regexp nil t nil)
-      (message-goto-body) ; TODO: is this message-goto-body redundant?
-      (if (message-y-or-n-p "Sign the message? " nil nil)
-          (mml-secure-sign-pgpmime)))))
+    (if (and ph/mu4e-auto-sign
+             (not (search-forward-regexp ph/message-security-regexp nil t nil))
+             (message-y-or-n-p "Sign the message? " nil nil))
+        (mml-secure-sign-pgpmime))))
 
 (add-hook 'message-send-hook 'ph/message-check-security)
 #+END_SRC
@@ -1323,6 +1323,7 @@ Pick first Context as default.
                       ("/r/INBOX.tempKeep"       . ?t)
                       ("/r/INBOX.Trash"          . ?b)))
                   (ph/mu4e-default-search-expr   . "maildir:/r/*")
+                  (ph/mu4e-auto-sign             . t)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.resolved.ch")
@@ -1354,6 +1355,7 @@ Pick first Context as default.
                       ("/q/INBOX.bugsnag"        . ?e)
                       ("/q/INBOX.Trash"          . ?b)))
                   (ph/mu4e-default-search-expr   . "maildir:/q/*")
+                  (ph/mu4e-auto-sign             . nil)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.quickshift.ch")
@@ -1384,6 +1386,7 @@ Pick first Context as default.
                       ("/e/INBOX.tmp"            . ?t)
                       ("/e/Deleted Items"        . ?b)))
                   (ph/mu4e-default-search-expr   . "maildir:/e/*")
+                  (ph/mu4e-auto-sign             . nil)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.ethz.ch")
