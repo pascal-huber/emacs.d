@@ -1391,34 +1391,7 @@ Pick first Context as default.
                   (smtpmail-smtp-service         . 587)
                   (smtpmail-smtp-user            . "pahuber")
                   (smtpmail-starttls-credentials . "/home/pascal/.authinfo.gpg")
-                  (smtpmail-auth-credentials     . '(("mail.ethz.ch" 587 nil nil)))))
-        ,(make-mu4e-context
-          :name "Gmail"
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg
-                           :to "mr.huber.pascal@gmail.com")))
-          :vars '((user-full-name                . "Pascal Huber")
-                  (user-mail-address	           . "mr.huber.pascal@gmail.com")
-                  (mu4e-get-mail-command         . "offlineimap -a Gmail")
-                  (mu4e-drafts-folder            . "/g/[Gmail].Drafts")
-                  (mu4e-sent-folder              . "/g/[Gmail].Sent Mail")
-                  (mu4e-trash-folder             . "/g/[Gmail].Bin")
-                  (mu4e-maildir-shortcuts
-                   .( ("/g/INBOX"                . ?i)
-                      ("/g/[Gmail].Sent Mail"    . ?s)
-                      ("/g/[Gmail].Spam"         . ?x)
-                      ("/g/[Gmail].Bin"          . ?b)))
-                  (ph/mu4e-default-search-expr   . "")
-                  (mu4e-sent-messages-behavior   . delete)
-                  (smtpmail-stream-type          . starttls)
-                  (smtpmail-default-smtp-server  . "smtp.gmail.com")
-                  (smtpmail-smtp-server          . "smtp.gmail.com")
-                  (smtpmail-smtp-service         . 587)
-                  (smtpmail-smtp-user            . "mr.huber.pascal@gmail.com")
-                  (smtpmail-starttls-credentials . "/home/pascal/.authinfo.gpg")
-                  (smtpmail-auth-credentials     . '(("smtp.gmail.com" 587 nil nil)))))))
+                  (smtpmail-auth-credentials     . '(("mail.ethz.ch" 587 nil nil)))))))
 #+END_SRC
 
 * Programming
