@@ -1225,35 +1225,6 @@ Kill message-buffer when finished.
 (setq message-kill-buffer-on-exit t)
 #+END_SRC
 
-When replying an encrypted message, encrypt and sign the answer. [[https://github.com/djcb/mu/issues/865#issuecomment-228297390][Stolen
-shamelessly from here]].
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'mu4e-compose-mode-hook
-  (defun my/maybe-reply-encrypted ()
-    (let ((msg mu4e-compose-parent-message))
-      (when (and msg (member 'encrypted (mu4e-message-field msg :flags)))
-        (mml-secure-message-sign-encrypt)))))
-#+END_SRC
-
-When sending a message with no =<#secure= option, ask if it should at least be
-signed.
-
-#+BEGIN_SRC emacs-lisp
-(defvar ph/message-security-regexp "<#secure")
-
-(defun ph/message-check-security nil
-  "Check for security options."
-  (save-excursion
-    (message-goto-body)
-    (if (and ph/mu4e-auto-sign
-             (not (search-forward-regexp ph/message-security-regexp nil t nil))
-             (message-y-or-n-p "Sign the message? " nil nil))
-        (mml-secure-sign-pgpmime))))
-
-(add-hook 'message-send-hook 'ph/message-check-security)
-#+END_SRC
-
 *** Send
 
 Use =smtpmail= with =gnutls= to sending mails.
@@ -1322,8 +1293,8 @@ Pick first Context as default.
                       ("/r/INBOX.keep"           . ?k)
                       ("/r/INBOX.tempKeep"       . ?t)
                       ("/r/INBOX.Trash"          . ?b)))
+                  (mu4e-compose-crypto-reply-plain-policy . sign)
                   (ph/mu4e-default-search-expr   . "maildir:/r/*")
-                  (ph/mu4e-auto-sign             . t)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.resolved.ch")
@@ -1354,8 +1325,8 @@ Pick first Context as default.
                       ("/q/INBOX.tempKeep"       . ?k)
                       ("/q/INBOX.bugsnag"        . ?e)
                       ("/q/INBOX.Trash"          . ?b)))
+                  (mu4e-compose-crypto-reply-plain-policy . nil)
                   (ph/mu4e-default-search-expr   . "maildir:/q/*")
-                  (ph/mu4e-auto-sign             . nil)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.quickshift.ch")
@@ -1385,8 +1356,8 @@ Pick first Context as default.
                       ("/e/INBOX.and"            . ?a)
                       ("/e/INBOX.tmp"            . ?t)
                       ("/e/Deleted Items"        . ?b)))
+                  (mu4e-compose-crypto-reply-plain-policy . nil)
                   (ph/mu4e-default-search-expr   . "maildir:/e/*")
-                  (ph/mu4e-auto-sign             . nil)
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
                   (smtpmail-default-smtp-server  . "mail.ethz.ch")
