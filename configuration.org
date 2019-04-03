@@ -633,10 +633,12 @@ your currently entered incomplete command (a prefix) in a popup.
 (which-key-mode)
 #+END_SRC
 
-Also use which-key in all evil states.
+Also use which-key evil and god-mode shortcuts.
 
 #+BEGIN_SRC emacs-lisp
 (which-key-enable-god-mode-support)
+(setq which-key-allow-evil-operators t)
+(setq which-key-show-operator-state-maps t)
 #+END_SRC
 
 Show command names up to 40 columns before cutting them.
