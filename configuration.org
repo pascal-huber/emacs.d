@@ -2145,6 +2145,7 @@ without modifiers).
   "h f" 'dumb-jump-go
   "h p" 'dumb-jump-go-prompt
   "l k" 'ph/kill-other-buffers
+  "l r" 'ranger
   "l o" 'ph/xdg-open
   "l q" 'ph/qs-notes
   "i"   'indent-region
