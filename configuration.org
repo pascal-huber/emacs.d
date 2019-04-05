@@ -215,13 +215,15 @@ After the first start, run the following commands.
 * Packages
 ** Installation
 
-Use the =gnu=, =melpa= and =marmelade= archives.
+Use the =gnu= (official) and =melpa= (unofficial) archives.
+
+# TODO: check if security measures are needed for melpa
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
 #+END_SRC
 
 A function to install and load packages on demand.
