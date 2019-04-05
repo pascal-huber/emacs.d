@@ -2113,7 +2113,6 @@ Overwriting default bindings (and defining new ones).
 
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keys-keymap
-  "<f6>"  'ivy-resume
   "M-x"   'counsel-M-x
   "C-s"   'ph/swiper
   "C-h f" 'counsel-describe-function
@@ -2156,7 +2155,8 @@ without modifiers).
   "u"   'imenu)
 
 (general-def ph/global-keys-keymap
-  "<f5>" 'ph/next-theme)
+  "<f5>"  'ph/next-theme
+  "<f6>"  'ivy-resume)
 #+END_SRC
 
 * User Interface
