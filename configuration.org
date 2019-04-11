@@ -607,7 +607,7 @@ will be updated with the current table of contents.
 for org-mode.
 
 #+begin_src emacs-lisp
-(ph/install-package 'org-ref)
+(ph/install-package 'org-ref nil)
 #+end_src
 
 ** Kill Buffers
