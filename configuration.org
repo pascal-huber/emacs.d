@@ -2309,7 +2309,7 @@ everything).
 #+BEGIN_SRC emacs-lisp
 (defun ph/set-powerline-text-scale-factor (face reserve)
   (if (display-graphic-p (selected-frame))
-      (setq powerline-text-scale-factor 0.92)
+      (setq powerline-text-scale-factor 0.81)
     (setq powerline-text-scale-factor nil)))
 
 (advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
@@ -2325,7 +2325,7 @@ The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 (set-face-attribute 'default nil
                     :family "DejaVu Sans Mono"
                     :weight 'normal
-                    :height 105
+                    :height 120
                     :width 'normal)
 #+END_SRC
 
