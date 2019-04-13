@@ -126,12 +126,16 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#tooltips][Tooltips]]
 
 * Notes for me
-  - Use =C-c u= more often (=imenu=)
-  - Close other window in same frame with =C-w C-o=.
+
+  - Use =C-c u= more often (=counsel-imenu=).
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
   - Use =C-c ​'​= to edit code blocks in =org-mode=.
   - Use =C-u M-!= to execute shell command and insert the output.
+  - Use =``= to jump back and forth.
+  - Use =m <letter>= to create markers =` <letter>= to go to marker.
+  - Use =C-i= (=jump-forward=) and =C-o= (=jump-backward=).
+
 * Inspiration
 
 - [[https://github.com/munen/emacs.d][Alain's configuration]]
@@ -544,19 +548,13 @@ Open in new frame
 [[https://orgmode.org/][Org-Mode]] is for keeping notes, maintaining TODO lists, planning projects, and
 authoring documents with a fast and effective plain-text system.
 
+# TODO: find solution in terminal for the C-i vs Tab (org vs evil) problem
+
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 #+END_SRC
 
 *** Settings
-
-Use =TAB= for org-cycle. This is not the case by default in terminal clients
-with =evil-mode= enabled.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'org-mode-hook
-  (lambda () (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
-#+END_SRC
 
 Automatically fill lines
 
@@ -1899,6 +1897,7 @@ engines in GNU Emacs. Internally it is based on Projectile.
 (ph/install-package 'projectile-rails)
 (projectile-rails-global-mode)
 #+END_SRC
+
 *** Autocompletion
 
 #+BEGIN_SRC emacs-lisp
