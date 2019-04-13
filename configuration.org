@@ -2153,7 +2153,7 @@ without modifiers).
   "k"   'switch-to-prev-buffer
   "o"   'ph/occur-dwim
   "r"   'ph/mu4e
-  "u"   'imenu)
+  "u"   'counsel-imenu)
 
 (general-def ph/global-keys-keymap
   "<f5>"  'ph/next-theme
