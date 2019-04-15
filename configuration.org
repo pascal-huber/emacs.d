@@ -41,7 +41,6 @@ This is my Emacs configuration. There are many like it, but this one is mine.
   - [[#org-mode][Org-Mode]]
     - [[#settings][Settings]]
     - [[#toc-org][TOC-Org]]
-    - [[#org-ref][Org-Ref]]
   - [[#kill-buffers][Kill Buffers]]
 - [[#general-packages][General Packages]]
   - [[#which-key][Which-Key]]
@@ -597,15 +596,6 @@ will be updated with the current table of contents.
 #+begin_src emacs-lisp
 (ph/install-package 'toc-org)
 (add-hook 'org-mode-hook 'toc-org-enable)
-#+end_src
-
-*** Org-Ref
-
-=org-ref=: citations, cross-references, indexes, glossaries and bibtex utilities
-for org-mode.
-
-#+begin_src emacs-lisp
-(ph/install-package 'org-ref nil)
 #+end_src
 
 ** Kill Buffers
