@@ -1146,17 +1146,22 @@ Set the fields displayed in =mu4e-headers-mode= and =mu4e-view-mode=.
         (:subject)))
 #+END_SRC
 
-Ask before I delete something permanently.
+Ask before I delete something permanently or set the trash flag. I just move
+messages to the trash folder to "delete" them.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/do-or-dont-execute (fn &rest args)
-  "Ask if FN should be executed (with ARGS)."
-  (when (y-or-n-p "Execute ? ")
+  "Execute FN (with ARGS) iff I confirm."
+  (when (y-or-n-p "Are you sure? ")
     (apply fn args)))
 
 (advice-add 'mu4e-headers-mark-for-delete
             :around 'ph/do-or-dont-execute)
 (advice-add 'mu4e-view-mark-for-delete
+            :around 'ph/do-or-dont-execute)
+(advice-add 'mu4e-headers-mark-for-trash
+            :around 'ph/do-or-dont-execute)
+(advice-add 'mu4e-view-mark-for-trash
             :around 'ph/do-or-dont-execute)
 #+END_SRC
 
