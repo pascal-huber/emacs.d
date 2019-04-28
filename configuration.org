@@ -261,6 +261,7 @@ Update all packages with =M-x auto-package-update-now=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'auto-package-update)
+(require 'auto-package-update)
 (setq auto-package-update-interval 7)
 #+END_SRC
 
@@ -268,7 +269,7 @@ To calculate the number of available updates, =package-refresh-contents= needs
 to be executed. Doing this periodically is annoying since it will block emacs. I
 therefore use the following function to query the number of
 =auto-package-update-interval= since the last update for my status bar so that I
-remeber to update my packages regularly.
+remember to update my packages regularly.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/update-intervals-since-last-update ()
