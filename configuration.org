@@ -1,6 +1,6 @@
 #+TITLE: Emacs Configuration
 
-This is my Emacs configuration. There are many like it, but this one is mine.
+This is my Emacs configuration.
 
 * Content :TOC_3_gh:
 - [[#notes-for-me][Notes for me]]
