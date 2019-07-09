@@ -47,6 +47,7 @@ This is my Emacs configuration.
   - [[#session][Session]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#crux][Crux]]
+  - [[#docker][Docker]]
   - [[#ag][Ag]]
   - [[#ripgrep][Ripgrep]]
   - [[#evil][Evil]]
@@ -667,6 +668,12 @@ useful interactive commands to enhance your overall Emacs experience.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'crux)
+#+END_SRC
+
+** Docker
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'dockerfile-mode)
 #+END_SRC
 
 ** Ag
