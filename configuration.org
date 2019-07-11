@@ -766,14 +766,6 @@ keys. It's similar to Vim's separation of commands and insertion mode.
 (ph/install-package 'evil-god-state)
 #+END_SRC
 
-Keybinding to escape god-state.
-
-#+BEGIN_SRC emacs-lisp
-(general-def 'god
-  [escape] 'evil-god-state-bail
-  "C-g"    'evil-god-state-bail)
-#+END_SRC
-
 *** Keybindings
 
 #+BEGIN_SRC emacs-lisp
