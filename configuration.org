@@ -396,6 +396,19 @@ Don't do double-spaces between sentences.
 (setq-default sentence-end-double-space nil)
 #+END_SRC
 
+To undo paragraph and region reorganization. Stolen from [[https://www.emacswiki.org/emacs/UnfillParagraph][here]].
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line
+of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+#+END_SRC
+
 ** Whitespace Cleanup
 
 Delete trailing whitespaces when saving.
@@ -2152,6 +2165,7 @@ without modifiers).
   "l r" 'ranger
   "l o" 'ph/xdg-open
   "l q" 'ph/qs-notes
+  "l u" 'ph/unfill-paragraph
   "i"   'indent-region
   "j"   'switch-to-next-buffer
   "k"   'switch-to-prev-buffer
