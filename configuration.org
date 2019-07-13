@@ -1030,46 +1030,39 @@ Save attachments in =~/Downloads/=.
 (setq mu4e-attachment-dir  "~/Downloads")
 #+END_SRC
 
-Close mu4e without asking
+Close mu4e without asking.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-confirm-quit nil)
 #+END_SRC
 
-Open mu4e in the current frame, even if it is already opened in another
-,possibly forgotten, frame.
+Open mu4e in the current frame or switch to an already existing mu4e-buffer.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/mu4e ()
-  "Open mu4e even if its already opened somewhere else."
+  "Open or switch to mu4e."
   (interactive)
   (unless (string-prefix-p "mu4e" (symbol-name major-mode))
     (let ((buffer (get-buffer "*mu4e-headers*")))
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
+Hide the annoying indexing message.
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-hide-index-messages t)
+#+END_SRC
+
 Update every 10 minutes
 
 #+BEGIN_SRC emacs-lisp
+(setq mu4e-get-mail-command "offlineimap")
 (setq mu4e-update-interval (* 10 60))
-#+END_SRC
-
-Update in background by default.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/mu4e-update-mail-and-index-in-background ()
-  "Fetch emails in background."
-  (interactive)
-  (mu4e-update-mail-and-index t))
-
-(general-def 'mu4e-main-mode-map
-  "U" 'ph/mu4e-update-mail-and-index-in-background
-  "i" 'mu4e-update-mail-and-index)
 #+END_SRC
 
 For some reason the first two cited faces are equal by default. Let's fix this.
 
-# TODO: find out why they are equal (see mu4e-vars.el)
+# TODO: mu4e: Find out why the first two cited faces are equal
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'mu4e-cited-2-face nil
@@ -1209,6 +1202,11 @@ Custom Bookmarks
               :name  "Big messages"
               :query "size:5M..50000M"
               :key ?b))
+(add-to-list 'mu4e-bookmarks
+             (make-mu4e-bookmark
+              :name  "Spam"
+              :query "maildir:/r/Spam/ OR maildir:/q/INBOX.spambucket OR maildir:/e/Junk*"
+              :key ?s))
 #+END_SRC
 
 *** Compose
@@ -1233,6 +1231,13 @@ Kill message-buffer when finished.
 
 #+BEGIN_SRC emacs-lisp
 (setq message-kill-buffer-on-exit t)
+#+END_SRC
+
+Add formatted citation line.
+
+#+BEGIN_SRC emacs-lisp
+(setq message-citation-line-function
+      'message-insert-formatted-citation-line)
 #+END_SRC
 
 *** Send
@@ -1266,7 +1271,7 @@ before sending the mail.
   (save-excursion
     (message-goto-body)
     (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
-      (message-goto-body) ; TODO: is this message-goto-body redundant?
+      (message-goto-body) ; TODO: mu4e: Refactor ph/message-check-attachment
       (unless (message-y-or-n-p
                "Did you attach all documents?" nil nil)
         (error "No message sent, add some attachments!")))))
@@ -1287,28 +1292,32 @@ Pick first Context as default.
           :name "Private"
           :match-func (lambda (msg)
                         (when msg
-                          (mu4e-message-contact-field-matches
-                           msg
-                           :to "pascal.huber@resolved.ch")))
+                          (or
+                           (mu4e-message-contact-field-matches
+                            msg
+                            :to "pascal.huber@resolved.ch")
+                           (mu4e-message-contact-field-matches
+                            msg
+                            :to "accounts@resolved.ch"))))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pascal.huber@resolved.ch")
-                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
-                  (mu4e-drafts-folder            . "/r/INBOX.Drafts")
-                  (mu4e-sent-folder              . "/r/INBOX.Sent")
-                  (mu4e-trash-folder             . "/r/INBOX.Trash")
+                  (mu4e-get-mail-command         . "offlineimap")
+                  (mu4e-drafts-folder            . "/r/Drafts")
+                  (mu4e-sent-folder              . "/r/Sent")
+                  (mu4e-trash-folder             . "/r/Trash")
                   (mu4e-maildir-shortcuts
                    .( ("/r/INBOX"                . ?i)
-                      ("/r/INBOX.Sent"           . ?s)
-                      ("/r/INBOX.spambucket"     . ?x)
-                      ("/r/INBOX.keep"           . ?k)
-                      ("/r/INBOX.tempKeep"       . ?t)
-                      ("/r/INBOX.Trash"          . ?b)))
+                      ("/r/Sent"                 . ?s)
+                      ("/r/Spam"                 . ?x)
+                      ("/r/keep"                 . ?k)
+                      ("/r/tempKeep"             . ?t)
+                      ("/r/Trash"                . ?b)))
                   (mu4e-compose-crypto-reply-plain-policy . sign)
                   (ph/mu4e-default-search-expr   . "maildir:/r/*")
                   (mu4e-sent-messages-behavior   . sent)
                   (smtpmail-stream-type          . starttls)
-                  (smtpmail-default-smtp-server  . "mail.resolved.ch")
-                  (smtpmail-smtp-server          . "mail.resolved.ch")
+                  (smtpmail-default-smtp-server  . "mail.infomaniak.com")
+                  (smtpmail-smtp-server          . "mail.infomaniak.com")
                   (smtpmail-smtp-service         . 587)
                   (smtpmail-smtp-user            . "pascal.huber@resolved.ch")
                   (smtpmail-starttls-credentials . "/home/pascal/.authinfo.gpg")
@@ -1317,11 +1326,12 @@ Pick first Context as default.
           :name "QuickShift"
           :match-func (lambda (msg)
                         (when msg
-                          (mu4e-message-contact-field-matches msg
-                                                              :to "pascal@quickshift.ch")))
+                          (mu4e-message-contact-field-matches
+                           msg
+                           :to "pascal@quickshift.ch")))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pascal@quickshift.ch")
-                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
+                  (mu4e-get-mail-command         . "offlineimap")
                   (mu4e-drafts-folder            . "/q/INBOX.Drafts")
                   (mu4e-sent-folder              . "/q/INBOX.Sent")
                   (mu4e-trash-folder             . "/q/INBOX.Trash")
@@ -1354,7 +1364,7 @@ Pick first Context as default.
                            :to "pahuber@student.ethz.ch")))
           :vars '((user-full-name                . "Pascal Huber" )
                   (user-mail-address             . "pahuber@student.ethz.ch")
-                  (mu4e-get-mail-command         . "offlineimap -a Private,QuickshiftPascal,ETH")
+                  (mu4e-get-mail-command         . "offlineimap")
                   (mu4e-drafts-folder            . "/e/Drafts")
                   (mu4e-sent-folder              . "/e/Sent Items")
                   (mu4e-trash-folder             . "/e/Deleted Items")
