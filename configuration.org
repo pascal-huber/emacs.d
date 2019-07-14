@@ -115,7 +115,7 @@ This is my Emacs configuration.
   - [[#spaceline][Spaceline]]
     - [[#segments][Segments]]
     - [[#setup][Setup]]
-    - [[#config][Config]]
+    - [[#scaling][Scaling]]
   - [[#themes-and-faces][Themes and Faces]]
     - [[#faces][Faces]]
     - [[#themes][Themes]]
@@ -131,10 +131,11 @@ This is my Emacs configuration.
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
   - Use =C-c p n= for =projectile-rails=.
   - Use =C-c ​'​= to edit code blocks in =org-mode=.
-  - Use =C-u M-!= to execute shell command and insert the output.
+  - Use =M-!= or =:!= to execute shell command.
   - Use =``= to jump back and forth.
   - Use =m <letter>= to create markers =` <letter>= to go to marker.
   - Use =C-i= (=jump-forward=) and =C-o= (=jump-backward=).
+  - The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
 * Inspiration
 
@@ -2314,14 +2315,14 @@ spaceline-compile=.
     (major-mode)))
 #+END_SRC
 
-*** Config
-
-Set mode-line always active (don't hide any information when focus is on a
-different window).
+Set mode-line always active (don't hide segments when focus is on a different
+window).
 
 #+BEGIN_SRC emacs-lisp
 (defun powerline-selected-window-active () t)
 #+END_SRC
+
+*** Scaling
 
 Before drawing the powerline, adjust =powerline-text-scale-factor=. The reason
 behind this ist that my mode-line font in my graphical frames is a tiny bit
@@ -2341,9 +2342,10 @@ everything).
 
 ** Themes and Faces
 *** Faces
-**** Default
 
-The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
+The faces in this section are the same for all themes.
+
+**** Default Font
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
@@ -2353,78 +2355,7 @@ The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
                     :width 'normal)
 #+END_SRC
 
-**** Mode Line
-
-A slightly smaller font for the mode-line.
-
-#+BEGIN_SRC emacs-lisp
-(set-face-attribute 'mode-line nil
-                    :inherit 'default
-                    :height 0.8)
-(set-face-attribute 'mode-line-inactive nil
-                    :inherit 'mode-line)
-#+END_SRC
-
-Functions to change the mode-line faces.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/spaceline-light()
-  (interactive)
-  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#7ec0ee")
-  (set-face-attribute 'mode-line nil
-                      :height 100
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#d7d7af")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#d7d7af")
-  (set-face-attribute 'powerline-active1 nil
-                      :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7")
-  (set-face-attribute 'powerline-active2 nil
-                      :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7")
-  (powerline-reset))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/spaceline-dark()
-  (interactive)
-  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :foreground "#3a3a3a"
-                      :background "#7ec0ee")
-  (set-face-attribute 'mode-line nil
-                      :height 100
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'powerline-active1 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#303030")
-  (set-face-attribute 'powerline-active2 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#303030")
-  (powerline-reset))
-#+END_SRC
-
-**** Attention-Faces
+**** Spaceline Attention
 
 Faces to highlight things/spaceline-segments which need special attention.
 
@@ -2458,9 +2389,9 @@ Faces to highlight things/spaceline-segments which need special attention.
   :group 'spaceline)
 #+END_SRC
 
-**** Mu4e
+**** Spaceline Mu4e
 
-Face for mu4e segemnt.
+Face for =mu4e= segemnt.
 
 #+BEGIN_SRC emacs-lisp
 (defface ph/spaceline-mu4e-context-face
@@ -2470,9 +2401,9 @@ Face for mu4e segemnt.
   :group 'spaceline)
 #+END_SRC
 
-**** Evil States
+**** Spaceline Evil-State
 
-Ajdust the colors for different evil-states.
+Set the evil-state segment colors for =god-state= and =operator-state=.
 
 #+BEGIN_SRC emacs-lisp
 (defface ph/spaceline-evil-god-face
@@ -2480,6 +2411,7 @@ Ajdust the colors for different evil-states.
         :inherit 'spaceline-evil-normal)))
   "Spaceline Evil God State"
   :group 'spaceline)
+
 (add-to-list 'spaceline-evil-state-faces
              '(god . ph/spaceline-evil-god-face))
 
@@ -2488,12 +2420,14 @@ Ajdust the colors for different evil-states.
         :inherit 'spaceline-evil-normal)))
   "Spaceline Evil Operator State"
   :group 'spaceline)
+
 (add-to-list 'spaceline-evil-state-faces
              '(operator . ph/spaceline-evil-operator-face))
 #+END_SRC
 
 *** Themes
-**** Rotation
+
+Function to rotate through =ph/theme-list=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'moe-theme)
@@ -2501,32 +2435,95 @@ Ajdust the colors for different evil-states.
 (setq ph/theme-list '(moe-dark moe-light))
 
 (defun ph/next-theme ()
-  "Disable all enabled themes and then load next theme."
+  "Load next theme."
   (interactive)
-  (mapcar 'disable-theme custom-enabled-themes)
-  (load-theme (nth 0 ph/theme-list) t)
+  (ph/load-theme (nth 0 ph/theme-list))
   (setq ph/theme-list (-rotate -1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
+
 #+END_SRC
 
-**** Customizations
-
-Customize the loaded themes.
+Functionality to load and customize themes.
 
 #+BEGIN_SRC emacs-lisp
-(advice-add 'load-theme :after
-            (lambda (&rest args)
-              (mapcar 'ph/customize-theme custom-enabled-themes)))
+(defun ph/load-theme (theme)
+  "Like load-theme but first disable all custom-enabled themes ,
+then load THEME and finally do some customizations."
+  (interactive
+   (list
+    (intern (completing-read "Load custom theme: "
+			     (mapcar 'symbol-name
+				     (custom-available-themes))))))
+  (mapcar 'disable-theme custom-enabled-themes)
+  (load-theme theme t)
+  (ph/customize-theme theme)
+  (powerline-reset))
 
 (defun ph/customize-theme (theme)
-  "Customize the given THEME if necessary."
-  (let ((theme-name (symbol-name theme)))
-    (cond ((string= theme-name "moe-dark")
-           (ph/spaceline-dark))
-          ((string= theme-name "moe-light")
-           (ph/spaceline-light)))))
+  "Call ph/any-theme-customize and if existent
+ph/THEME-customize."
+  (ph/any-theme-customize)
+  (let ((fn (intern (concat "ph/" (symbol-name theme) "-customize"))))
+    (when (functionp fn)
+      (funcall fn))))
+
+(defun ph/any-theme-customize()
+  (set-face-attribute 'mode-line nil
+                      :height 100))
+
+(defun ph/moe-dark-customize()
+  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
+                      :foreground "#3a3a3a"
+                      :background "#7ec0ee")
+  (set-face-attribute 'mode-line nil
+                      :height 100
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'powerline-active1 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030")
+  (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030"))
+
+(defun ph/moe-light-customize()
+  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
+                      :background "#7ec0ee")
+  (set-face-attribute 'mode-line nil
+                      :height 100
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#ffd787")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#ffd787")
+  (set-face-attribute 'powerline-active1 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7")
+  (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7"))
 #+END_SRC
+
+#+RESULTS:
+: ph/moe-light-customize
 
 ** Diminish
 
@@ -2562,7 +2559,7 @@ where it is.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'beacon)
 (beacon-mode 1)
-(setq beacon-color "medium sea green")
+(setq beacon-color "#478061")
 (setq beacon-blink-duration 0.1)
 #+END_SRC
 
