@@ -5,16 +5,7 @@ This is my Emacs configuration.
 * Content :TOC_3_gh:
 - [[#notes-for-me][Notes for me]]
 - [[#inspiration][Inspiration]]
-- [[#os-setup][OS Setup]]
-  - [[#installation][Installation]]
-  - [[#mu4e][Mu4e]]
-  - [[#go][Go]]
-  - [[#markdown][Markdown]]
-  - [[#javascript][JavaScript]]
-  - [[#python-development][Python Development]]
-  - [[#ruby][Ruby]]
-  - [[#dumb-jump][Dumb Jump]]
-- [[#first-use][First Use]]
+- [[#installation][Installation]]
 - [[#packages][Packages]]
   - [[#installation-1][Installation]]
   - [[#packages-for-configuration][Packages for Configuration]]
@@ -143,8 +134,7 @@ This is my Emacs configuration.
 - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
 
-* OS Setup
-** Installation
+* Installation
 
 Clone, create symlink and update submodules.
 
@@ -152,64 +142,13 @@ Clone, create symlink and update submodules.
 $ cd ~/git
 $ git clone http://github.com/sirpscl/emacs.d
 $ ln -s ~/git/emacs.d ~/.emacs.d
-$ cd ~/git/emacs.d
-$ git submodule update --init
 #+END_SRC
 
-** Mu4e
-
-Install and configure [[https://github.com/djcb/mu][mu]] and [[https://github.com/OfflineIMAP/offlineimap][offlineimap]] and make sure mu has indexed
-everything.
-
-#+BEGIN_SRC shell
-$ mu index --maildir=~/.mail
-#+END_SRC
-
-** Go
-
-#+BEGIN_SRC shell
-$ go get -u github.com/rogpeppe/godef
-$ go get -u github.com/mdempsky/gocode
-#+END_SRC
-
-** Markdown
-
-[[https://github.com/jgm/pandoc][Pandoc]] is a swiss-army knife for converting documents.
-
-#+BEGIN_SRC shell
-$ pacaur -S pandoc
-#+END_SRC
-
-** JavaScript
-
-Install =npm= dependencies for linting and auto-completion.
-
-#+BEGIN_SRC shell
-$ npm install -g eslint babel-eslint tern
-#+END_SRC
-
-** Python Development
-
-#+BEGIN_SRC shell
-$ sudo pacman -S python-pipenv
-#+END_SRC
-
-** Ruby
-
-Install dependencies for =robe=. Note that if the project has a =Gemfile=, these
-dependencies have to be installed with it.
-
-#+BEGIN_SRC shell
-$ gem install pry pry-doc method_source
-#+END_SRC
-
-** Dumb Jump
-
-#+BEGIN_SRC shell
-$ sudo pacman -S ripgrep
-#+END_SRC
-
-* First Use
+Some important and noteworthy dependencies:
+ - [[https://github.com/djcb/mu][mu]]
+ - [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
+ - [[https://github.com/jgm/pandoc][pandoc]]
+ - ripgrep
 
 After the first start, run the following commands.
 
