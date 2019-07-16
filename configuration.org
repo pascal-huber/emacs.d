@@ -2176,7 +2176,9 @@ without modifiers).
   "k"   'switch-to-prev-buffer
   "o"   'ph/occur-dwim
   "r"   'ph/mu4e
-  "u"   'counsel-imenu)
+  "u"   'counsel-imenu
+  "w m" 'which-key-show-major-mode
+  "w t" 'which-key-show-top-level)
 
 (general-def ph/global-keys-keymap
   "<f5>"  'ph/next-theme
