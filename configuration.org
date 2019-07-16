@@ -14,6 +14,7 @@ This is my Emacs configuration.
   - [[#disabled-commands][Disabled Commands]]
   - [[#yes-or-no][Yes or No]]
   - [[#symlinks][Symlinks]]
+  - [[#display-line-numbers][Display Line Numbers]]
   - [[#final-newline][Final Newline]]
   - [[#backup][Backup]]
   - [[#auto-save][Auto-Save]]
@@ -64,8 +65,7 @@ This is my Emacs configuration.
   - [[#general-purpose][General Purpose]]
     - [[#company][Company]]
     - [[#brackets][Brackets]]
-    - [[#display-line-numbers][Display Line Numbers]]
-    - [[#dumb-jump-1][Dumb Jump]]
+    - [[#dumb-jump][Dumb Jump]]
     - [[#flycheck][Flycheck]]
     - [[#git][Git]]
     - [[#indentation][Indentation]]
@@ -247,6 +247,20 @@ Always Follow Symlinks, no questions asked.
 
 #+BEGIN_SRC emacs-lisp
 (setq vc-follow-symlinks t)
+#+END_SRC
+
+** Display Line Numbers
+
+Show line numbers in all modes.
+
+#+BEGIN_SRC emacs-lisp
+(global-display-line-numbers-mode)
+#+END_SRC
+
+Count the number of lines to use for line number width.
+
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-width-start t)
 #+END_SRC
 
 ** Final Newline
@@ -1394,20 +1408,6 @@ Highlight matching brackets.
 #+BEGIN_SRC emacs-lisp
 (setq show-paren-style 'mixed)
 (add-hook 'prog-mode-hook 'show-paren-mode)
-#+END_SRC
-
-*** Display Line Numbers
-
-Show line numbers in programming modes
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+END_SRC
-
-Count the number of lines to use for line number width.
-
-#+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-width-start t)
 #+END_SRC
 
 *** Dumb Jump
