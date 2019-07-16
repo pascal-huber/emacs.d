@@ -188,8 +188,8 @@ Also load packages which are not in an archive but in this repository.
 
 ** Packages for Configuration
 
-[[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for
-both evil and non-evil users).
+[[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for both
+evil and non-evil users).
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'general)
@@ -213,7 +213,8 @@ remember to update my packages regularly.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/update-intervals-since-last-update ()
-  "Return the number of auto-update-package-intervals since the last update."
+  "Return the number of auto-update-package-intervals since the
+last update."
   (when (file-exists-p auto-package-update-last-update-day-path)
     (/ (- (apu--today-day) (apu--read-last-update-day))
        auto-package-update-interval)))
@@ -340,8 +341,8 @@ Use a line width of 80 columns.
 (setq-default fill-column 80)
 #+END_SRC
 
-To reorganize a paragraph to fit the 80 columns, use =M-q= (=M-x fill-paragraph=)
-and/or enable =auto-fill-mode=.
+To reorganize a paragraph to fit the 80 columns, use =M-q= (=M-x
+fill-paragraph=) and/or enable =auto-fill-mode=.
 
 Don't do double-spaces between sentences.
 
