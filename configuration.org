@@ -103,13 +103,12 @@ This is my Emacs configuration.
 - [[#random-stuff][Random Stuff]]
 - [[#global-keybindings][Global Keybindings]]
 - [[#user-interface][User Interface]]
+  - [[#default-face][Default Face]]
   - [[#spaceline][Spaceline]]
     - [[#segments][Segments]]
     - [[#setup][Setup]]
     - [[#scaling][Scaling]]
-  - [[#themes-and-faces][Themes and Faces]]
-    - [[#faces][Faces]]
-    - [[#themes][Themes]]
+  - [[#color-themes][Color Themes]]
   - [[#diminish][Diminish]]
   - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
@@ -2125,6 +2124,16 @@ without modifiers).
 #+END_SRC
 
 * User Interface
+** Default Face
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil
+                    :family "DejaVu Sans Mono"
+                    :weight 'normal
+                    :height 120
+                    :width 'normal)
+#+END_SRC
+
 ** Spaceline
 
 #+BEGIN_SRC emacs-lisp
@@ -2160,7 +2169,35 @@ Slightly simplified flycheck segments for =info=, =warning= and =error=.
          (if c (format "%s" c))))))
 #+END_SRC
 
-**** Evil
+Default faces for the flycheck segments.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-flycheck-error-face
+  '((t :inherit 'mode-line
+       :weight bold
+       :foreground "white"
+       :background "dark red"))
+  "Flycheck Error Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-flycheck-warning-face
+  '((t :inherit 'mode-line
+       :weight bold
+       :foreground "white"
+       :background "DarkOrange3"))
+  "Flycheck Warning Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-flycheck-info-face
+  '((t :inherit 'mode-line
+       :weight bold
+       :foreground "white"
+       :background "dark green"))
+  "Flycheck Info Face"
+  :group 'spaceline)
+#+END_SRC
+
+**** Evil State
 
 Setting the face according to =evil-state=.
 
@@ -2176,7 +2213,29 @@ Setting the face according to =evil-state=.
               'ph/spaceline-highlight-face-evil-state)
 #+END_SRC
 
-**** Git Branch Name
+Set the evil-state segment colors for =god-state= and =operator-state=.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-evil-god-face
+  '((t (:background "tomato"
+        :inherit 'spaceline-evil-normal)))
+  "Spaceline Evil God State"
+  :group 'spaceline)
+
+(add-to-list 'spaceline-evil-state-faces
+             '(god . ph/spaceline-evil-god-face))
+
+(defface ph/spaceline-evil-operator-face
+  '((t (:background "cornflower blue"
+        :inherit 'spaceline-evil-normal)))
+  "Spaceline Evil Operator State"
+  :group 'spaceline)
+
+(add-to-list 'spaceline-evil-state-faces
+             '(operator . ph/spaceline-evil-operator-face))
+#+END_SRC
+
+**** Git Branch
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/git-branch-name ()
@@ -2216,6 +2275,24 @@ The following segemnts display the current buffer's =method= and =user@host=.
      (file-remote-p default-directory 'host))))
 #+END_SRC
 
+Default faces for the tramp segments.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-tramp-user-host-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#fce94f"))
+  "Tramp User@Host Face"
+  :group 'spaceline)
+
+(defface ph/spaceline-tramp-method-face
+  '((t :inherit 'mode-line
+       :foreground "black"
+       :background "#ff5d17"))
+  "Tramp Method Face"
+  :group 'spaceline)
+#+END_SRC
+
 **** Mu4e Context
 
 #+BEGIN_SRC emacs-lisp
@@ -2226,10 +2303,22 @@ The following segemnts display the current buffer's =method= and =user@host=.
       (mu4e-context-name context))))
 #+END_SRC
 
+Face for =mu4e= segemnt.
+
+#+BEGIN_SRC emacs-lisp
+(defface ph/spaceline-mu4e-context-face
+  '((t :inherit 'mode-line
+       :weight bold))
+  "mu4e face"
+  :group 'spaceline)
+#+END_SRC
+
 *** Setup
 
 Setting up the mode-line and order of segements. Compile the modeline with =M-x
 spaceline-compile=.
+
+# TODO: spaceline line-column performance issues with sudo
 
 #+BEGIN_SRC emacs-lisp
 (require 'spaceline-config)
@@ -2239,8 +2328,8 @@ spaceline-compile=.
   '((evil-state :when active :face highlight-face)
     (buffer-id)
     (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
-    (ph/remote-method :face 'ph/spaceline-warn-face)
-    (ph/remote-user-and-host :face 'ph/spaceline-another-warn-face)
+    (ph/remote-method :face 'ph/spaceline-tramp-method-face)
+    (ph/remote-user-and-host :face 'ph/spaceline-tramp-user-host-face)
     (ph/virtualenvwrapper-segment)
     (buffer-modified)
     (process :when active))
@@ -2248,11 +2337,11 @@ spaceline-compile=.
     (anzu)
     (projectile-root)
     (ph/version-control :when active)
-    (line-column)
-    (buffer-position)
-    (ph/flycheck-info-segment :face 'ph/spaceline-info-face)
-    (ph/flycheck-warning-segment :face 'ph/spaceline-warn-face)
-    (ph/flycheck-error-segment :face 'ph/spaceline-alert-face)
+    ;; (line-column)
+    ;; (buffer-position)
+    (ph/flycheck-info-segment :face 'ph/spaceline-flycheck-info-face)
+    (ph/flycheck-warning-segment :face 'ph/spaceline-flycheck-warning-face)
+    (ph/flycheck-error-segment :face 'ph/spaceline-flycheck-error-face)
     (major-mode)))
 #+END_SRC
 
@@ -2281,92 +2370,7 @@ everything).
 (advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
 #+END_SRC
 
-** Themes and Faces
-*** Faces
-
-The faces in this section are the same for all themes.
-
-**** Default Font
-
-#+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil
-                    :family "DejaVu Sans Mono"
-                    :weight 'normal
-                    :height 120
-                    :width 'normal)
-#+END_SRC
-
-**** Spaceline Attention
-
-Faces to highlight things/spaceline-segments which need special attention.
-
-#+BEGIN_SRC emacs-lisp
-(defface ph/spaceline-alert-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#ef2929"))
-  "Alert Face"
-  :group 'spaceline)
-
-(defface ph/spaceline-warn-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#ff5d17"))
-  "Warn Face"
-  :group 'spaceline)
-
-(defface ph/spaceline-another-warn-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#fce94f"))
-  "Another Warn Face"
-  :group 'spaceline)
-
-(defface ph/spaceline-info-face
-  '((t :inherit 'mode-line
-       :foreground "black"
-       :background "#a1db00"))
-  "Info Face"
-  :group 'spaceline)
-#+END_SRC
-
-**** Spaceline Mu4e
-
-Face for =mu4e= segemnt.
-
-#+BEGIN_SRC emacs-lisp
-(defface ph/spaceline-mu4e-context-face
-  '((t :inherit 'mode-line
-       :weight bold))
-  "mu4e face"
-  :group 'spaceline)
-#+END_SRC
-
-**** Spaceline Evil-State
-
-Set the evil-state segment colors for =god-state= and =operator-state=.
-
-#+BEGIN_SRC emacs-lisp
-(defface ph/spaceline-evil-god-face
-  '((t (:background "tomato"
-        :inherit 'spaceline-evil-normal)))
-  "Spaceline Evil God State"
-  :group 'spaceline)
-
-(add-to-list 'spaceline-evil-state-faces
-             '(god . ph/spaceline-evil-god-face))
-
-(defface ph/spaceline-evil-operator-face
-  '((t (:background "cornflower blue"
-        :inherit 'spaceline-evil-normal)))
-  "Spaceline Evil Operator State"
-  :group 'spaceline)
-
-(add-to-list 'spaceline-evil-state-faces
-             '(operator . ph/spaceline-evil-operator-face))
-#+END_SRC
-
-*** Themes
+** Color Themes
 
 Function to rotate through =ph/theme-list=.
 
@@ -2382,7 +2386,6 @@ Function to rotate through =ph/theme-list=.
   (setq ph/theme-list (-rotate -1 ph/theme-list)))
 
 (add-hook 'after-init-hook 'ph/next-theme)
-
 #+END_SRC
 
 Functionality to load and customize themes.
@@ -2404,10 +2407,10 @@ then load THEME and finally do some customizations."
 (defun ph/customize-theme (theme)
   "Call ph/any-theme-customize and if existent
 ph/THEME-customize."
-  (ph/any-theme-customize)
   (let ((fn (intern (concat "ph/" (symbol-name theme) "-customize"))))
     (when (functionp fn)
-      (funcall fn))))
+      (funcall fn)))
+  (ph/any-theme-customize))
 
 (defun ph/any-theme-customize()
   (set-face-attribute 'mode-line nil
@@ -2463,9 +2466,6 @@ ph/THEME-customize."
                       :background "#fdfde7"))
 #+END_SRC
 
-#+RESULTS:
-: ph/moe-light-customize
-
 ** Diminish
 
 Diminish implements hiding or abbreviation of the mode line displays (lighters)
@@ -2474,22 +2474,24 @@ of minor-modes.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'diminish)
 
-(eval-after-load "god-mode"
-  '(diminish 'god-local-mode))
-(eval-after-load "rainbow-mode"
-  '(diminish 'rainbow-mode))
-(eval-after-load "projectile"
-  '(diminish 'projectile-mode))
-(eval-after-load "beacon"
-  '(diminish 'beacon-mode))
 (eval-after-load "auto-revert"
   '(diminish 'auto-revert-mode))
+(eval-after-load "beacon"
+  '(diminish 'beacon-mode))
+(eval-after-load "god-mode"
+  '(diminish 'god-local-mode))
+(eval-after-load "ivy"
+  '(diminish 'ivy-mode))
+(eval-after-load "projectile"
+  '(diminish 'projectile-mode))
+(eval-after-load "projectile-rails"
+  '(diminish 'projectile-rails-mode))
+(eval-after-load "rainbow-mode"
+  '(diminish 'rainbow-mode))
 (eval-after-load "undo-tree"
   '(diminish 'undo-tree-mode))
 (eval-after-load "which-key"
   '(diminish 'which-key-mode))
-(eval-after-load "ivy"
-  '(diminish 'ivy-mode))
 #+END_SRC
 
 ** Beacon
@@ -2525,8 +2527,8 @@ Disable fancy GUI stuff
 
 ** Frame Title
 
-Show the buffer-name, projectile-project-name and major-mode in the frame title.
-Use the same title for unfocussed/stacked frames.
+Show the buffer-name in the frame title and use the same title for unfocussed
+frames.
 
 #+BEGIN_SRC emacs-lisp
 (setq ph/frame-title-format '("%b"))
