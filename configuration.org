@@ -49,7 +49,6 @@ This is my Emacs configuration.
     - [[#keybindings][Keybindings]]
   - [[#projectile][Projectile]]
   - [[#ivy-counsel-and-swiper][Ivy, Counsel and Swiper]]
-  - [[#dictcc][Dictcc]]
   - [[#pdf-tools][PDF-Tools]]
   - [[#elfeed][Elfeed]]
   - [[#mu4e][Mu4e]]
@@ -803,14 +802,6 @@ Prevent swiper from swiping itself.
   (interactive)
   (unless (string= (symbol-name major-mode) "minibuffer-inactive-mode")
     (swiper)))
-#+END_SRC
-
-** Dictcc
-
-[[https://github.com/cqql/dictcc.el][Dictcc]] translates English to German and vice versa.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'dictcc)
 #+END_SRC
 
 ** PDF-Tools
