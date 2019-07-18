@@ -2293,7 +2293,8 @@ spaceline-compile=.
     (ph/remote-method :face 'ph/spaceline-tramp-method-face)
     (ph/remote-user-and-host :face 'ph/spaceline-tramp-user-host-face)
     (buffer-modified)
-    (line-column)
+    ;; TODO: Find out why spaceline's line-column slows down tramp
+    (line-column :when (not (file-remote-p default-directory 'method)))
     (buffer-encoding))
   '((minor-modes)
     (projectile-root)
