@@ -2282,8 +2282,6 @@ Face for =mu4e= segemnt.
 Setting up the mode-line and order of segements. Compile the modeline with =M-x
 spaceline-compile=.
 
-# TODO: spaceline line-column performance issues with sudo
-
 #+BEGIN_SRC emacs-lisp
 (require 'spaceline-config)
 (spaceline-emacs-theme)
@@ -2294,7 +2292,9 @@ spaceline-compile=.
     (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
     (ph/remote-method :face 'ph/spaceline-tramp-method-face)
     (ph/remote-user-and-host :face 'ph/spaceline-tramp-user-host-face)
-    (buffer-modified))
+    (buffer-modified)
+    (line-column)
+    (buffer-encoding))
   '((minor-modes)
     (projectile-root)
     (ph/version-control)
