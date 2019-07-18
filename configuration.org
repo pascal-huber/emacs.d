@@ -2289,20 +2289,15 @@ spaceline-compile=.
 (spaceline-emacs-theme)
 (spaceline-install
   'main
-  '((evil-state :when active :face highlight-face)
+  '((evil-state :face highlight-face)
     (buffer-id)
     (ph/mu4e-context-segment :face 'ph/spaceline-mu4e-context-face)
     (ph/remote-method :face 'ph/spaceline-tramp-method-face)
     (ph/remote-user-and-host :face 'ph/spaceline-tramp-user-host-face)
-    (ph/virtualenvwrapper-segment)
-    (buffer-modified)
-    (process :when active))
+    (buffer-modified))
   '((minor-modes)
-    (anzu)
     (projectile-root)
-    (ph/version-control :when active)
-    ;; (line-column)
-    ;; (buffer-position)
+    (ph/version-control)
     (ph/flycheck-info-segment :face 'ph/spaceline-flycheck-info-face)
     (ph/flycheck-warning-segment :face 'ph/spaceline-flycheck-warning-face)
     (ph/flycheck-error-segment :face 'ph/spaceline-flycheck-error-face)
@@ -2389,6 +2384,11 @@ ph/THEME-customize."
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
                       :background "#252525")
+  (set-face-attribute 'mode-line-inactive nil
+                      :height 100
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
   (set-face-attribute 'mode-line-buffer-id nil
                       :inherit 'mode-line
                       :foreground "#c6c6c6"
@@ -2399,7 +2399,17 @@ ph/THEME-customize."
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
                       :background "#303030")
+  (set-face-attribute 'powerline-inactive1 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030")
   (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#303030")
+  (set-face-attribute 'powerline-inactive2 nil
                       :inherit 'mode-line
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
@@ -2408,13 +2418,18 @@ ph/THEME-customize."
 (defun ph/moe-light-customize()
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
                       :background "#7ec0ee")
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#ffd787")
   (set-face-attribute 'mode-line nil
                       :height 100
                       :foreground "#3a3a3a"
                       :box '(:color "#8a8a8a")
                       :background "#ffd787")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :inherit 'mode-line
+  (set-face-attribute 'mode-line-inactive nil
+                      :height 100
                       :foreground "#3a3a3a"
                       :box '(:color "#8a8a8a")
                       :background "#ffd787")
@@ -2423,7 +2438,17 @@ ph/THEME-customize."
                       :foreground "#3a3a3a"
                       :box '(:color "#8a8a8a")
                       :background "#fdfde7")
+  (set-face-attribute 'powerline-inactive1 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7")
   (set-face-attribute 'powerline-active2 nil
+                      :inherit 'mode-line
+                      :foreground "#3a3a3a"
+                      :box '(:color "#8a8a8a")
+                      :background "#fdfde7")
+  (set-face-attribute 'powerline-inactive2 nil
                       :inherit 'mode-line
                       :foreground "#3a3a3a"
                       :box '(:color "#8a8a8a")
