@@ -7,9 +7,12 @@ This is my Emacs configuration.
 - [[#inspiration][Inspiration]]
 - [[#installation][Installation]]
 - [[#packages][Packages]]
+  - [[#sources][Sources]]
   - [[#installation-1][Installation]]
-  - [[#packages-for-configuration][Packages for Configuration]]
-  - [[#package-updates][Package Updates]]
+  - [[#updates][Updates]]
+- [[#configuration-helpers][Configuration Helpers]]
+  - [[#keybindings][Keybindings]]
+  - [[#other-helpers][Other Helpers]]
 - [[#tweaking-defaults][Tweaking Defaults]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#yes-or-no][Yes or No]]
@@ -46,7 +49,7 @@ This is my Emacs configuration.
     - [[#states][States]]
     - [[#evil-surround][Evil Surround]]
     - [[#evil-god-state][Evil God State]]
-    - [[#keybindings][Keybindings]]
+    - [[#keybindings-1][Keybindings]]
   - [[#projectile][Projectile]]
   - [[#ivy-counsel-and-swiper][Ivy, Counsel and Swiper]]
   - [[#pdf-tools][PDF-Tools]]
@@ -117,9 +120,6 @@ This is my Emacs configuration.
 
   - Use =C-c u= more often (=counsel-imenu=).
   - Use =C-c p 5 f= to open a file in a new frame with projectile.
-  - Use =C-c p n= for =projectile-rails=.
-  - Use =C-c ​'​= to edit code blocks in =org-mode=.
-  - Use =M-!= or =:!= to execute shell command.
   - Use =``= to jump back and forth.
   - Use =m <letter>= to create markers =` <letter>= to go to marker.
   - Use =C-i= (=jump-forward=) and =C-o= (=jump-backward=).
@@ -132,8 +132,6 @@ This is my Emacs configuration.
 - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
 
 * Installation
-
-Clone, create symlink and update submodules.
 
 #+BEGIN_SRC shell
 $ cd ~/git
@@ -154,7 +152,7 @@ After the first start, run the following commands.
 #+END_SRC
 
 * Packages
-** Installation
+** Sources
 
 Use the =gnu= (official) and =melpa= (unofficial) archives.
 
@@ -167,7 +165,16 @@ Use the =gnu= (official) and =melpa= (unofficial) archives.
 (package-initialize)
 #+END_SRC
 
-A function to install and load packages on demand.
+Also load packages which are not in an archive but in this repository.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/vendor/")
+#+END_SRC
+
+** Installation
+
+Install packages on demand. This is cleaner and easier to keep tidy than
+defining a huge list of packages at the beginning of the configuration.
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/install-package (package)
@@ -178,22 +185,7 @@ A function to install and load packages on demand.
       (package-install package))))
 #+END_SRC
 
-Also load packages which are not in an archive but in this repository.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/vendor/")
-#+END_SRC
-
-** Packages for Configuration
-
-[[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for both
-evil and non-evil users).
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'general)
- #+END_SRC
-
-** Package Updates
+** Updates
 
 Update all packages with =M-x auto-package-update-now=.
 
@@ -216,6 +208,27 @@ last update."
   (when (file-exists-p auto-package-update-last-update-day-path)
     (/ (- (apu--today-day) (apu--read-last-update-day))
        auto-package-update-interval)))
+#+END_SRC
+
+* Configuration Helpers
+** Keybindings
+
+[[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for both
+evil and non-evil users).
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'general)
+ #+END_SRC
+
+** Other Helpers
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'dash)
+(defun ph/call-rotate (fn lst)
+  "Call FN with first element of the LST.
+Returns the rotated list."
+  (funcall fn (nth 0 lst))
+  (-rotate -1 lst))
 #+END_SRC
 
 * Tweaking Defaults
@@ -609,7 +622,7 @@ Restore some stuff (command histories, kill-ring, ...) from last session.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'session)
-(add-hook 'after-init-hook 'session-initialize)
+(add-hook 'emacs-startup-hook 'session-initialize)
 #+END_SRC
 
 ** Browse-Kill-Ring
@@ -856,7 +869,6 @@ Go up and down with =j= and =k=.
   "j" 'next-line
   "k" 'previous-line)
 #+END_SRC
-
 
 Show date
 
@@ -1314,9 +1326,9 @@ This section contains programming packages and settings.
 ** General Purpose
 *** Company
 
-[[http://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for
-"complete anything". It uses pluggable back-ends and front-ends to retrieve and
-display completion candidates.
+[[http://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for "complete
+anything". It uses pluggable back-ends and front-ends to retrieve and display
+completion candidates.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'company)
@@ -1389,7 +1401,8 @@ persistent background processes
 
 *** Flycheck
 
-[[https://www.flycheck.org/en/latest/][Flycheck]] is a modern on-the-fly syntax checking extension for GNU Emacs.
+[[https://www.flycheck.org/en/latest/][Flycheck]] is a modern on-the-fly syntax checking extension for GNU Emacs. The
+most important commands have keybindings with prefix =C-c !=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'flycheck)
@@ -1401,17 +1414,6 @@ Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'global-flycheck-mode)
  #+END_SRC
-
-Use =C-c ! l= (=M-x flycheck-list-errors=) to list all errors. Within the error
-list the following key bindings are available:
- - =n= Jump to the next error
- - =p= Jump to the previous error
- - =e= Explain the error
- - =f= Filter the error list by level
- - =F= Remove this filter
- - =S= Sort the error list bye the column at point
- - =g= Check the source buffer and update the error list
- - =q= Quit the error list and hide its window
 
 *** Git
 
@@ -1454,8 +1456,6 @@ Some major-modes to configure git repositories.
 #+END_SRC
 
 ** CSS
-
-Indentation
 
 #+BEGIN_SRC emacs-lisp
 (setq css-indent-offset 2)
@@ -1973,6 +1973,7 @@ Use a line width of 100 in =yaml-mode=.
 (add-hook 'yaml-mode-hook
   (lambda () (set-fill-column 100)))
 #+END_SRC
+
 * Random Stuff
 
 #+BEGIN_SRC emacs-lisp
@@ -2023,14 +2024,16 @@ Version 2019-01-18"
 
 * Global Keybindings
 
-Create an empty keymap and minor-mode for my global keybindings
+Create an empty keymap and minor-mode for my global keybindings.
 
 #+BEGIN_SRC emacs-lisp
 (defvar ph/global-keys-keymap (make-sparse-keymap))
+
 (define-minor-mode ph/global-keys-mode
-  :init-value t
-  :keymap ph/global-keys-keymap)
-(ph/global-keys-mode t)
+  "A minor mode with personalized keybindings."
+  t ;; init-value
+  nil ;; lighter
+  ph/global-keys-keymap)
 #+END_SRC
 
 Overwriting default bindings (and defining new ones).
@@ -2069,7 +2072,6 @@ without modifiers).
   "h f" 'dumb-jump-go
   "h p" 'dumb-jump-go-prompt
   "l k" 'ph/kill-other-buffers
-  "l r" 'ranger
   "l o" 'ph/xdg-open
   "l q" 'ph/qs-notes
   "l u" 'ph/unfill-paragraph
@@ -2336,16 +2338,15 @@ Function to rotate through =ph/theme-list=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'moe-theme)
-(ph/install-package 'dash)
 (setq ph/theme-list '(moe-dark moe-light))
 
 (defun ph/next-theme ()
   "Load next theme."
   (interactive)
-  (ph/load-theme (nth 0 ph/theme-list))
-  (setq ph/theme-list (-rotate -1 ph/theme-list)))
+  (setq ph/theme-list
+        (ph/call-rotate 'ph/load-theme ph/theme-list)))
 
-(add-hook 'after-init-hook 'ph/next-theme)
+(add-hook 'emacs-startup-hook 'ph/next-theme)
 #+END_SRC
 
 Functionality to load and customize themes.
@@ -2380,18 +2381,13 @@ ph/THEME-customize."
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
                       :foreground "#3a3a3a"
                       :background "#7ec0ee")
-  (set-face-attribute 'mode-line nil
-                      :height 100
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'mode-line-inactive nil
-                      :height 100
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
   (set-face-attribute 'mode-line-buffer-id nil
                       :inherit 'mode-line
+                      :foreground "#c6c6c6"
+                      :box '(:color "#252525")
+                      :background "#252525")
+  (set-face-attribute 'mode-line nil
+                      :height 100
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
                       :background "#252525")
@@ -2399,61 +2395,36 @@ ph/THEME-customize."
                       :inherit 'mode-line
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
-                      :background "#303030")
-  (set-face-attribute 'powerline-inactive1 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#303030")
+                      :background "#3a3a3a")
   (set-face-attribute 'powerline-active2 nil
                       :inherit 'mode-line
                       :foreground "#c6c6c6"
                       :box '(:color "#252525")
-                      :background "#303030")
-  (set-face-attribute 'powerline-inactive2 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#303030"))
+                      :background "#3a3a3a"))
 
 (defun ph/moe-light-customize()
   (set-face-attribute 'ph/spaceline-mu4e-context-face nil
                       :background "#7ec0ee")
   (set-face-attribute 'mode-line-buffer-id nil
                       :inherit 'mode-line
-                      :foreground "#3a3a3a"
+                      :foreground "#000000"
                       :box '(:color "#8a8a8a")
                       :background "#ffd787")
   (set-face-attribute 'mode-line nil
                       :height 100
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#ffd787")
-  (set-face-attribute 'mode-line-inactive nil
-                      :height 100
-                      :foreground "#3a3a3a"
+                      :foreground "#000000"
                       :box '(:color "#8a8a8a")
                       :background "#ffd787")
   (set-face-attribute 'powerline-active1 nil
                       :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7")
-  (set-face-attribute 'powerline-inactive1 nil
-                      :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7")
+                      :foreground "#000000"
+                      :box '(:color "#aaaaaa")
+                      :background "#afd7ff")
   (set-face-attribute 'powerline-active2 nil
                       :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7")
-  (set-face-attribute 'powerline-inactive2 nil
-                      :inherit 'mode-line
-                      :foreground "#3a3a3a"
-                      :box '(:color "#8a8a8a")
-                      :background "#fdfde7"))
+                      :foreground "#000000"
+                      :box '(:color "#aaaaaa")
+                      :background "#afd7ff"))
 #+END_SRC
 
 ** Diminish
