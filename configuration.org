@@ -107,6 +107,7 @@ This is my Emacs configuration.
   - [[#default-face][Default Face]]
   - [[#spaceline][Spaceline]]
     - [[#segments][Segments]]
+    - [[#face-handling][Face Handling]]
     - [[#setup][Setup]]
     - [[#scaling][Scaling]]
   - [[#color-themes][Color Themes]]
@@ -2273,10 +2274,31 @@ Face for =mu4e= segemnt.
 
 #+BEGIN_SRC emacs-lisp
 (defface ph/spaceline-mu4e-context-face
-  '((t :inherit 'mode-line
-       :weight bold))
-  "mu4e face"
+'((t :inherit 'mode-line
+       :foreground "#fdf4c1"
+       :weight bold
+       :background "chocolate4"))
+  "Mu4e Segment Face"
   :group 'spaceline)
+#+END_SRC
+
+*** Face Handling
+
+Only use the =powerline-active1= and =powerline-active2= faces.
+
+#+BEGIN_SRC emacs-lisp
+(defun ph/spaceline-face-func (face active)
+  (pcase (cons face active)
+    ('(face1 . t)   'powerline-active1)
+    ('(face1 . nil) 'powerline-inactive1)
+    ('(face2 . t)   'powerline-active2)
+    ('(face2 . nil) 'powerline-inactive2)
+    ('(line  . t)   'powerline-active1)
+    ('(line  . nil) 'powerline-inactive1)
+    ('(highlight . t)   (funcall spaceline-highlight-face-func))
+    ('(highlight . nil) (funcall spaceline-highlight-face-func))))
+
+(setq spaceline-face-func 'ph/spaceline-face-func)
 #+END_SRC
 
 *** Setup
@@ -2326,10 +2348,11 @@ everything).
 #+BEGIN_SRC emacs-lisp
 (defun ph/set-powerline-text-scale-factor (face reserve)
   (if (display-graphic-p (selected-frame))
-      (setq powerline-text-scale-factor 0.81)
+      (setq powerline-text-scale-factor 0.8)
     (setq powerline-text-scale-factor nil)))
 
-(advice-add 'powerline-fill :before #'ph/set-powerline-text-scale-factor)
+(advice-add 'powerline-fill :before
+            #'ph/set-powerline-text-scale-factor)
 #+END_SRC
 
 ** Color Themes
@@ -2337,8 +2360,10 @@ everything).
 Function to rotate through =ph/theme-list=.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'moe-theme)
-(setq ph/theme-list '(moe-dark moe-light))
+(ph/install-package 'gruvbox-theme)
+(setq ph/theme-list
+      '(gruvbox-dark-medium
+        gruvbox-light-hard))
 
 (defun ph/next-theme ()
   "Load next theme."
@@ -2357,74 +2382,16 @@ Functionality to load and customize themes.
 then load THEME and finally do some customizations."
   (interactive
    (list
-    (intern (completing-read "Load custom theme: "
-			     (mapcar 'symbol-name
-				     (custom-available-themes))))))
+    (intern (completing-read
+             "Load custom theme: "
+             (mapcar 'symbol-name (custom-available-themes))))))
   (mapcar 'disable-theme custom-enabled-themes)
   (load-theme theme t)
-  (ph/customize-theme theme)
+  (ph/customize-faces)
   (powerline-reset))
 
-(defun ph/customize-theme (theme)
-  "Call ph/any-theme-customize and if existent
-ph/THEME-customize."
-  (let ((fn (intern (concat "ph/" (symbol-name theme) "-customize"))))
-    (when (functionp fn)
-      (funcall fn)))
-  (ph/any-theme-customize))
-
-(defun ph/any-theme-customize()
-  (set-face-attribute 'mode-line nil
-                      :height 100))
-
-(defun ph/moe-dark-customize()
-  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :foreground "#3a3a3a"
-                      :background "#7ec0ee")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'mode-line nil
-                      :height 100
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#252525")
-  (set-face-attribute 'powerline-active1 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#3a3a3a")
-  (set-face-attribute 'powerline-active2 nil
-                      :inherit 'mode-line
-                      :foreground "#c6c6c6"
-                      :box '(:color "#252525")
-                      :background "#3a3a3a"))
-
-(defun ph/moe-light-customize()
-  (set-face-attribute 'ph/spaceline-mu4e-context-face nil
-                      :background "#7ec0ee")
-  (set-face-attribute 'mode-line-buffer-id nil
-                      :inherit 'mode-line
-                      :foreground "#000000"
-                      :box '(:color "#8a8a8a")
-                      :background "#ffd787")
-  (set-face-attribute 'mode-line nil
-                      :height 100
-                      :foreground "#000000"
-                      :box '(:color "#8a8a8a")
-                      :background "#ffd787")
-  (set-face-attribute 'powerline-active1 nil
-                      :inherit 'mode-line
-                      :foreground "#000000"
-                      :box '(:color "#aaaaaa")
-                      :background "#afd7ff")
-  (set-face-attribute 'powerline-active2 nil
-                      :inherit 'mode-line
-                      :foreground "#000000"
-                      :box '(:color "#aaaaaa")
-                      :background "#afd7ff"))
+(defun ph/customize-faces()
+  (set-face-attribute 'mode-line nil :height 100))
 #+END_SRC
 
 ** Diminish
