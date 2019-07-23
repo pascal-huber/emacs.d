@@ -2350,21 +2350,24 @@ Face for =mu4e= segemnt.
 
 *** Face Handling
 
-Only use the =powerline-active1= and =powerline-active2= faces.
+Not every theme works well with the default faces. Therefore I have 2 different
+setups for different themes. See the Color Themes section for details.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/spaceline-face-func (face active)
-  (pcase (cons face active)
-    ('(face1 . t)   'powerline-active1)
-    ('(face1 . nil) 'powerline-inactive1)
-    ('(face2 . t)   'powerline-active2)
-    ('(face2 . nil) 'powerline-inactive2)
-    ('(line  . t)   'powerline-active1)
-    ('(line  . nil) 'powerline-inactive1)
-    ('(highlight . t)   (funcall spaceline-highlight-face-func))
-    ('(highlight . nil) (funcall spaceline-highlight-face-func))))
+(defun ph/spaceline-face-func-1 (face active)
+  (case face
+    (face1 'powerline-active1)
+    (face2 'powerline-active2)
+    (line  'mode-line)
+    (highlight (funcall spaceline-highlight-face-func))))
 
-(setq spaceline-face-func 'ph/spaceline-face-func)
+;; Spaceline default behavior
+(defun ph/spaceline-face-func-2 (face active)
+  (case face
+    (face1 'powerline-active1)
+    (face2 'mode-line)
+    (line  'powerline-active2)
+    (highlight (funcall spaceline-highlight-face-func))))
 #+END_SRC
 
 *** Setup
@@ -2427,9 +2430,11 @@ Function to rotate through =ph/theme-list=.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'gruvbox-theme)
+(ph/install-package 'doom-themes)
+
 (setq ph/theme-list
       '(gruvbox-dark-medium
-        gruvbox-light-hard))
+        doom-one-light))
 
 (defun ph/next-theme ()
   "Load next theme."
@@ -2453,11 +2458,29 @@ then load THEME and finally do some customizations."
              (mapcar 'symbol-name (custom-available-themes))))))
   (mapcar 'disable-theme custom-enabled-themes)
   (load-theme theme t)
-  (ph/customize-faces)
+  (ph/customize-theme theme)
+  (ph/any-theme-customize)
   (powerline-reset))
 
-(defun ph/customize-faces()
+(defun ph/customize-theme (theme)
+  "Call ph/THEME-customize if existent or ph/fallback-customize."
+  (let ((fn (intern (concat "ph/" (symbol-name theme) "-customize"))))
+    (message (concat "ph/" (symbol-name theme) "-customize"))
+    (if (functionp fn)
+        (funcall fn)
+      (ph/fallback-customize))))
+
+(defun ph/any-theme-customize()
   (set-face-attribute 'mode-line nil :height 100))
+
+(defun ph/fallback-customize()
+  (setq spaceline-face-func 'ph/spaceline-face-func-1))
+
+(defun ph/doom-one-light-customize()
+  (setq spaceline-face-func 'ph/spaceline-face-func-2))
+
+(defun ph/gruvbox-dark-medium-customize()
+  (setq spaceline-face-func 'ph/spaceline-face-func-1))
 #+END_SRC
 
 ** Diminish
