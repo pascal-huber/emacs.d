@@ -274,10 +274,11 @@ Always Follow Symlinks, no questions asked.
 
 ** Display Line Numbers
 
-Show line numbers in all modes.
+Show line numbers in all text and programming buffers.
 
 #+BEGIN_SRC emacs-lisp
-(global-display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+END_SRC
 
 Count the number of lines to use for line number width.
