@@ -40,6 +40,7 @@ This is my Emacs configuration.
 - [[#additional-functionality][Additional Functionality]]
   - [[#which-key][Which-Key]]
   - [[#session][Session]]
+  - [[#smex][Smex]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#crux][Crux]]
   - [[#docker][Docker]]
@@ -631,6 +632,16 @@ Restore some stuff (command histories, kill-ring, ...) from last session.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'session)
 (add-hook 'emacs-startup-hook 'session-initialize)
+ #+END_SRC
+
+** Smex
+
+Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a
+convenient interface to your recently and most frequently used commands. And to
+all the other commands, too.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'smex)
 #+END_SRC
 
 ** Browse-Kill-Ring
