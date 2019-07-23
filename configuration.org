@@ -31,6 +31,7 @@ This is my Emacs configuration.
   - [[#buffers-and-frames][Buffers and Frames]]
   - [[#ido][Ido]]
   - [[#sudo-save][Sudo Save]]
+  - [[#flyspell][Flyspell]]
   - [[#occur][Occur]]
   - [[#dired][Dired]]
   - [[#org-mode][Org-Mode]]
@@ -475,6 +476,51 @@ This is, when it doesn't already have a sudo-prefix."
                          (file-writable-p (buffer-file-name))
                          (not (ph/sudo-save-buffer)))
                  (call-interactively fn args))))
+#+END_SRC
+
+** Flyspell
+
+[[https://www.emacswiki.org/emacs/FlySpell][Flyspell]] enables on-the-fly spell checking in Emacs by the means of a minor
+mode. Flyspell highlights incorrect words as soon as they are completed or as
+soon as the TextCursor hits a new word.
+
+[[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]] offers distraction-free words correction with flyspell via
+selected interface.
+
+# TODO: Find out how flyspell-correct-wrapper works.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flyspell-correct-ivy)
+(setq flyspell-correct-interface #'flyspell-correct-ivy)
+#+END_SRC
+
+Enable =flyspell-mode= in text-mode buffers.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'text-mode-hook #'flyspell-mode)
+#+END_SRC
+
+Use Hunspell instead of Aspell.
+
+# TODO: Compare Aspell with Hunspell.
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "hunspell")
+#+END_SRC
+
+Rotate through Ispell languages
+
+#+BEGIN_SRC emacs-lisp
+(setq ph/ispell-dictionaries-list '("en_US" "de_CH"))
+
+(defun ph/ispell-next-dictionary ()
+  "Load next Ispell dictionary."
+  (interactive)
+  (setq ph/ispell-dictionaries-list
+        (ph/call-rotate 'ispell-change-dictionary
+                         ph/ispell-dictionaries-list)))
+
+(add-hook 'after-init-hook 'ph/ispell-next-dictionary)
 #+END_SRC
 
 ** Occur
@@ -2092,6 +2138,11 @@ without modifiers).
   "k"   'switch-to-prev-buffer
   "o"   'ph/occur-dwim
   "r"   'ph/mu4e
+  "s b" 'flyspell-buffer
+  "s c" 'flyspell-correct-at-point
+  "s e" 'flyspell-mode
+  "s n" 'flyspell-goto-next-error
+  "s l" 'ph/ispell-next-dictionary
   "u"   'counsel-imenu
   "w m" 'which-key-show-major-mode
   "w t" 'which-key-show-top-level)
