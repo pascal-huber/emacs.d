@@ -2477,6 +2477,9 @@ then load THEME and finally do some customizations."
   (setq spaceline-face-func 'ph/spaceline-face-func-1))
 
 (defun ph/doom-one-light-customize()
+  (set-face-attribute 'org-level-1 nil :height 1.0 :background nil)
+  (set-face-attribute 'org-level-2 nil :height 1.0 :background nil)
+  (set-face-attribute 'org-level-3 nil :height 1.0 :background nil)
   (setq spaceline-face-func 'ph/spaceline-face-func-2))
 
 (defun ph/gruvbox-dark-medium-customize()
