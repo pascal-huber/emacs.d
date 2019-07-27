@@ -860,10 +860,10 @@ Show current entry number.
 Prevent swiper from swiping itself.
 
 #+BEGIN_SRC emacs-lisp
-(defun ph/swiper ()
+(defun ph/swiper-from-isearch ()
   (interactive)
   (unless (string= (symbol-name major-mode) "minibuffer-inactive-mode")
-    (swiper)))
+    (swiper-from-isearch)))
 #+END_SRC
 
 ** PDF-Tools
@@ -2078,7 +2078,7 @@ Overwriting sequences (and defining new ones) for non-user-reserved sequences.
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keys-keymap
   "M-x"   'counsel-M-x
-  "C-s"   'ph/swiper
+  "C-s"   'ph/swiper-from-isearch
   "C-h f" 'counsel-describe-function
   "C-h v" 'counsel-describe-variable)
 
