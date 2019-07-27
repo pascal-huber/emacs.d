@@ -457,21 +457,17 @@ If the current buffer is not writable, ask if it should be saved with sudo.
 #+BEGIN_SRC emacs-lisp
 (defun ph/sudo-file-name (filename)
   "Prepend '/sudo:root@`system-name`:' to FILENAME if appropriate.
-This is, when it doesn't already have a sudo-prefix."
-  (if (not (or (string-prefix-p "/sudo:root@localhost:"
-				                        filename)
-		           (string-prefix-p (format "/sudo:root@%s:" system-name)
-				                        filename)))
-	    (format "/sudo:root@%s:%s" system-name filename)
-    filename))
+If the file already has a tramp prefix, return nil."
+  (when (and filename
+             (not (file-remote-p filename)))
+    (format "/sudo:root@%s:%s" (system-name) filename)))
 
 (defun ph/sudo-save-buffer ()
-  "Save FILENAME with sudo if the user approves."
-  (interactive)
-  (when buffer-file-name
-    (let ((file (ph/sudo-file-name buffer-file-name)))
-	    (if (yes-or-no-p (format "Save file as %s ? " file))
-	        (write-file file)))))
+  "Save buffer as root if the user approves."
+  (let ((filename (ph/sudo-file-name (buffer-file-name))))
+    (when (and filename
+               (yes-or-no-p (format "Save file as %s ? " filename)))
+      (write-file filename))))
 
 (advice-add 'save-buffer :around
             '(lambda (fn &rest args)
