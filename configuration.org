@@ -238,12 +238,12 @@ evil and non-evil users).
 ** Other Helpers
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'dash)
 (defun ph/call-rotate (fn lst)
   "Call FN with first element of the LST.
 Returns the rotated list."
-  (funcall fn (nth 0 lst))
-  (-rotate -1 lst))
+  (let ((args (car lst)))
+    (funcall fn args)
+    (append (cdr lst) (cons args ()))))
 #+END_SRC
 
 * Tweaking Defaults
