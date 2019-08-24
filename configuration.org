@@ -171,13 +171,22 @@ After the first start, run the following commands.
 
 Use the =gnu= (official) and =melpa= (unofficial) archives.
 
-# TODO: check if security measures are needed for melpa
+# TODO: check if security measures are needed for melpa (package-check-signature?)
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
 (setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
+#+END_SRC
+
+Some packages (=undo-tree=) fail to install over =https=, thus this workaround.
+[[https://github.com/bbatsov/prelude/issues/1225][See this issue]].
+
+# TODO: investigate gnutls package installation issue
+
+#+BEGIN_SRC emacs-lisp
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 #+END_SRC
 
 Also load packages which are not in an archive but in this repository.
