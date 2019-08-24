@@ -363,7 +363,7 @@ will profit.
 
 ** Browser
 
-Use Firefox to browse urls.
+Use Firefox to browse URLs.
 
 #+BEGIN_SRC emacs-lisp
 (setq browse-url-browser-function 'browse-url-generic
@@ -840,7 +840,8 @@ dependencies (when feasible).
 
 ** Ivy, Counsel and Swiper
 
-[[https://github.com/abo-abo/swiper][Ivy, Counsel (and Swiper)]], a collection of Ivy-enhanced versions of common Emacs commands.
+[[https://github.com/abo-abo/swiper][Ivy, Counsel (and Swiper)]], a collection of Ivy-enhanced versions of common Emacs
+commands.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
