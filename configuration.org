@@ -41,6 +41,7 @@ This is my Emacs configuration.
 - [[#additional-functionality][Additional Functionality]]
   - [[#which-key][Which-Key]]
   - [[#session][Session]]
+  - [[#ace-window][Ace Window]]
   - [[#smex][Smex]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
   - [[#crux][Crux]]
@@ -690,7 +691,22 @@ Restore some stuff (command histories, kill-ring, ...) from last session.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'session)
 (add-hook 'emacs-startup-hook 'session-initialize)
- #+END_SRC
+#+END_SRC
+
+** Ace Window
+
+[[https://github.com/abo-abo/ace-window][Ace-window]] aims to take the speed and predictability of =windmove= and pack it
+into a single key binding, similar to =other-window=.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'ace-window)
+#+END_SRC
+
+Use the following characters/keys to switch to the windows
+
+#+BEGIN_SRC emacs-lisp
+(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+#+END_SRC
 
 ** Smex
 
@@ -2091,6 +2107,7 @@ Overwriting sequences (and defining new ones) for non-user-reserved sequences.
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keys-keymap
   "M-x"   'counsel-M-x
+  "C-x o" 'ace-window
   "C-s"   'ph/swiper-from-isearch
   "C-h f" 'counsel-describe-function
   "C-h v" 'counsel-describe-variable)
