@@ -708,6 +708,13 @@ Use the following characters/keys to switch to the windows
 (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 #+END_SRC
 
+Set the ace-window-scope to =frame= because I often have multiple frames opened
+on other workspaces and only want to jump to other windows in the current frame.
+
+#+BEGIN_SRC emacs-lisp
+(setq aw-scope 'frame)
+#+END_SRC
+
 ** Smex
 
 Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a
