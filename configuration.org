@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 #+TITLE: Emacs Configuration
 
 This is my Emacs configuration.
 
-* Content :TOC_3_gh:
+* Content :TOC_3:
 - [[#notes][Notes]]
 - [[#inspiration][Inspiration]]
 - [[#installation][Installation]]
