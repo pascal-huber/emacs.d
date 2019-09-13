@@ -12,8 +12,6 @@ This is my Emacs configuration.
   - [[#installation-1][Installation]]
   - [[#updates][Updates]]
 - [[#configuration-helpers][Configuration Helpers]]
-  - [[#keybindings][Keybindings]]
-  - [[#other-helpers][Other Helpers]]
 - [[#tweaking-defaults][Tweaking Defaults]]
   - [[#disabled-commands][Disabled Commands]]
   - [[#yes-or-no][Yes or No]]
@@ -144,6 +142,7 @@ Things to check out and problems to deal with:
  - Use project-specific exec-path. For example to use =eslint= from the
    project's =./node_modules/= and not from globally installed modules.
  - [[https://github.com/ianpan870102/.emacs.d/blob/master/config.org][Yay-Evil distro by Ian Y.E. Pan]]
+ - Check out [[https://www.reddit.com/r/emacs/comments/5vhlws/using_tab_for_both_yasnippet_and_company/][this]] company-yasnippet setup
 
 * Inspiration
 
@@ -176,22 +175,20 @@ After the first start, run the following commands.
 
 Use the =gnu= (official) and =melpa= (unofficial) archives.
 
-# TODO: check if security measures are needed for melpa (package-check-signature?)
-
 #+BEGIN_SRC emacs-lisp
 (require 'package)
-(setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
+(setq package-archives
+      '(("gnu"   . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 #+END_SRC
 
 Some packages (=undo-tree=) fail to install over =https=, thus this workaround.
-[[https://github.com/bbatsov/prelude/issues/1225][See this issue]].
-
-# TODO: investigate gnutls package installation issue
+[[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341][See GNU bug report logs - #34341]]. Should be fixed as of Emacs 26.3.
 
 #+BEGIN_SRC emacs-lisp
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(when (version< emacs-version "26.3")
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 #+END_SRC
 
 Also load packages which are not in an archive but in this repository.
@@ -240,7 +237,6 @@ last update."
 #+END_SRC
 
 * Configuration Helpers
-** Keybindings
 
 [[https://github.com/noctuid/general.el][General]] provides a more convenient method for binding keys in emacs (for both
 evil and non-evil users).
@@ -249,7 +245,7 @@ evil and non-evil users).
 (ph/install-package 'general)
  #+END_SRC
 
-** Other Helpers
+Other Helpers:
 
 #+BEGIN_SRC emacs-lisp
 (defun ph/call-rotate (fn lst)
@@ -501,8 +497,6 @@ soon as the TextCursor hits a new word.
 [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]] offers distraction-free words correction with flyspell via
 selected interface.
 
-# TODO: Find out how flyspell-correct-wrapper works.
-
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'flyspell-correct-ivy)
 (setq flyspell-correct-interface #'flyspell-correct-ivy)
@@ -515,8 +509,6 @@ Enable =flyspell-mode= in text-mode buffers.
 #+END_SRC
 
 Use Hunspell instead of Aspell.
-
-# TODO: Compare Aspell with Hunspell.
 
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "hunspell")
@@ -1120,7 +1112,7 @@ Update every 10 minutes
 
 For some reason the first two cited faces are equal by default. Let's fix this.
 
-# TODO: mu4e: Find out why the first two cited faces are equal
+# TODO: Find out why the first two mu4e-cited faces are identical
 
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'mu4e-cited-2-face nil
@@ -1329,7 +1321,7 @@ before sending the mail.
   (save-excursion
     (message-goto-body)
     (when (search-forward-regexp ph/message-attachment-regexp nil t nil)
-      (message-goto-body) ; TODO: mu4e: Refactor ph/message-check-attachment
+      (message-goto-body)
       (unless (message-y-or-n-p
                "Did you attach all documents?" nil nil)
         (error "No message sent, add some attachments!")))))
@@ -1787,8 +1779,6 @@ Some useful commands:
 *** Auto Completion
 
 Jedi is a Python auto-completion package for Emacs.
-
-# TODO: Compare jedi with rope.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'jedi)
@@ -2581,7 +2571,7 @@ Disable fancy GUI stuff
 
 ** Frame Title
 
-Show the buffer-name in the frame title and use the same title for unfocussed
+Show the buffer-name in the frame title and use the same title for unfocused
 frames.
 
 #+BEGIN_SRC emacs-lisp
