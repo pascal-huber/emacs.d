@@ -74,6 +74,7 @@ This is my Emacs configuration.
     - [[#git][Git]]
     - [[#indentation][Indentation]]
     - [[#rainbow][Rainbow]]
+    - [[#yasnippet][YASnippet]]
   - [[#css][CSS]]
   - [[#go][Go]]
   - [[#haml][Haml]]
@@ -1580,6 +1581,17 @@ Some major-modes to configure git repositories.
 (add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
 
+*** YASnippet
+
+[[https://github.com/joaotavora/yasnippet][YASnippet]] is a template system for Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'yasnippet)
+(ph/install-package 'yasnippet-snippets)
+(require 'yasnippet)
+(yas-global-mode 1)
+#+END_SRC
+
 ** CSS
 
 #+BEGIN_SRC emacs-lisp
@@ -2191,7 +2203,8 @@ Some state specific bindings.
   "k" 'evil-previous-visual-line)
 
 (general-def 'insert ph/global-keys-keymap
-  "C-SPC" 'company-complete)
+  "<C-tab>" 'company-yasnippet
+  "C-SPC"   'company-complete)
 #+END_SRC
 
 * User Interface
