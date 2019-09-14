@@ -1223,10 +1223,24 @@ messages to the trash folder to "delete" them.
 
 *** View
 
-Show the useragent of the sender.
+Show the =useragent= and =bcc=.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'mu4e-view-fields ':useragent t)
+(setq mu4e-view-fields
+      '(:from
+        :to
+        :cc
+        :bcc
+        :subject
+        :flags
+        :date
+        :maildir
+        :mailing-list
+        :tags
+        :signature
+        :decryption
+        :useragent
+        :attachments))
 #+END_SRC
 
 Show me the addresses, not only names.
