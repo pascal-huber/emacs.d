@@ -105,7 +105,7 @@ This is my Emacs configuration.
   - [[#web-mode][Web mode]]
     - [[#autocompletion-2][Autocompletion]]
   - [[#yaml][Yaml]]
-- [[#keybindings-1][Keybindings]]
+- [[#keybindings][Keybindings]]
   - [[#not-user-reserved][Not User-Reserved]]
   - [[#user-reserved][User-Reserved]]
   - [[#state-specific][State Specific]]
