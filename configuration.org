@@ -2131,7 +2131,6 @@ Overwriting sequences (and defining new ones) for non-user-reserved sequences.
 #+BEGIN_SRC emacs-lisp
 (general-def ph/global-keys-keymap
   "M-x"   'counsel-M-x
-  "C-x o" 'ace-window
   "C-s"   'ph/swiper-from-isearch
   "C-h f" 'counsel-describe-function
   "C-h v" 'counsel-describe-variable)
@@ -2141,8 +2140,9 @@ Overwriting sequences (and defining new ones) for non-user-reserved sequences.
   "2"   'ph/vsplit-last-buffer
   "3"   'ph/hsplit-last-buffer
   "7"   'ph/open-last-buffer
-  "m"   'counsel-M-x
   "b"   'ivy-switch-buffer
+  "m"   'counsel-M-x
+  "o"   'ace-window
   "C-b" 'ivy-switch-buffer
   "C-f" 'counsel-find-file)
 #+END_SRC
@@ -2166,10 +2166,12 @@ are intended for user-defined keybindings.
   "h f" 'dumb-jump-go
   "h p" 'dumb-jump-go-prompt
   "l k" 'ph/kill-other-buffers
+  "l m" 'counsel-minor
   "l o" 'ph/xdg-open
   "l q" 'ph/qs-notes
   "l r" 'browse-kill-ring
   "l u" 'ph/unfill-paragraph
+  "l v" 'visual-line-mode
   "i"   'indent-region
   "j"   'switch-to-next-buffer
   "k"   'switch-to-prev-buffer
