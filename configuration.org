@@ -75,6 +75,7 @@ This is my Emacs configuration.
     - [[#indentation][Indentation]]
     - [[#rainbow][Rainbow]]
     - [[#yasnippet][YASnippet]]
+  - [[#c][C++]]
   - [[#css][CSS]]
   - [[#go][Go]]
   - [[#haml][Haml]]
@@ -1622,6 +1623,47 @@ Some major-modes to configure git repositories.
 (require 'yasnippet)
 (yas-global-mode 1)
 #+END_SRC
+
+** C++
+
+[[https://github.com/Sarcasm/irony-mode][Irony-mode]] is an Emacs minor-mode that aims at improving the editing experience
+for the C, C++ and Objective-C languages. I
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'irony)
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+#+END_SRC
+
+Add flycheck linting.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flycheck-irony)
+(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'flycheck-clang-tidy)
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-clang-tidy-setup))
+#+END_SRC
+
+[[https://github.com/realgud/realgud][Realgud]] - An extensible, modular GNU Emacs front-end for interacting with
+external debuggers (e.g. gdb).
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'realgud)
+(require 'realgud)
+#+END_SRC
+
+Notes:
+
+ - Run =irony-install-server= the first time (and install OS dependencies).
+ - Compile with =M-x compile=.
+ - For debugging, use =M-x gdb= and =M-x gdb-many-windows= and the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Commands-of-GUD.html][GUD
+   keybindings]] (=C-x C-a ...=).
+ - Use =M-x realgud:gdb= for debugging.
 
 ** CSS
 
