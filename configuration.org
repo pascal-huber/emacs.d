@@ -774,7 +774,6 @@ and provides facilities for writing custom extensions.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'evil)
-(setq evil-want-C-u-scroll t)
 (require 'evil)
 (evil-mode 1)
 #+END_SRC
@@ -1469,6 +1468,7 @@ completion candidates.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'company)
+(require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
 
