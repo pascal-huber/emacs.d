@@ -1123,11 +1123,11 @@ For some reason the first two cited faces are equal by default. Let's fix this.
 
 *** Headers
 
-Show dates as =dd.mm.yy=, and times in =HH:MM=.
+Custom date and time format.
 
 #+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-time-format "%H:%M")
-(setq mu4e-headers-date-format "%d.%m.%y")
+(setq mu4e-headers-time-format "today    %H:%M")
+(setq mu4e-headers-date-format "%d.%m.%y %H:%M")
 #+END_SRC
 
 Do not show related messages by default (toggle with =W=)
