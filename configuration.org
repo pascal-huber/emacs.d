@@ -921,7 +921,7 @@ Zoom by 10%.
 (setq pdf-view-resize-factor 1.1)
 #+END_SRC
 
-Kebindings:
+Keybindings:
  - =C-c C-a h= to highlight text
  - =C-c C-a o= to strike though text
  - =C-c C-a t= to add a note
