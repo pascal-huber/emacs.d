@@ -1197,9 +1197,8 @@ Set the fields displayed in =mu4e-headers-mode= and =mu4e-view-mode=.
 
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-headers-fields
-      '((:mailing-list . 4)
-        (:flags        . 4)
-        (:human-date   . 10)
+      '((:flags        . 4)
+        (:human-date   . 15)
         (:from         . 25)
         (:subject)))
 #+END_SRC
