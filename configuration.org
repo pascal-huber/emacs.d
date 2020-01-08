@@ -133,6 +133,8 @@ Some functions I should use more often:
 
 Things to check out and problems to deal with:
 
+ - Highlight git diff changed/removed/inserted line with =diff-hl= or
+   =git-gutter=
  - [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]] (all-language autocomplete)
  - [[https://github.com/magit/forge][Magit Forge]]
  - [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-indent-mode]]
