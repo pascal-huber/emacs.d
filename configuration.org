@@ -862,6 +862,7 @@ commands.
 
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
+(require 'swiper)
 #+END_SRC
 
 Use =ivy= for completion instead of =ido=.
