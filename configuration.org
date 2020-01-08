@@ -1535,13 +1535,42 @@ most important commands have keybindings with prefix =C-c !=.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'flycheck)
 (require 'flycheck)
- #+END_SRC
+#+END_SRC
 
 Enable =Flycheck= globally (=prog-mode-hook= may not cover all modes).
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'global-flycheck-mode)
- #+END_SRC
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(define-fringe-bitmap 'flycheck-fringe-bitmap-ball
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00111000
+            #b01111100
+            #b11111110
+            #b11111110
+            #b11111110
+            #b01111100
+            #b00111000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000))
+
+(flycheck-define-error-level 'error
+  :severity 100
+  :compilation-level 2
+  :overlay-category 'flycheck-error-overlay
+  :fringe-bitmap 'flycheck-fringe-bitmap-ball
+  :fringe-face 'flycheck-fringe-error
+  :error-list-face 'flycheck-error-list-error)
+#+END_SRC
 
 *** Git
 
