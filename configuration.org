@@ -50,7 +50,7 @@ This is my Emacs configuration.
   - [[#evil][Evil]]
     - [[#states][States]]
     - [[#evil-surround][Evil Surround]]
-    - [[#evil-god-state][Evil God State]]
+    - [[#evil-goddess][Evil Goddess]]
     - [[#free-keys][Free Keys]]
   - [[#projectile][Projectile]]
   - [[#ivy-counsel-and-swiper][Ivy, Counsel and Swiper]]
@@ -816,14 +816,19 @@ Set initial state by major mode.
 (global-evil-surround-mode 1)
 #+END_SRC
 
-*** Evil God State
+*** Evil Goddess
 
-=evil-god-state= is a global minor mode for entering Emacs commands without
-modifier keys. It's similar to Vim's separation of commands and insertion mode.
-=evil-god-state= is =god-mode= for =evil-mode=.
+*Evil Goddess* makes it possible for evil users to conveniently access Emacs
+keybindings without touching the control and meta key - similar to god-mode.
+
+In order not to loose (hard-coded) which-key support, it is called =god-mode=
+and thus conflicts with the original =god-mode=.
+
+See [here](evil-goddess/README.md) for more details.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'evil-god-state)
+(add-to-list 'load-path "~/.emacs.d/evil-goddess/")
+(require 'god-mode)
 #+END_SRC
 
 *** Free Keys
@@ -2277,8 +2282,9 @@ Some state specific bindings.
 
 #+BEGIN_SRC emacs-lisp
 (general-def 'normal ph/global-keys-keymap
-  "SPC" (general-simulate-key "C-c")
-  ","   'evil-execute-in-god-state)
+  "SPC" 'god-local-mode)
+(general-def 'visual ph/global-keys-keymap
+  "SPC" 'god-local-mode)
 
 (general-def 'motion ph/global-keys-keymap
   "j" 'evil-next-visual-line
