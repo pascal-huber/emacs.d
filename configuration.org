@@ -1673,6 +1673,13 @@ Notes:
 
 ** Go
 
+Install on system.
+
+#+BEGIN_SRC shell
+$ go get -u github.com/rogpeppe/godef
+$ go get -u github.com/mdempsky/gocode
+ #+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'go-mode)
 #+END_SRC
