@@ -502,12 +502,6 @@ selected interface.
 (setq flyspell-correct-interface #'flyspell-correct-ivy)
 #+END_SRC
 
-Enable =flyspell-mode= in text-mode buffers.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'text-mode-hook #'flyspell-mode)
-#+END_SRC
-
 Use Hunspell instead of Aspell.
 
 #+BEGIN_SRC emacs-lisp
