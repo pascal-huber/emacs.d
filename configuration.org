@@ -350,6 +350,13 @@ file so they can't get out of sync.
 (global-auto-revert-mode t)
 #+END_SRC
 
+Update vc-info when reverting (e.g. after changing branch). Note that this may
+cause performance issues when many buffers are present.
+
+#+BEGIN_SRC emacs-lisp
+(setq auto-revert-check-vc-info t)
+#+END_SRC
+
 ** Garbage Collection
 
 Collect garbage after 20MB. Some packages which cache a lot (e.g. =flx-ido=)
