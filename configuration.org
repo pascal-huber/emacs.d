@@ -125,31 +125,39 @@ This is my Emacs configuration.
 
 Some functions I should use more often:
 
-  - Use =C-c u= more often (=counsel-imenu=).
-  - Use =C-c p 5 f= to open a file in a new frame with projectile.
-  - Use =``= to jump back and forth.
-  - Use =m <letter>= to create markers =` <letter>= to go to marker.
-  - Use =C-i= (=jump-forward=) and =C-o= (=jump-backward=).
-  - The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
+ - Use =C-c u= more often (=counsel-imenu=).
+ - Use =C-c p 5 f= to open a file in a new frame with projectile.
+ - Use =``= to jump back and forth.
+ - Use =m <letter>= to create markers =` <letter>= to go to marker.
+ - Use =C-i= (=jump-forward=) and =C-o= (=jump-backward=).
+ - The font-size can be adjusted buffer-locally with =C-x C-+= and =C-x C--=.
 
-Things to check out and problems to deal with:
 
- - Highlight git diff changed/removed/inserted line with =diff-hl= or
-   =git-gutter=
- - [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]] (all-language autocomplete)
- - [[https://github.com/magit/forge][Magit Forge]]
- - [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-indent-mode]]
- - [[https://github.com/jwiegley/use-package][Use-package]]
+Packages to check out:
+
+ - [[https://github.com/raxod502/straight.el][straight.el]] - Next-generation, purely functional package manager for the
+   Emacs hacker.
+ - [[https://github.com/dgutov/diff-hl][diff-hl]] or [[https://github.com/syohex/emacs-git-gutter][emacs-git-gutter]] - Highlighting uncommitted changes.
+ - [[https://github.com/TommyX12/company-tabnine][company-tabnine]] - A company-mode backend for TabNine, the all-language
+   autocompleter.
+ - [[https://github.com/magit/forge][magit forge]] - Work with Git forges from the comfort of Magit.
+ - [[https://github.com/Malabarba/aggressive-indent-mode][aggressive-indent-mode]] - Emacs minor mode that keeps your code always
+   indented. More reliable than electric-indent-mode.
+ - [[https://github.com/jwiegley/use-package][use-package]] - A use-package declaration for simplifying your .emacs.
+
+Other things to check out and problems to deal with:
+
  - Use project-specific exec-path. For example to use =eslint= from the
    project's =./node_modules/= and not from globally installed modules.
- - [[https://github.com/ianpan870102/.emacs.d/blob/master/config.org][Yay-Evil distro by Ian Y.E. Pan]]
  - Check out [[https://www.reddit.com/r/emacs/comments/5vhlws/using_tab_for_both_yasnippet_and_company/][this]] company-yasnippet setup
+
 
 * Inspiration
 
-- [[https://github.com/munen/emacs.d][Alain's configuration]]
-- [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
-- [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
+ - [[https://github.com/munen/emacs.d][Alain's configuration]]
+ - [[https://github.com/emacs-tw/awesome-emacs][Awesome-Emacs: A list of awesome Emacs packages]]
+ - [[https://github.com/caisah/emacs.dz][Emacs.dz: A collection of Emacs configurations]]
+ - [[https://github.com/ianpan870102/.emacs.d/blob/master/config.org][Yay-Evil distro by Ian Y.E. Pan]]
 
 * Installation
 
