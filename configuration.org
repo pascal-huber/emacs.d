@@ -1277,13 +1277,13 @@ Custom Bookmarks
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'mu4e-bookmarks
              (make-mu4e-bookmark
-              :name  "Big messages"
+              :name  "Big ones"
               :query "size:5M..50000M"
               :key ?b))
 (add-to-list 'mu4e-bookmarks
              (make-mu4e-bookmark
-              :name  "Spam"
-              :query "maildir:/r/Spam/ OR maildir:/q/INBOX.spambucket OR maildir:/e/Junk*"
+              :name  "Bullshit"
+              :query "maildir:/.*/.*\\(spam\\|junk\\).*/"
               :key ?s))
 #+END_SRC
 
