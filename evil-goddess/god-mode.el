@@ -6,7 +6,7 @@
 ;; Copyright (C) 2019 Pascal Huber
 
 ;; Author: Pascal Huber <pascal.huber@resolved.ch>
-;; URL: https://github.com/SirPscl/evil-goddess
+;; URL: https://github.com/SirPscl/emacs.d/tree/master/evil-goddess
 ;; Version: 0.1.0
 
 ;; The following are the copyright holders of god-mode.
@@ -83,22 +83,28 @@ used in key sequences."
   :group 'god
   :type 'boolean)
 
-;; TODO: remote god-control-active variable
+;; TODO: get rid of state variable god-control-active
 (defvar god-control-active t)
 
 (defvar god-local-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map t)
     (define-key map [remap self-insert-command] 'god-mode-self-insert)
-    (let ((i ?\s))
+    (let ((i 33))
       (while (< i 256)
         (define-key map (vector i) 'god-mode-self-insert)
         (setq i (1+ i))))
-    (define-key map (kbd "DEL") nil)
-    (define-key map (vector 1) nil) ; C-a
-    (define-key map (vector 67108896) nil) ; C-a
-    (define-key map (kbd "C-g") 'god-local-mode)
     map))
+
+(defun god-read-event (prompt)
+  "Read event using PROMPT including \\[keyboard-quit].
+In the case of \\[keyboard-quit] god-local-mode is disabled."
+  (let ((inhibit-quit t))
+    (setq event (read-event prompt))
+    (if inhibit-quit (setq quit-flag nil))
+    (if (= event 7)
+        (god-local-mode -1))
+    event))
 
 (evil-make-intercept-map god-local-mode-map)
 
@@ -113,18 +119,6 @@ used in key sequences."
         (run-hooks 'god-mode-enabled-hook)
         (message "Evil Goddess"))
     (run-hooks 'god-mode-disabled-hook)))
-
-;; (defun god-mode-maybe-universal-argument-more ()
-;;   "If god mode is enabled, call `universal-argument-more'."
-;;   (interactive)
-;;   (if god-local-mode
-;;       (call-interactively #'universal-argument-more)
-;;     (let ((binding (god-mode-lookup-command "u")))
-;;       (if (commandp binding t)
-;;           (call-interactively binding)
-;;         (execute-kbd-macro binding)))))
-;; (define-key universal-argument-map (kbd "u")
-;;   #'god-mode-maybe-universal-argument-more)
 
 (defun god-mode-self-insert ()
   "Handle self-insert keys."
@@ -148,13 +142,6 @@ used in key sequences."
       ;; check how this works
       (execute-kbd-macro binding))))
 
-;; TODO: remove function if not needed
-;; (defun god-mode-upper-p (char)
-;;   "Is the given char upper case?"
-;;   (and (>= char ?A)
-;;        (<= char ?Z)
-;;        (/= char ?G)))
-
 (defun god-get-modifier-string (key)
   "Return the modifier string for event KEY."
   (cond
@@ -168,33 +155,44 @@ if `key' is nil). This function sometimes recurses.
 `key-string-so-far' should be nil for the first call in the
 sequence."
   (interactive)
-  (let* ((event (or key (read-event key-string-so-far)))
-         (sanitized-key (god-mode-sanitized-key-string event))
+
+  (let* ((event (or key (god-read-event key-string-so-far)))
+         (sanitized-key (or (god-mode-sanitized-key-string event) nil))
          next-binding)
 
     (cond
 
-     ;; C-h -> show help
-     ((string= sanitized-key (kbd "C-h"))
-      ;; (message "C-h")
-      (which-key-C-h-dispatch)
+     ;; Quit on C-g
+     ((not god-local-mode)
+      (message "Quit (by Evil Goddess)"))
+
+     ;; No relevant event
+     ((not sanitized-key)
       (setq next-binding key-string-so-far)
       (setq key-string-so-far nil))
 
-     ;; add C-SPC
-     ((= event 67108896)
-      (setq next-binding (format "C-SPC" sanitized-key))
-      (unless god-switch-literal
-        (setq god-control-active nil)))
+     ;; TODO: handle which-key if possible
+     ;;  (which-key-toggle-docstrings)
+     ;;  (which-key-C-h-dispatch)
 
-     ;; add C-a
-     ((= event 1)
-      (setq next-binding (format "C-a" sanitized-key))
-      (unless god-switch-literal
-        (setq god-control-active nil)))
-     ;; ditch C-? bindings (after which-key dispatched)
+     ;; C-p -> show prev which-key page
+     ;; TODO why does (which-key-show-previous-page-cycle) not work
+     ((and (bound-and-true-p which-key-mode)
+           (string= sanitized-key (kbd "C-p")))
+      (which-key--show-page -1)
+      (setq next-binding key-string-so-far)
+      (setq key-string-so-far nil))
+
+     ;; C-n -> show next which-key page
+     ;; TODO why does (which-key-show-next-page-cycle) not work
+     ((and (bound-and-true-p which-key-mode)
+           (string= sanitized-key (kbd "C-n")))
+      (which-key--show-page 1)
+      (setq next-binding key-string-so-far)
+      (setq key-string-so-far nil))
+
+     ;; C-? -> don't do anything
      ((<= event 26)
-      ;; (message "<=26")
       (setq next-binding key-string-so-far)
       (setq key-string-so-far nil))
 
@@ -207,7 +205,7 @@ sequence."
      ;; meta-key -> read another key
      ((and god-handle-meta
            (string= god-meta-key sanitized-key))
-      (let ((second-event (read-event key-string-so-far)))
+      (let ((second-event (god-read-event key-string-so-far)))
         (setq next-binding
               (format (god-get-modifier-string sanitized-key)
                       (god-mode-sanitized-key-string second-event)))))
@@ -215,7 +213,7 @@ sequence."
      ;; control-meta-key -> read another key
      ((and god-handle-control-meta
            (string= god-control-meta-key sanitized-key))
-      (let ((second-event (read-event key-string-so-far)))
+      (let ((second-event (god-read-event key-string-so-far)))
         (setq next-binding
               (format (god-get-modifier-string sanitized-key)
                       (god-mode-sanitized-key-string second-event)))))
@@ -227,11 +225,13 @@ sequence."
         (unless god-switch-literal
           (setq god-control-active nil)))))
 
-    (if key-string-so-far
-        (progn
-          (god-mode-lookup-command
-           (format "%s %s" key-string-so-far next-binding)))
-      (god-mode-lookup-command next-binding))
+    (if god-local-mode
+        (if key-string-so-far
+            (progn
+              (god-mode-lookup-command
+               (format "%s %s" key-string-so-far next-binding)))
+          (god-mode-lookup-command next-binding))
+      "") ;; if god-local-mode is not active anymore, do nothing
     ))
 
 (defun god-mode-sanitized-key-string (key)
@@ -243,7 +243,6 @@ sequence."
     (right "<right>")
     (S-left "S-<left>")
     (S-right "S-<right>")
-    (67108896 "C-SPC")
     (prior "<prior>")
     (next "<next>")
     (backspace "DEL")
@@ -261,7 +260,7 @@ call it."
           ((keymapp binding)
            (god-mode-lookup-key-sequence nil key-string))
           (:else
-           (error "God: Unknown key binding for `%s`" key-string)))))
+           (error "Evil Goddess: Unknown key binding for `%s`" key-string)))))
 
 (provide 'god-mode)
 

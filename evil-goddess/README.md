@@ -23,16 +23,14 @@ There are two main reasons I took god-mode and modified it:
     improvement/customization. Evil Goddess provides some variables to customize
     the behavior.
 
-God-Mode is an archived project. Thus creating PR's is not an option. It also
-contains functionality that I never use and I don't think make much sense for
-the evil user.
+I also like emacs-which-key and I don't want to miss it when entering key
+sequences. Which-key has hard-coded support for god-mode. This means that some
+functions cannot be renamed without loosing which-key support. Thus evil-goddess
+and god-mode (or evil-god-state) cannot be used together (which also doesn't
+make much sense I guess).
 
-A also like emacs-which-key and I don't want to miss it when entering key
-sequences with evil-goddess. Which-key has hard-coded support for god-mode. This
-means that some functions cannot be renamed without loosing which-key support.
-Thus evil-goddess and god-mode/evil-god-state cannot be used together (which
-also doesn't make much sense I guess). I will conctact the which-key maintainers
-as soon as this project is ready.
+~~God-Mode is an archived project.~~ God-mode has been moved to emacsorphanage.
+If it is maintained again, maybe a PR would be an option?
 
 ## Usage
 
@@ -92,9 +90,14 @@ By setting `god-switch-literal` to `t` (default: `nil`), the `god-literal-key`
 Example:
   * `ab cde f` → `C-a b C-c C-d C-e f`
 
+### Which key
+
+Which-key is partially supported. When enabled with god-mode support, you can
+use `C-n` and `C-p` for paging.
+
 ## Installation
 
- 1. Download god-mode.el
+ 1. Download god-mode.el (the one here, not the original!)
  2. Add the directory where god-mode.el lies to your load-path.
     ```
     (add-to-list 'load-path "/path/to/file/")
