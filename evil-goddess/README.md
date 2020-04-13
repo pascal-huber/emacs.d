@@ -93,7 +93,7 @@ Example:
 ### Which key
 
 Which-key is partially supported. When enabled with god-mode support, you can
-use `C-n` and `C-p` for paging.
+use `C-n` and `C-p` for paging and `C-d` to toggle docstrings.
 
 ## Installation
 

@@ -171,12 +171,13 @@ sequence."
       (setq next-binding key-string-so-far)
       (setq key-string-so-far nil))
 
-     ;; TODO: handle which-key if possible
-     ;;  (which-key-toggle-docstrings)
-     ;;  (which-key-C-h-dispatch)
+     ;; TODO: handle which-key without using internal functions
+     ;; (which-key-C-h-dispatch)
+     ;; (which-key-show-next-page-cycle) not work
+     ;; (which-key-show-previous-page-cycle)
+     ;; (which-key-toggle-docstrings) not work
 
      ;; C-p -> show prev which-key page
-     ;; TODO why does (which-key-show-previous-page-cycle) not work
      ((and (bound-and-true-p which-key-mode)
            (string= sanitized-key (kbd "C-p")))
       (which-key--show-page -1)
@@ -184,10 +185,17 @@ sequence."
       (setq key-string-so-far nil))
 
      ;; C-n -> show next which-key page
-     ;; TODO why does (which-key-show-next-page-cycle) not work
      ((and (bound-and-true-p which-key-mode)
            (string= sanitized-key (kbd "C-n")))
       (which-key--show-page 1)
+      (setq next-binding key-string-so-far)
+      (setq key-string-so-far nil))
+
+     ;; C-d -> show next which-key page
+     ((and (bound-and-true-p which-key-mode)
+           (string= sanitized-key (kbd "C-d")))
+      (setq which-key-show-docstrings (null which-key-show-docstrings))
+      (which-key--create-buffer-and-show (which-key--current-prefix))
       (setq next-binding key-string-so-far)
       (setq key-string-so-far nil))
 
