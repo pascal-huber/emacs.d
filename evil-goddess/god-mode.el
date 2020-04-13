@@ -138,8 +138,6 @@ In the case of \\[keyboard-quit] god-local-mode is disabled."
           (unless (eq binding 'digt-argument)
             (call-interactively 'god-local-mode))
           (call-interactively binding))
-      ;; TODO: fix weird behavior on exit
-      ;; check how this works
       (execute-kbd-macro binding))))
 
 (defun god-get-modifier-string (key)
