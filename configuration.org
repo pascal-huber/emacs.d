@@ -123,6 +123,7 @@ This is my Emacs configuration.
 
 Some functions I should use more often:
 
+ - Use =evil-window= commands (e.g. =C-w j=)
  - Use =C-c u= more often (=counsel-imenu=).
  - Use =C-c p 5 f= to open a file in a new frame with projectile.
  - Use =``= to jump back and forth.
