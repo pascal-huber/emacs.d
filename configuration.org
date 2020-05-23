@@ -150,7 +150,6 @@ Other things to check out and problems to deal with:
    project's =./node_modules/= and not from globally installed modules.
  - Check out [[https://www.reddit.com/r/emacs/comments/5vhlws/using_tab_for_both_yasnippet_and_company/][this]] company-yasnippet setup
 
-
 * Inspiration
 
  - [[https://github.com/munen/emacs.d][Alain's configuration]]
@@ -822,7 +821,7 @@ keybindings without touching the control and meta key - similar to god-mode.
 In order not to loose (hard-coded) which-key support, it is called =god-mode=
 and thus conflicts with the original =god-mode=.
 
-See [here](evil-goddess/README.md) for more details.
+See [[evil-goddess/README.md]] for more details.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/evil-goddess/")
@@ -863,6 +862,12 @@ dependencies (when feasible).
 [[https://github.com/abo-abo/swiper][Ivy, Counsel (and Swiper)]], a collection of Ivy-enhanced versions of common Emacs
 commands.
 
+ - Ivy is a generic completion mechanism for Emacs.
+ - Counsel is a collection of Ivy-enhanced versions of common Emacs commands.
+ - Swiper is an Ivy-enhanced alternative to isearch.
+
+Installing =counsel= will also install the other two as dependencies.
+
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'counsel)
 (require 'swiper)
@@ -871,7 +876,6 @@ commands.
 Use =ivy= for completion instead of =ido=.
 
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'ivy)
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
