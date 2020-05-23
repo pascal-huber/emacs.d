@@ -39,7 +39,6 @@ This is my Emacs configuration.
   - [[#kill-buffers][Kill Buffers]]
 - [[#additional-functionality][Additional Functionality]]
   - [[#which-key][Which-Key]]
-  - [[#session][Session]]
   - [[#ace-window][Ace Window]]
   - [[#smex][Smex]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
@@ -198,12 +197,6 @@ Some packages (=undo-tree=) fail to install over =https=, thus this workaround.
 #+BEGIN_SRC emacs-lisp
 (when (version< emacs-version "26.3")
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
-#+END_SRC
-
-Also load packages which are not in an archive but in this repository.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/vendor/")
 #+END_SRC
 
 ** Installation
@@ -685,15 +678,6 @@ Show command names up to 40 columns before cutting them.
 
 #+BEGIN_SRC emacs-lisp
 (setq which-key-max-description-length 40)
-#+END_SRC
-
-** Session
-
-Restore some stuff (command histories, kill-ring, ...) from last session.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'session)
-(add-hook 'emacs-startup-hook 'session-initialize)
 #+END_SRC
 
 ** Ace Window
