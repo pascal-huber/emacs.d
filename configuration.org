@@ -2418,13 +2418,8 @@ themes.
 (ph/install-package 'doom-themes)
 
 (setq ph/theme-list
-      '(
-        ;; doom-molokai
-        doom-peacock
-        ;; doom-tomorrow-night
-        ;; doom-one-light
-        doom-tomorrow-day
-        ))
+      '(doom-peacock
+        doom-tomorrow-day))
 
 (defun ph/next-theme ()
   "Load next theme."
@@ -2448,7 +2443,21 @@ then load THEME and finally do some customizations."
              (mapcar 'symbol-name (custom-available-themes))))))
   (mapcar 'disable-theme custom-enabled-themes)
   (load-theme theme t)
+  (ph/customize-theme theme)
   (ph/any-theme-customize))
+
+(defun ph/customize-theme (theme)
+  "Call ph/THEME-customize if existent."
+  (let ((fn (intern (concat "ph/" (symbol-name theme) "-customize"))))
+    (message (concat "ph/" (symbol-name theme) "-customize"))
+    (if (functionp fn)
+        (funcall fn))))
+
+(defun ph/doom-peacock-customize ()
+  ;; highlight current line number
+  (set-face-attribute 'line-number-current-line nil
+                      :foreground "#ff5d38"
+                      :weight 'bold))
 
 (defun ph/any-theme-customize ()
   "This function sets some default values for all themes."
