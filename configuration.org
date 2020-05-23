@@ -170,7 +170,7 @@ Some important and noteworthy dependencies:
  - [[https://github.com/djcb/mu][mu]]
  - [[https://github.com/OfflineIMAP/offlineimap][offlineimap]]
  - [[https://github.com/jgm/pandoc][pandoc]]
- - ripgrep
+ - [[https://github.com/BurntSushi/ripgrep][ripgrep]]
 
 After the first start, run the following commands.
 
