@@ -114,7 +114,6 @@ This is my Emacs configuration.
     - [[#minor-modes][Minor Modes]]
     - [[#doom-modeline][Doom Modeline]]
   - [[#color-themes][Color Themes]]
-  - [[#beacon][Beacon]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
   - [[#tooltips][Tooltips]]
@@ -2481,29 +2480,6 @@ then load THEME and finally do some customizations."
   (set-face-attribute 'mode-line-inactive nil
                       :height 90)
 )
-#+END_SRC
-
-** Beacon
-
-[[https://github.com/Malabarba/beacon][Beacon]] helps to never lose the cursor again. Whenever the window scrolls a light
-will shine on top of your cursor so you know where it is.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'beacon)
-(beacon-mode 1)
-(setq beacon-color "#478061")
-(setq beacon-blink-duration 0.1)
-#+END_SRC
-
-Blink when moving with evil.
-
-#+BEGIN_SRC emacs-lisp
-(defun ph/beacon-blink (&rest args) (beacon-blink))
-
-(advice-add 'evil-window-top    :after 'beacon-blink)
-(advice-add 'evil-window-middle :after 'beacon-blink)
-(advice-add 'evil-window-bottom :after 'beacon-blink)
-(advice-add 'evil-goto-mark     :after 'ph/beacon-blink)
 #+END_SRC
 
 ** Fancy stuff
