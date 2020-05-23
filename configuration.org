@@ -677,7 +677,13 @@ Also use which-key evil and god-mode shortcuts.
 Show command names up to 40 columns before cutting them.
 
 #+BEGIN_SRC emacs-lisp
-(setq which-key-max-description-length 40)
+(setq which-key-max-description-length 25)
+#+END_SRC
+
+Show which-key after .4 seconds inactivity
+
+#+BEGIN_SRC emacs-lisp
+(setq which-key-idle-delay 0.4)
 #+END_SRC
 
 ** Ace Window
