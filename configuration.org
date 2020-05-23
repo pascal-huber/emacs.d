@@ -2175,6 +2175,7 @@ are intended for user-defined keybindings.
   "i"   'indent-region
   "j"   'switch-to-next-buffer
   "k"   'switch-to-prev-buffer
+  "m"   'magit
   "o"   'ph/occur-dwim
   "r"   'ph/mu4e
   "s b" 'flyspell-buffer
