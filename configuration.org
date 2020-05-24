@@ -2161,12 +2161,12 @@ Overwriting sequences (and defining new ones) for non-user-reserved sequences.
   "3"   'ph/hsplit-last-buffer
   "7"   'ph/open-last-buffer
   "b"   'ivy-switch-buffer
+  "f"   'counsel-find-file
   "m"   'counsel-M-x
   "o"   'ace-window
   "C-b" 'ivy-switch-buffer
-  "C-f" 'counsel-find-file)
+  "C-f" 'set-fill-column)
 #+END_SRC
-
 ** User-Reserved
 
 User-reserved sequences (=C-c= followed by a letter and =<F5>= through =<F9>=
