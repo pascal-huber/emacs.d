@@ -1019,6 +1019,12 @@ Open mu4e in the current frame or switch to an already existing mu4e-buffer.
       (if buffer (switch-to-buffer buffer) (mu4e)))))
 #+END_SRC
 
+Hide addresses on main view
+
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-main-buffer-hide-personal-addresses t)
+#+END_SRC
+
 Hide the annoying indexing message.
 
 #+BEGIN_SRC emacs-lisp
