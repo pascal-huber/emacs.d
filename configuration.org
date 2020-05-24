@@ -2399,6 +2399,7 @@ Setup the mode-line.
 (doom-modeline-def-modeline 'ph/mode-line
   '(
     bar
+    window-number
     ph/evil-state
     tramp-method
     ph/buffer-info

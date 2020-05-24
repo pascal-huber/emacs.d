@@ -1,21 +1,16 @@
-;;; god-mode.el --- God-Mode-like command entering minor mode
-
-;; Copyright for portions evil-goddess are held by Chris Done et al. as part of
-;; god-mode. All other copyright for evil-goddess are held by Pascal Huber.
-
-;; Copyright (C) 2019 Pascal Huber
-
-;; Author: Pascal Huber <pascal.huber@resolved.ch>
-;; URL: https://github.com/SirPscl/emacs.d/tree/master/evil-goddess
-;; Version: 0.1.0
-
-;; The following are the copyright holders of god-mode.
+;;; god-mode.el --- Minor mode for God-like command entering  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Chris Done
 ;; Copyright (C) 2013 Magnar Sveen
 ;; Copyright (C) 2013 Rüdiger Sonderfeld
 ;; Copyright (C) 2013 Dillon Kearns
 ;; Copyright (C) 2013 Fabián Ezequiel Gallina
+;; Copyright (C) 2019 Pascal Huber
+
+;; Author: Chris Done <chrisdone@gmail.com>
+;; URL: https://github.com/emacsorphanage/god-mode
+;; Version: 2.16.2
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
