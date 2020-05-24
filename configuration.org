@@ -2483,7 +2483,7 @@ then load THEME and finally do some customizations."
 (defun ph/doom-peacock-customize ()
   ;; highlight current line number
   (set-face-attribute 'line-number-current-line nil
-                      :foreground "#ff5d38"
+                      :foreground "#BCD42A"
                       :weight 'bold))
 
 (defun ph/any-theme-customize ()
