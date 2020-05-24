@@ -2353,8 +2353,10 @@ want.
   (when (bound-and-true-p evil-local-mode)
     (let ((tag (evil-state-property evil-state :tag t)))
       (propertize tag 'face
-                  (cdr (assoc evil-state
-                              doom-modeline-evil-state-faces-alist))))))
+                  (if (doom-modeline--active)
+                      (cdr (assoc evil-state
+                                  doom-modeline-evil-state-faces-alist))
+                    'doom-modeline-bar-inactive)))))
 
 (doom-modeline-def-segment ph/evil-state
   (doom-modeline--evil))
