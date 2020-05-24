@@ -2029,6 +2029,12 @@ Autocompletion
 (company-auctex-init)
 #+END_SRC
 
+Auto-fill
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+#+END_SRC
+
 ** Web mode
 
 [[http://web-mode.org/][Web-Mode]] is an autonomous emacs major-mode for editing web templates. HTML
