@@ -1523,6 +1523,13 @@ Some major-modes to configure git repositories.
 (ph/install-package 'gitignore-mode)
 #+END_SRC
 
+[[https://github.com/dgutov/diff-hl][diff-hl-mode]] highlights uncommitted changes on the left side of the window,
+allows you to jump between and revert them selectively.
+
+#+BEGIN_SRC emacs-lisp
+(ph/install-package 'diff-hl)
+#+END_SRC
+
 *** Indentation
 
 #+BEGIN_SRC emacs-lisp
@@ -2177,8 +2184,9 @@ are intended for user-defined keybindings.
   "h b" 'dumb-jump-back
   "h f" 'dumb-jump-go
   "h p" 'dumb-jump-go-prompt
+  "l g" 'diff-hl-mode
   "l k" 'ph/kill-other-buffers
-  "l m" 'counsel-minor
+  "l m" 'magit-diff-buffer-file
   "l o" 'ph/xdg-open
   "l q" 'ph/qs-notes
   "l r" 'browse-kill-ring
