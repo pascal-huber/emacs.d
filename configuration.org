@@ -2384,17 +2384,28 @@ want.
                     :background "#fd971f")
 #+END_SRC
 
+Show both line and column numbers but not a percentage.
+
+#+BEGIN_SRC emacs-lisp
+(setq line-number-mode t)
+(setq column-number-mode t)
+(setq doom-modeline-percent-position nil)
+#+END_SRC
+
 Setup the mode-line.
 
 #+BEGIN_SRC emacs-lisp
 (doom-modeline-def-modeline 'ph/mode-line
-  '(bar
+  '(
+    bar
     ph/evil-state
     tramp-method
     ph/buffer-info
     remote-host
     matches ; ???
-    checker)
+    buffer-position
+    checker
+    )
   '(misc-info ; e.g. mu4e context
     vcs
     ph/projectile-project-name
