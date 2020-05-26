@@ -111,8 +111,11 @@ This is my Emacs configuration.
 - [[#user-interface][User Interface]]
   - [[#default-face][Default Face]]
   - [[#modeline][Modeline]]
-    - [[#minor-modes][Minor Modes]]
-    - [[#doom-modeline][Doom Modeline]]
+  - [[#diminish][Diminish]]
+  - [[#doom-modeline][Doom Modeline]]
+    - [[#settings-1][Settings]]
+    - [[#segments][Segments]]
+    - [[#setup][Setup]]
   - [[#color-themes][Color Themes]]
   - [[#fancy-stuff][Fancy stuff]]
   - [[#frame-title][Frame Title]]
@@ -2230,19 +2233,13 @@ Some state specific bindings.
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
                     :family "DejaVu Sans Mono"
-                    ;; :family "Menlo"
-                    ;; :family "Fira Code"
-                    ;; :family "Paprika" ; Just kidding.. but I love this font
                     ;; some similar characters: 0OD yprw VU Ss |iIl
                     :weight 'normal
                     :height 120
                     :width 'normal)
 #+END_SRC
 
-#+RESULTS:
-
-** Modeline
-*** Minor Modes
+** Diminish
 
 [[https://github.com/emacsmirror/diminish][Diminish]] implements hiding or abbreviation of the mode line displays (lighters)
 of minor-modes.
@@ -2250,11 +2247,15 @@ of minor-modes.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'diminish)
 
-(eval-after-load "visual-line"
-  (diminish 'visual-line-mode "VL"))
+(diminish 'visual-line-mode "VL")
+(diminish 'projectile-mode)
+(diminish 'which-key-mode)
+(diminish 'counsel-mode)
+(diminish 'ivy-mode)
+(diminish 'god-local-mode)
 #+END_SRC
 
-*** Doom Modeline
+** Doom Modeline
 
 [[https://github.com/seagle0128/doom-modeline][Doom Modeline]] is a fancy and fast mode-line with minimalism design.
 
@@ -2263,11 +2264,25 @@ of minor-modes.
 (require 'doom-modeline)
 #+END_SRC
 
+*** Settings
+
+Show both line and column numbers but not a percentage.
+
+#+BEGIN_SRC emacs-lisp
+(setq line-number-mode t)
+(setq column-number-mode t)
+(setq doom-modeline-percent-position nil)
+#+END_SRC
+
 Make modeline as high as its content.
 
 #+BEGIN_SRC emacs-lisp
 (setq doom-modeline-height 30)
 (setq doom-modeline-bar-width 1)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq doom-modeline-enable-word-count t)
 #+END_SRC
 
 No icons in my mode-line.
@@ -2301,23 +2316,34 @@ Show buffer-name instead of path.
 (setq doom-modeline-buffer-file-name-style 'buffer-name)
 #+END_SRC
 
-Some additional segments
+*** Segments
+
+Some simplified flyspell segments.
 
 #+BEGIN_SRC emacs-lisp
 (doom-modeline-def-segment ph/flyspell
   (when (and flyspell-mode
              ispell-local-dictionary)
     (concat
+     (doom-modeline-spc)
      (propertize ispell-local-dictionary
                  'face 'doom-modeline-buffer-minor-mode))))
+#+END_SRC
 
+Show the tramp method.
+
+#+BEGIN_SRC emacs-lisp
 (doom-modeline-def-segment tramp-method
   (let ((method (file-remote-p default-directory 'method)))
     (if method
       (concat
        (doom-modeline-spc)
        (propertize method 'face 'doom-modeline-urgent)))))
+#+END_SRC
 
+Show the projectile project name.
+
+#+BEGIN_SRC emacs-lisp
 (doom-modeline-def-segment ph/projectile-project-name
   (when (projectile-project-p)
     (concat
@@ -2327,7 +2353,11 @@ Some additional segments
                      'doom-modeline-buffer-path
                    'mode-line-inactive))
      (doom-modeline-spc))))
+#+END_SRC
 
+Show the buffer name.
+
+#+BEGIN_SRC emacs-lisp
 (doom-modeline-def-segment ph/buffer-info
   (concat
    (doom-modeline-spc)
@@ -2349,18 +2379,15 @@ want.
         (operator . doom-modeline-evil-operator-state)
         (replace . doom-modeline-evil-replace-state)))
 
-(defun doom-modeline--evil ()
+(doom-modeline-def-segment ph/evil-state
   "The current evil state. Requires `evil-mode' to be enabled."
   (when (bound-and-true-p evil-local-mode)
     (let ((tag (evil-state-property evil-state :tag t)))
-      (propertize tag 'face
+      (propertize (if (stringp tag) tag (funcall tag)) 'face
                   (if (doom-modeline--active)
                       (cdr (assoc evil-state
                                   doom-modeline-evil-state-faces-alist))
                     'doom-modeline-bar-inactive)))))
-
-(doom-modeline-def-segment ph/evil-state
-  (doom-modeline--evil))
 
 (set-face-attribute 'doom-modeline-evil-emacs-state nil
                     :foreground "#111"
@@ -2385,57 +2412,47 @@ want.
                     :background "#fd971f")
 #+END_SRC
 
-Show both line and column numbers but not a percentage.
-
-#+BEGIN_SRC emacs-lisp
-(setq line-number-mode t)
-(setq column-number-mode t)
-(setq doom-modeline-percent-position nil)
-#+END_SRC
+*** Setup
 
 Setup the mode-line.
 
 #+BEGIN_SRC emacs-lisp
-(doom-modeline-def-modeline 'ph/mode-line
-  '(
-    bar
+(doom-modeline-def-modeline 'main
+  '(bar
     window-number
     ph/evil-state
+    matches ; e.g. evil-substitute
+    selection-info
     tramp-method
     ph/buffer-info
     remote-host
-    matches ; ???
     buffer-position
-    checker
-    )
-  '(misc-info ; e.g. mu4e context
+    ph/flyspell
+    checker)
+  '(minor-modes
+    media-info
+    misc-info
     vcs
     ph/projectile-project-name
-    ph/flyspell
-    major-mode))
-
-(defun ph/setup-doom-modeline ()
-  (doom-modeline-set-modeline 'ph/mode-line 'default))
-
-(add-hook 'doom-modeline-mode-hook 'ph/setup-doom-modeline)
-#+END_SRC
-
-Take width from 'mode-line and not from 'default
-
-#+BEGIN_SRC emacs-lisp
-(defun doom-modeline--window-font-width ()
-  "Cache the font width."
-  (let ((attributes (face-all-attributes 'mode-line)))
-    (or (cdr (assoc attributes doom-modeline--width-cache))
-        (let ((width (window-font-width nil 'mode-line)))
-          (push (cons attributes width) doom-modeline--width-cache)
-          width))))
+    major-mode)
+)
 #+END_SRC
 
 Last but not least, enable it.
 
 #+BEGIN_SRC emacs-lisp
 (doom-modeline-mode 1)
+#+END_SRC
+
+When I open my first frame, the mode-line has a rather large empty space on the
+right side. The width is set incorrectly although
+=doom-modeline-refresh-font-width-cache= is in =after-make-frame-functions=.
+Adding the function to =buffer-list-update-hook= seems to resolve this issue.
+
+# TODO: Create an issue on doom-modeline about font-width-cache
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'buffer-list-update-hook 'doom-modeline-refresh-font-width-cache)
 #+END_SRC
 
 ** Color Themes
@@ -2513,6 +2530,7 @@ then load THEME and finally do some customizations."
                       :foreground nil
                       :background nil)
 
+  ;; Use a smaller font for the mode-line
   (set-face-attribute 'mode-line nil
                       :height 90)
   (set-face-attribute 'mode-line-inactive nil
