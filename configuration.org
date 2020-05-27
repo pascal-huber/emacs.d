@@ -2021,6 +2021,16 @@ Query to find out which is the master file.
 (setq-default TeX-master nil)
 #+END_SRC
 
+Auctex by default adds comment sections to all the .tex files to save the
+=TeX-master= variable. In order not to confuse my colleagues with such
+auctex-specific lines I use [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html][per-directory local variables]]. For that I put the
+following list in a =.dir-locals.el= file in the project root if the main latex
+file is =report.tex=.
+
+#+BEGIN_SRC lisp
+((latex-mode . ((TeX-master . "report"))))
+#+END_SRC
+
 I use Evince to view my PDFs.
 
 #+BEGIN_SRC emacs-lisp
