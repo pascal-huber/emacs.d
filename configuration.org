@@ -191,14 +191,6 @@ Use the =gnu= (official) and =melpa= (unofficial) archives.
 (package-initialize)
 #+END_SRC
 
-Some packages (=undo-tree=) fail to install over =https=, thus this workaround.
-[[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341][See GNU bug report logs - #34341]]. Should be fixed as of Emacs 26.3.
-
-#+BEGIN_SRC emacs-lisp
-(when (version< emacs-version "26.3")
-  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
-#+END_SRC
-
 ** Installation
 
 Install packages on demand. This is cleaner and easier to keep tidy than
