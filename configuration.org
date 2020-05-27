@@ -2328,10 +2328,10 @@ Show buffer-name instead of path.
 
 *** Segments
 
-Some simplified flyspell segments.
+A Segment to indicate the active ispell dictionary in flyspell.
 
 #+BEGIN_SRC emacs-lisp
-(doom-modeline-def-segment ph/flyspell
+(doom-modeline-def-segment ph/flyspell-dictionary
   (when (and flyspell-mode
              ispell-local-dictionary)
     (concat
@@ -2437,7 +2437,7 @@ Setup the mode-line.
     ph/buffer-info
     remote-host
     buffer-position
-    ph/flyspell
+    ph/flyspell-dictionary
     checker)
   '(minor-modes
     media-info
