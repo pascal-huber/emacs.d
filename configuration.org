@@ -1702,10 +1702,12 @@ Indentation
 
 *** Autocompletion
 
+TODO: company-tern is not on melpa anymore, find a solution
+
 #+BEGIN_SRC emacs-lisp
-(ph/install-package 'company-tern)
-(require 'company-tern)
-(add-to-list 'company-backends 'company-tern)
+;(ph/install-package 'company-tern)
+;(require 'company-tern)
+;(add-to-list 'company-backends 'company-tern)
 #+END_SRC
 
 =jquery-doc= provides completion source for auto-complete and company-mode as
