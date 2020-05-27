@@ -38,7 +38,6 @@ This is my Emacs configuration.
     - [[#toc-org][TOC-Org]]
   - [[#kill-buffers][Kill Buffers]]
 - [[#additional-functionality][Additional Functionality]]
-  - [[#which-key][Which-Key]]
   - [[#ace-window][Ace Window]]
   - [[#smex][Smex]]
   - [[#browse-kill-ring][Browse-Kill-Ring]]
@@ -49,8 +48,9 @@ This is my Emacs configuration.
   - [[#evil][Evil]]
     - [[#states][States]]
     - [[#evil-surround][Evil Surround]]
-    - [[#evil-goddess][Evil Goddess]]
     - [[#free-keys][Free Keys]]
+  - [[#god-mode][God Mode]]
+  - [[#which-key][Which-Key]]
   - [[#projectile][Projectile]]
   - [[#ivy-counsel-and-swiper][Ivy, Counsel and Swiper]]
   - [[#pdf-tools][PDF-Tools]]
@@ -656,36 +656,6 @@ Kill all but the current buffer. [[https://www.emacswiki.org/emacs/KillingBuffer
 
 This section contains some third party packages and additional functionality.
 
-** Which-Key
-
-[[https://github.com/justbur/emacs-which-key][Which-Key]] is a minor mode for Emacs that displays the key bindings following
-your currently entered incomplete command (a prefix) in a popup.
-
-#+BEGIN_SRC emacs-lisp
-(ph/install-package 'which-key)
-(which-key-mode)
-#+END_SRC
-
-Also use which-key evil and god-mode shortcuts.
-
-#+BEGIN_SRC emacs-lisp
-(which-key-enable-god-mode-support)
-(setq which-key-allow-evil-operators t)
-(setq which-key-show-operator-state-maps t)
-#+END_SRC
-
-Show command names up to 40 columns before cutting them.
-
-#+BEGIN_SRC emacs-lisp
-(setq which-key-max-description-length 25)
-#+END_SRC
-
-Show which-key after .4 seconds inactivity
-
-#+BEGIN_SRC emacs-lisp
-(setq which-key-idle-delay 0.4)
-#+END_SRC
-
 ** Ace Window
 
 [[https://github.com/abo-abo/ace-window][Ace-window]] aims to take the speed and predictability of =windmove= and pack it
@@ -814,7 +784,22 @@ Set initial state by major mode.
 (global-evil-surround-mode 1)
 #+END_SRC
 
-*** Evil Goddess
+*** Free Keys
+
+Free =M-.= and =M-,​= since they are popular keybindings for "jump to definition"
+and "back". Also I don't use =evil-complete=.
+
+#+BEGIN_SRC emacs-lisp
+(general-def 'normal
+  "M-." nil
+  "M-," nil)
+
+(general-def 'insert
+  "C-p" nil
+  "C-n" nil)
+#+END_SRC
+
+** God Mode
 
 *Evil Goddess* makes it possible for evil users to conveniently access Emacs
 keybindings without touching the control and meta key - similar to god-mode.
@@ -829,19 +814,49 @@ See [[evil-goddess/README.md]] for more details.
 (require 'god-mode)
 #+END_SRC
 
-*** Free Keys
+** Which-Key
 
-Free =M-.= and =M-,​= since they are popular keybindings for "jump to definition"
-and "back". Also I don't use =evil-complete=.
+[[https://github.com/justbur/emacs-which-key][Which-Key]] is a minor mode for Emacs that displays the key bindings following
+your currently entered incomplete command (a prefix) in a popup.
 
 #+BEGIN_SRC emacs-lisp
-(general-def 'normal
-  "M-." nil
-  "M-," nil)
+(ph/install-package 'which-key)
+(which-key-mode)
 
-(general-def 'insert
-  "C-p" nil
-  "C-n" nil)
+;; (use-package which-key
+;;   :bind (("C-' k" . which-key-mode)
+;;          ("C-' C-k" . which-key-mode))
+;;   :init
+;;   (which-key-setup-side-window-bottom)
+;;   (which-key-enable-god-mode-support)
+;;   ;; ...
+;;   (which-key-mode t))
+#+END_SRC
+
+Also use which-key evil and god-mode shortcuts.
+
+#+BEGIN_SRC emacs-lisp
+(setq which-key-allow-evil-operators t)
+(setq which-key-show-operator-state-maps t)
+#+END_SRC
+
+Show command names up to 40 columns before cutting them.
+
+#+BEGIN_SRC emacs-lisp
+(setq which-key-max-description-length 25)
+#+END_SRC
+
+Show which-key after .4 seconds inactivity
+
+#+BEGIN_SRC emacs-lisp
+(setq which-key-idle-delay 0.4)
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+(which-key-setup-side-window-bottom)
+  (which-key-enable-god-mode-support)
+(which-key-enable-god-mode-support)
 #+END_SRC
 
 ** Projectile
