@@ -2305,10 +2305,6 @@ Make modeline as high as its content.
 (setq doom-modeline-bar-width 1)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(setq doom-modeline-enable-word-count t)
-#+END_SRC
-
 No icons in my mode-line.
 
 #+BEGIN_SRC emacs-lisp
