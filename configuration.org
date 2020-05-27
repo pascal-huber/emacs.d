@@ -2263,12 +2263,13 @@ of minor-modes.
 #+BEGIN_SRC emacs-lisp
 (ph/install-package 'diminish)
 
-(diminish 'visual-line-mode "VL")
-(diminish 'projectile-mode)
-(diminish 'which-key-mode)
 (diminish 'counsel-mode)
-(diminish 'ivy-mode)
 (diminish 'god-local-mode)
+(diminish 'ivy-mode)
+(diminish 'projectile-mode)
+(diminish 'undo-tree-mode)
+(diminish 'visual-line-mode "VL")
+(diminish 'which-key-mode)
 #+END_SRC
 
 ** Doom Modeline
