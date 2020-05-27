@@ -110,7 +110,6 @@ This is my Emacs configuration.
   - [[#state-specific][State Specific]]
 - [[#user-interface][User Interface]]
   - [[#default-face][Default Face]]
-  - [[#modeline][Modeline]]
   - [[#diminish][Diminish]]
   - [[#doom-modeline][Doom Modeline]]
     - [[#settings-1][Settings]]
